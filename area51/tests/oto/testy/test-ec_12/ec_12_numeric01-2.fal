@@ -1,0 +1,12 @@
+str = input()
+x = numeric()
+i = 0.0
+pocet_cyklu = 10.0
+
+while i < pocet_cyklu
+	x = x / i
+	print(x)
+	str = input()
+	x = numeric(str)
+	i = i + 1.0
+end

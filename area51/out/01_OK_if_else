@@ -1,0 +1,144 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:a
+ID value node:a
+aktivni:136970736
+ID value list:a
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:c*¨*
+ID value node:c*¨*
+	 -1|aktivni:136970864
+ID value list:c*¨*
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 2
+	 Jsem v ? 2
+Jsem v Stat 2
+	 Jsem v IF
+aktivni:136971000
+2 asd 2
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+konecne venku
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:i*Ø*
+ID value node:i*Ø*
+	 -1|	 -1|aktivni:136971344
+ID value list:i*Ø*
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 3
+	 Jsem v 2?
+aktivni:136971544
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:käj·0äj·
+ID value node:käj·0äj·
+	 -1|	 -1|	 -1|aktivni:136971712
+ID value list:käj·0äj·
+Jsem v Assign 33
+Jsem v Assign 15
+	znaky
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 13
+	 Jsem v 2?
+aktivni:136971792
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+     +-[b,14]
+     |
+  +-[33]
+     |
+     +-[a,14]
+2:	
+           +-[d,14]
+           |
+        +-[o,27]
+        |  |
+        |  +-[e,14]
+        |
+     +-[o,27]
+     |  |
+     |  +-[f,14]
+     |
+  +-[33]
+     |
+     +-[c*¨*,14]
+3:	
+  +-[if,2]
+     |
+     |  +-[g,14]
+     |  |
+     +-[o,39]
+        |
+        +-[häj·@äj·,14]
+4:	
+     +-[j,14]
+     |
+  +-[33]
+     |
+     +-[i*Ø*,14]
+5:	
+  +-[else,3]
+6:	
+        +-[999.300000,15]
+        |
+     +-[o,27]
+     |  |
+     |  +-[m,14]
+     |
+  +-[33]
+     |
+     +-[käj·0äj·,14]
+7:	
+  +-[end,13]
+---Vysledek: 0---

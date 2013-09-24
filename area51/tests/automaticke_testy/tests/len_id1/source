@@ -1,0 +1,4 @@
+//test funkce len
+x = input()
+y = len(x)
+z = print(y)

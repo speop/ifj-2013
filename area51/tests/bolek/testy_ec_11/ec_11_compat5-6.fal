@@ -1,0 +1,6 @@
+alfa=16.5
+beta="\nn\nn\nn"
+
+retezec="slovo"
+
+dr=beta*retezec

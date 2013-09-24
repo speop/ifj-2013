@@ -1,0 +1,9 @@
+i = 0.0
+pocet_cyklu = 10.0
+while i < pocet_cyklu
+	x = pocet_cyklu / i
+	print(x)
+	str = "abcdefg"
+	x = numeric(str)
+	i = i + 1.0
+end

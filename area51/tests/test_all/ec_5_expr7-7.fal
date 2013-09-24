@@ -1,0 +1,17 @@
+a=1.0
+b=2.0
+c=3.0
+d=4.0
+
+
+h=((("sdf"*3.0)/3.2)+"sfdf"+2.0)
+
+hff=1.0*3.2+c+2.0
+
+while ("sdfds"<"sdf")
+	a=a+1.0
+end
+
+while a==b
+	b=b+1.0
+end

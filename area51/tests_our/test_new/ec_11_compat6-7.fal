@@ -1,0 +1,9 @@
+alfa=16.5
+beta="\nn\nn\nn"
+
+retezec1=beta*alfa
+q=print(retezec1)
+//retezec na cislo je v poradku, jedna se o iteraci
+retezec2=alfa*beta
+qq=print(retezec1)
+//cislo na retezec je blbost

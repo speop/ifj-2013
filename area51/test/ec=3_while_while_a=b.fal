@@ -1,0 +1,7 @@
+	while ((dobre==2.3))
+		vnitrek=1.0
+		while ((spatne=2.3))
+			kk=1.0
+		end
+	end
+	

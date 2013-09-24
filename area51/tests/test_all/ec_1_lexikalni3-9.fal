@@ -1,0 +1,9 @@
+b=2.0
+c=3.0
+
+function ahoj (b,c)
+	i=23e-3
+end
+
+h=2.3
+gg=ahoj(h,2,6)

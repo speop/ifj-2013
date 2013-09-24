@@ -1,0 +1,6 @@
+//spatne zadany podmineny prikaz
+var = 1.0
+if var == 0.0
+var = 5.7
+else
+var = 2.9

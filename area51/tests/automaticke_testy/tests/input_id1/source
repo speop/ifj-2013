@@ -1,0 +1,3 @@
+//test funkce input
+x = input()
+y = print(x)

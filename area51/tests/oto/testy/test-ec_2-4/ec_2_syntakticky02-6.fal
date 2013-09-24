@@ -1,0 +1,10 @@
+pocet_cyklu = input()
+i = 0.0
+prvek = 1.0
+vysledek = 1.0
+
+while i  pocet_cyklu
+	prvek = ( (3.0 * i + 5.0) / (i * x + 1.0) ) * (i + x)
+	vysledek = (vysldedek * prvek) / 2.0 
+	i = i + 1.0
+end

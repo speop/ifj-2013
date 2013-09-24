@@ -1,0 +1,11 @@
+j=1.00
+	ugh=165.000
+l56l=81e1
+vysl=18e-9
+
+while j< ugh
+  l56l=l56l-9.0
+  vysl=vysl/l56l
+  j=j+1.0
+end
+

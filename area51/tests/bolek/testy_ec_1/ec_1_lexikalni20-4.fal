@@ -1,0 +1,6 @@
+a=10.0
+
+if a
+  return 'ano"
+end
+

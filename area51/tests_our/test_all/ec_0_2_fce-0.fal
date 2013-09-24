@@ -1,0 +1,25 @@
+b=2.0
+c=3.0
+
+function ahoj (b,c)
+	i=2.3
+end
+
+h=2.3
+gg=ahoj(h,2.6)
+
+function ahoj1(b,c)
+	i=2.3
+end
+
+function ahoj2 (b,c)
+	i=2.3
+end
+
+function ahoj3 (b,c)
+	i=2.3
+end
+
+gg=ahoj(h,2.6)
+gg=ahoj1(h,255555.2)
+gg=ahoj2(h,9999999999.6)

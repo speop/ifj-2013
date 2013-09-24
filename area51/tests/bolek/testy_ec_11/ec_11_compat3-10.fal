@@ -1,0 +1,12 @@
+alfa=17.5
+beta="tyu"
+
+if alfa==beta
+  qq=print("jedna")
+else
+  qq=print("dva")
+end
+
+c=alfa/beta
+
+qq=print(alfa)

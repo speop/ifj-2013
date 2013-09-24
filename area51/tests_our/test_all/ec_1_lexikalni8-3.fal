@@ -1,0 +1,14 @@
+a=1.0
+b=2.0
+y=3.ea0
+z=6.0
+function hovno(a,b)
+	x=2.0
+end
+
+function sracka(a,b)
+	f=2.0
+end
+
+a=hovno(z,y)
+h=2.0

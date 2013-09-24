@@ -1,0 +1,15 @@
+
+  slovo="\"nhjm\"\n"
+
+x=117.5006e+6
+
+if x
+  b=0.68+x
+else
+  b=58.0003
+end
+
+c=x-x
+d=x/c
+
+b=b+11e6

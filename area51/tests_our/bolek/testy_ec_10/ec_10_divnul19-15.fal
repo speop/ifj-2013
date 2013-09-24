@@ -1,0 +1,17 @@
+a=42e+0
+b=84.26
+
+while a
+  b=b/9e-2
+  a=a-0.06e2
+end  
+
+if 0.0
+  a=a+1.8
+else
+  a=a-a
+end
+
+b=25.8e-3/a
+
+qq=print("print\n\n\n\n\n\n\n")

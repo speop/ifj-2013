@@ -1,0 +1,5 @@
+//test operatoru ==
+x = "abc"
+y = 5.0
+a = x == y
+b = print(a)

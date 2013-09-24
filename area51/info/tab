@@ -1,0 +1,42 @@
+	FUNCTION = 1,
+	IF = 2,
+	ELSE = 3,
+	WHILE = 4,
+	RETURN = 5,
+	SORT = 6,
+	FIND = 7,
+	LEN = 8,
+	TYPS_OEF = 9,
+	PRINT = 10,
+	NUMERIC = 11,
+	INPUT = 12,
+	EXPR = 13,
+	ID = 14,
+	S_LITERAL = 15,
+	S_LBRA = 16,	// left bracket - (
+	S_RBRA = 17,	// )
+	S_LSBRA = 18,	// left square bracket
+	S_RSBRA = 19,	// ]
+	S_EOL = 20,
+	S_END = 21,
+	S_NIL = 22,
+	S_DOLAR = 23,
+	S_COMMA = 24,	// ,
+	S_FALSE = 25,
+	S_STR = 26,	// retezec
+	S_COLON = 27,	// :
+	S_PLUS = 28,	// +
+	S_MINUS = 29,	// -
+	S_MUL = 30,		// /
+	S_DIV = 31,		// *
+	S_POW = 32,		// mocnina
+	S_OEF = 33,
+	S_IS = 34,		// =
+	S_LEQ = 35,		// <=
+	S_LST = 36,		// <
+	S_GEQ = 37,		// >=
+	S_GRT = 38,		// >
+	S_NEQ = 39,		// !=
+	S_EQ = 40,		// ==
+	S_BOOL = 41,
+	S_VAR = 42 

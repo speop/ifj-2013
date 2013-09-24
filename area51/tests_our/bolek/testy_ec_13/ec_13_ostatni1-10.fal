@@ -1,0 +1,10 @@
+a=5.0
+retezec="15.5"
+
+if a>30e-1
+  retezec=numeric(retezec)
+else
+  x=2.0
+end
+
+mocnina=3**retezec

@@ -1,0 +1,28 @@
+Jsem v progu 4
+Jsem v StList 4
+	 Jsem v ?
+Jsem v Stat 4
+	 Jsem v WHILE
+Jsem v Expr()
+Jsem v Termu 15
+
+Stack-vystup:
+15 - 5
+-------
+
+Stack:
+-------
+Jsem v Termu 23
+Jsem v Opr 23
+
+Stack-vystup:
+15 - 5
+-------
+
+Stack:
+-------
+Jsem v StList 20
+	 Jsem v ?
+Jsem v Stat 20
+	 Jsem v S_EOL
+---Vysledek: 0---

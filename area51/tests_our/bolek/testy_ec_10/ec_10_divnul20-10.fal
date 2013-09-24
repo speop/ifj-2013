@@ -1,0 +1,11 @@
+x=369.258e-1
+b=x*2.0
+x=x/2.0000
+
+b=b-x
+b=b-x
+b=b-x
+b=b-x
+
+y=x/b
+qq=print("nula\n\n\n\n")

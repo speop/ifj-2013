@@ -1,0 +1,40 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:g
+ID value node:g
+aktivni:164594160
+ID value list:g
+Jsem v Assign 33
+Jsem v Assign 16
+	znaky
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+
+vypisuju seznam:
+1:	
+           +-[a,14]
+           |
+        +-[o,27]
+        |  |
+        |  +-[b,14]
+        |
+     +-[o,27]
+     |  |
+     |  +-[c,14]
+     |
+  +-[33]
+     |
+     +-[g,14]
+---Vysledek: -1---

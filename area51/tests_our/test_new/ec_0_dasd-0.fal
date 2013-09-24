@@ -1,0 +1,6 @@
+f="srackahovnoexkrement"[7.0:11.0]
+t=print(f)
+
+g="fsdfsdfsdfds"
+r=g[1.0:3.0]
+q=print(r)

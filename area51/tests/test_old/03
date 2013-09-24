@@ -1,0 +1,21 @@
+a=b
+while (a+b)
+	a=8.0
+	b=sort(a)
+end
+if ( 1.0 < 1.0 )
+else
+	while( a + v )
+		if ( 1.0 + 8.0 )
+			a=6.0
+		else
+			if ( 2.0 + 8.0 )
+				c=input()
+			else
+				b=sort()
+			end
+		end
+		c=8.0
+	end
+end
+

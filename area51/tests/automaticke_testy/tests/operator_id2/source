@@ -1,0 +1,11 @@
+//test funcknich operatoru
+x = "a"
+y = "b"
+z = "c"
+
+
+a = x + y
+b = x + y + z
+d = z * 5.0
+
+e = print(a,b,d)

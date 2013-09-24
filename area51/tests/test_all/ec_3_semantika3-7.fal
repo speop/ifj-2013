@@ -1,0 +1,11 @@
+a=2.3
+b=1.2
+c=9.6
+a=b+c
+d=5.2
+e=a+d
+f=g+e
+a=2.3
+h=2.1
+synatexerror=a++++b
+h=5.2

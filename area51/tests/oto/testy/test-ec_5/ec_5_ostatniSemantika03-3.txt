@@ -1,0 +1,5 @@
+str1 = 4958.0
+
+str = str1[3.0:5.0]
+
+print(str)

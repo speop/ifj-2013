@@ -1,0 +1,13 @@
+x = input()
+x = numeric(x)
+
+function faktorial(n)
+	vysl = 1.0
+	while a > 0.0
+		vysl = vysl * a
+		a = a - 1.0
+	end
+	return vysl
+end
+
+faktorial = faaktorial(x)

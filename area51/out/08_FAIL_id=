@@ -1,0 +1,22 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:fsdf
+ID value node:fsdf
+aktivni:159261168
+ID value list:fsdf
+Jsem v Assign 33
+Jsem v Assign 20
+	znaky
+----------exprrr-----
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+  +-[33]
+     |
+     +-[fsdf,14]
+---Vysledek: 0---

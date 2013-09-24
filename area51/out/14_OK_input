@@ -1,0 +1,23 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:a
+ID value node:a
+aktivni:157516272
+ID value list:a
+Jsem v Assign 33
+Jsem v Assign 12
+	funkce
+Jsem v Params 16
+Jsem v Params 17
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+  +-[33]
+     |
+     +-[a,14]
+---Vysledek: 0---

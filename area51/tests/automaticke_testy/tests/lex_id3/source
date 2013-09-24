@@ -1,0 +1,4 @@
+// spravny ciselny literal
+id = 1e2
+//spatny ciselny literal
+id1 = 1e.2

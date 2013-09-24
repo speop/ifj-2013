@@ -1,0 +1,9 @@
+alfa=16.5
+beta="\nn\nn\nn"
+
+while alfa>0.000
+  q=print(beta)
+  alfa=alfa-1.5e-0
+end
+
+a=alfa**beta

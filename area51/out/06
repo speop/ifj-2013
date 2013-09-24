@@ -1,0 +1,23 @@
+Jsem v progu 2
+Jsem v StList 2
+	 Jsem v ?
+Jsem v Stat 2
+	 Jsem v IF
+Jsem v Expr()
+Jsem v Termu 23
+Jsem v Opr 23
+
+Stack-vystup:
+-------
+
+Stack:
+-------
+Jsem v StList 20
+	 Jsem v ?
+Jsem v Stat 20
+	 Jsem v S_EOL
+Jsem v StList 20
+	 Jsem v ?
+Jsem v Stat 20
+	 Jsem v S_EOL
+---Vysledek: 0---

@@ -1,0 +1,14 @@
+a=5e+1
+b=8.0000000
+
+c=a*b
+
+if c
+  c=c/40.0
+else
+  /*komentar*/
+end
+c=c-0.01e2
+a=b/c
+
+xx=print("delil jsem nulou")

@@ -1,0 +1,5 @@
+//test cyklu
+var = 5.0
+while var != 0.0
+var = var - 1.0
+end

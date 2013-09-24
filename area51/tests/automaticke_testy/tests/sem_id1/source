@@ -1,0 +1,6 @@
+//test na definici funkci
+function test()
+end
+//podruhe stejna funkce
+function test()
+end

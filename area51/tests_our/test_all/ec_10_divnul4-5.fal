@@ -1,0 +1,16 @@
+a=10.0e1
+b=10e2
+c=7.7
+
+if 4e-3/0.0e3
+  a=4.0
+else
+  a=4.5
+end
+
+while b>0.0
+  b=b+1.01
+end
+
+c=0.0e-1
+retezec="abc"

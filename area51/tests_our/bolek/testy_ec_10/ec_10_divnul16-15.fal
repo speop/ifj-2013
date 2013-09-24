@@ -1,0 +1,16 @@
+q=print("radek 1\n")
+qq=print("radek 2\n")
+
+e=840.147
+t=e
+
+if e<155e1
+  qqq=print("e=",e)
+else
+  t=t-0.147
+  a=2.00
+  t=t/a
+  t=t-420.00
+end
+  a=e/t
+  qqqq=print("konec")

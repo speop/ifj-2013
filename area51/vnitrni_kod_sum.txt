@@ -1,0 +1,48 @@
+/*
+Neco uz mam hotove ale nechci pokracovat dal dokud se neujistim, ze ma koncepce zapada do celku.
+Takze se prosim vyjadrete.
+*/
+
+
+
+
+/* Generator vnitrniho kodu bych videl tak, ze obdrzi seznam syntaktickych stromu
+   a ten zpracuje na pole triadresnych instrukci.*/
+
+typedef struct T_Token_struct
+{ int state;
+  char previous;
+  long int lines;
+  int type;
+  void* value;
+}T_Token_struct;
+
+struct node{
+  T_Token_struct data;
+  struct node* left;
+  struct node* right;
+};
+
+typedef struct TAC{  //Three address code
+  int TAC_operator; /*Operator urceny podle tabulky terminalu.*/
+  T_Token_struct TAC_operand_1;
+  T_Token_struct TAC_operand_2;
+  T_Token_struct TAC_destination; /*Muze byt promena kam se zapisuje, nebo navesti.*/
+};
+
+struct node pole_stromu[]; /*Pole stromu reprezentujicich jednotlive radky TAC kodu*/
+
+struct TAC TAC_pole[]; /*Pole TAC instrukci pro kokretni strom, globalni promena ve ktere je radek po radku zapsany vnitrni kod.*/
+
+int TAC_pole_index; /*Index na ktery se bude zapisovat nasledujici TAC instrukce*/
+
+int vyhodnot_strom(struct node strom, int TAC_pole_index ) /*Funkce vezme strom (reprezentujici radky kodu) a pro tento strom vyplni pole odpovidajicich TAC instrukci. */
+{
+  /*Funkce zapise do pole TAC instrukci a vrati index na ktery se bude dale zapisovat*/
+  return TAC_pole_index
+}
+
+void projdi_seznam_stromu()/*Funkce prochazi seznam stromu a postupne vyplni cele pole TAC instrukci*/
+{
+  /*Cyklicky se vola funkce vyhodnot strom*/
+}

@@ -1,0 +1,10 @@
+
+i=4e3
+x=1754e-3
+
+while i>5.684
+  i=i-010.00
+  b=x/i
+end
+
+zzz=print("chyba")

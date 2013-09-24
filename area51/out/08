@@ -1,0 +1,31 @@
+Jsem v progu 5
+Jsem v StList 5
+	 Jsem v ?
+Jsem v Stat 5
+	 Jsem v RETURN
+Jsem v Expr()
+Jsem v Termu 16
+
+Stack-vystup:
+-------
+
+Stack:
+16 - 0
+-------
+Jsem v Termu 17
+Jsem v Opr 17
+
+Stack-vystup:
+-------
+
+Stack:
+-------
+Jsem v Termu 23
+Jsem v Opr 23
+
+Stack-vystup:
+-------
+
+Stack:
+-------
+---Vysledek: 0---

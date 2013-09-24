@@ -1,0 +1,14 @@
+x = input()
+x = numeric(x)
+eps = 100.0
+delta = 0.0
+
+while inkrement(delta) > eps
+	x = input()
+	x = numeric(x)
+end 
+
+function increment(n)
+	n = n + 1.0
+	return n
+end

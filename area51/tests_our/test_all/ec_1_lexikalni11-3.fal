@@ -1,0 +1,10 @@
+a=0.0
+b=10e2
+c=42-e2
+
+while a<b
+  c=c+1.5e+2
+  b=b-0.005e3
+end
+
+retezec="\\\\\\\"

@@ -1,0 +1,80 @@
+/* Pocita to neco uplne jineho nez arctan, puvodni funkce*/
+
+beh1 = 50.0
+beh2 = 100.0
+
+function absolutniHodnota(a)
+    if a >= 0.0
+        return a
+    else
+        return -a
+    end
+end
+
+function arctan(vstup, epsilon)
+    MEZ = 0.267949192431122806823396      /* MEZ = 2-sqrt(3) */
+    koef1 = 1.0
+    koef2 = 2.0
+    koef3 = 3.0
+    zaporne = false
+    vetsiNez1 = false
+    vetsiNezMEZ = false
+    pocetIteraci = 0.0
+
+    if vstup < 0.0
+        vstup = 0.0 - vstup
+        zaporne = true
+    else
+    end
+    if vstup > koef1
+        vstup = koef1 / vstup
+        vetsiNez1 = true
+    else
+    end
+    if vstup > MEZ
+        vstup = ((koef3/5.0)*vstup - koef1) / ((koef3/5.0) + vstup)
+        vetsiNezMEZ = true
+    else
+    end
+    
+    koefVypoctu = 3.0
+    n = 0.0
+    aktualniCitatel = vstup
+    vysledek = aktualniCitatel
+    koefCit = vstup*vstup
+    aktualniClen = koef1
+
+    a = aktualniClen
+    b = vysledek*epsilon
+    c = a
+    d = b
+    e = absolutniHodnota(c)
+    f = absolutniHodnota(d)
+    c = 26.0004
+    x = 0.0
+    while c > d
+        c = c - 0.0000001
+        //ahojda = print("c = ", c, "\n")
+        vysledek = vysledek + 4.00004
+        x = x + 1.0
+    end
+
+    return x
+end
+
+
+/*
+Real = 0.0 - 10.0
+z = absolutniHodnota(Real)
+Real = z
+ex = print(Real ,"\n")
+*/
+
+x = arctan(10.0,0.0000000000001)
+pocetCyklu = print(x, "\n")
+/*
+while beh1 > 0.1
+    x = arctan(10.0,0.0000000000001)
+    beh1 = beh1 - 1.0
+end
+*/

@@ -1,0 +1,5 @@
+//prirazeni definovanou promennou
+var = 1.0
+var1 = var
+//prirazeni nedefinovanou promennou
+var = var2

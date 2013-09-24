@@ -1,0 +1,33 @@
+Jsem v progu 20
+Jsem v StList 20
+	 Jsem v ? 20
+Jsem v Stat 20
+	 Jsem v S_EOL
+aktivni:156799392
+Jsem v StList 5
+	 Jsem v ? 5
+Jsem v Stat 5
+	 Jsem v RETURN
+aktivni:156799456
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+  +-[20]
+2:	
+  +-[return,5]
+     |
+     |  +-[a,14]
+     |  |
+     +-[o,27]
+        |
+        +-[b,14]
+---Vysledek: 0---

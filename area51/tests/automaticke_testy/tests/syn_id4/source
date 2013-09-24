@@ -1,0 +1,4 @@
+//spravne prirazeni
+var = 999.9
+//spatne prirazeni
+999.9 = var1

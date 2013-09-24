@@ -1,0 +1,11 @@
+a=10.0e1
+b=10e2
+c=7.7
+
+while b>0.0
+  b=b-a  
+  c=c/b
+end
+
+c=0.0e-1
+retezec="abc"

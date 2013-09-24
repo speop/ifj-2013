@@ -1,0 +1,10 @@
+
+retezec="\n\n\n\n\n"
+
+if retezec<1789.0
+  q=print("1")
+else
+  q=print("1")
+end
+
+qq=print(retezec)

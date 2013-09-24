@@ -1,0 +1,3 @@
+//test navratoveho kodu funkce sort
+x = 5.0
+y = sort(x)

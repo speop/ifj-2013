@@ -1,0 +1,26 @@
+
+function dos()
+  return 2.0
+end
+
+a = print(" 2+3 = ", (2.0*(2.0+3.0)))
+a = print("\n")
+a = print(" 2*3 = ", 2.0*3.0)
+a = print("\n")
+a = print(" 2/3 = ", dos()/3.0)
+a = print("\n")
+a = print(" 2**3 = ", 2.0**3.0)
+a = print("\n")
+a = print(" 2<3 = ", 2.0<3.0)
+a = print("\n")
+a = print(" 2>3 = ", dos(8.88)>3.0)
+a = print("\n")
+a = print(" 2<=3 = ", 2.0<=3.0)
+a = print("\n")
+a = print(" 2>=3 = ", 2.0>=3.0)
+a = print("\n")
+b1 = "alfaomega"
+b = b1[1.1:4.99]
+a = print("substring: ", b, "orig:", b1)
+a = print("\n")
+

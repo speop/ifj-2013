@@ -1,0 +1,19 @@
+a=" fd \xff sa "
+a=8e+1
+a="fsa"[5.0:]
+a="fsa"[5.0:5.0]
+a="fsa"[:5.0]
+function aaa ( a, b)
+	while (a)
+		while(b)
+			while ( c )
+				while (8.0)
+					while 	(a+a)
+						a=input()
+					end
+				end
+			end
+		end
+	end
+end
+a="ok"

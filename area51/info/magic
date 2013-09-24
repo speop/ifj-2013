@@ -1,0 +1,11 @@
+01-sort(id)
+02-sort()
+03-insert(id,id,id)
+04-function id () eol eol end eol
+05-function id () eol insert(id,id,id) end eol
+06-if $ eol stlist else eol end eol
+07-while $ eol eol end eol
+08-return ( ) $ EOL
+09-while 5 $ eol eol end eol
+10-id = (a+b)*(c-d)/(e+f)*(g-h)
+11-id =

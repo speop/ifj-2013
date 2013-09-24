@@ -1,0 +1,170 @@
+Jsem v progu 1
+Jsem v StList 1
+	 Jsem v ? 1
+Jsem v Stat 1
+	 Jsem v function
+Jsem v Params 16
+Jsem v Params 14
+Jsem v Params_n 23
+tadyyyyyyyyyyy
+Jsem v Params_n 23
+tadyyyyyyyyyyy
+Jsem v Params_n 17
+aktivni:136667568
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:telo
+ID value node:telo
+aktivni:136667888
+ID value list:telo
+Jsem v Assign 33
+Jsem v Assign 15
+	znaky
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:ac%e%
+ID value node:ac%e%
+	 1|aktivni:136668000
+ID value list:ac%e%
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:ce% e%
+ID value node:ce% e%
+	 1|	 -1|aktivni:136668520
+ID value list:ce% e%
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 4
+	 Jsem v ? 4
+Jsem v Stat 4
+	 Jsem v WHILE
+aktivni:136668656
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:vnitrek
+ID value node:vnitrek
+	 -1|aktivni:136668840
+ID value list:vnitrek
+Jsem v Assign 33
+Jsem v Assign 15
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 13
+	 Jsem v 2?
+aktivni:136669056
+Jsem v StList 13
+	 Jsem v 2?
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+           +-[par3,14]
+           |
+        +-[par2,14]
+        |
+     +-[par1,23]
+     |
+  +-[function,1]
+     |
+     +-[a,14]
+2:	
+           +-[2.300000,15]
+           |
+        +-[o,27]
+        |  |
+        |  +-[a,14]
+        |
+     +-[o,27]
+     |  |
+     |  |     +-[b,14]
+     |  |     |
+     |  |  +-[o,29]
+     |  |  |  |
+     |  |  |  +-[f,14]
+     |  |  |
+     |  +-[o,30]
+     |     |
+     |     +-[8.300000,15]
+     |
+  +-[33]
+     |
+     +-[telo,14]
+3:	
+     +-[b„l·@„l·,14]
+     |
+  +-[33]
+     |
+     +-[ac%e%,14]
+4:	
+     +-[d,14]
+     |
+  +-[33]
+     |
+     +-[ce% e%,14]
+5:	
+  +-[while,4]
+     |
+     |  +-[fff,14]
+     |  |
+     +-[o,39]
+        |
+        +-[2.300000,15]
+6:	
+     +-[1.000000,15]
+     |
+  +-[33]
+     |
+     +-[vnitrek,14]
+7:	
+  +-[end,13]
+---Vysledek: 0---

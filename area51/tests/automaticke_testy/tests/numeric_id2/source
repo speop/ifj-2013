@@ -1,0 +1,16 @@
+//rozsahlejsi test funkce numeric
+//a = "545" ///@note: zde by byla chyba, zakomentovano 9.12.
+b = "           54e-1"
+c = "12.89e2"
+d = "4"
+e = "12.e4o"
+f = "0.00000000159e10"
+
+//g = numeric(a)
+h = numeric(b)
+i = numeric(c)
+j = numeric(d)
+k = numeric(e)
+l = numeric(f)
+
+m = print(g,h,i,j,k,l)

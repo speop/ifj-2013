@@ -1,0 +1,14 @@
+a = 20.0
+b = 0.0  // hodnota teto promenne nastavena na 0.0 znamena nekonecnou rekurzi
+c = mysM(a, b, 0.0)
+
+function mysM(a, b, x)
+    x = x + 1.0
+    if a >= b
+        a = a - b
+        c = print(x, "\n") // " ", a, " ",b
+        c = mysM(a, b, x)
+    else
+        c = print("K\n")
+    end
+end

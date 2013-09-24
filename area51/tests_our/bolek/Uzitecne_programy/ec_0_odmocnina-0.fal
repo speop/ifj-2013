@@ -1,0 +1,31 @@
+// spocita druhou odmocninu metodou puleni intervalu
+
+q=print("zadej x")
+x=input()
+x=numeric(x)
+
+zacatek=0.0
+stred=x/2.0
+konec=x
+
+if x*x==x
+  vysledek=x
+else
+  i=0.0
+  while i<1000.0
+    if stred*stred==x
+      vysledek=stred
+    else
+      if stred*stred>x
+        konec=stred
+        stred=(zacatek+konec)/2.0
+      else
+        zacatek=stred
+        stred=(zacatek+konec)/2.0
+      end
+    end
+    i=i+1.0
+  end
+end
+
+qq=print("druha odmocnina z ",x," je ",vysledek)

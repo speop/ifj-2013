@@ -1,0 +1,9 @@
+Automaticke testy projektu IFJ12
+Za spravnost nerucim, ale za ohlaseni chyby (xmacha51@stud.fit.vutbr.cz) budu rad!
+
+Slozku tests si vlozte do repozitare tam, kde mate binarku.
+Testy spustte z urovne, kde se nachazi binarka.
+
+Doporucuji pridat do makefilu neco jako toto:
+test:
+        $ ./tests/run.sh

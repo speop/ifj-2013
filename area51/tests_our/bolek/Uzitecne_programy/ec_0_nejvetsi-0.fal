@@ -1,0 +1,30 @@
+// vybere nejvetsi cislo ze tri cisel
+
+q=print("zadej prvni")
+prvni=input()
+prvni=numeric(prvni)
+
+qq=print("zadej druhe")
+druhe=input()
+druhe=numeric(druhe)
+
+qqq=print("zadej treti")
+treti=input()
+treti=numeric(treti)
+
+
+if prvni>druhe
+  if prvni>treti
+    nejvetsi=prvni
+  else
+    nejvetsi=treti
+  end
+else
+  if druhe>treti
+    nejvetsi=druhe
+  else
+    nejvetsi=treti
+  end
+end
+
+qqqq=print("\nZ cisel ",prvni," ",druhe," ",treti," je nejvetsi ",nejvetsi)

@@ -1,0 +1,5 @@
+//maly program pro vyhledani podretezce v retezci
+x = "popokatepetl"
+z = "laska"
+y = find(x,z)
+g = print (y)

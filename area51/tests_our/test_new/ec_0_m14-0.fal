@@ -1,0 +1,12 @@
+a=2.1
+
+//f=("sfsdf"+2.3)+(3.2+"fsdf")
+
+//f=("sfsdf"+3.2)+("asdasd"+"sad")+("ffffff"+"sad")
+if((("sdfsdf"+"sdf")*3.2)+("sdfds" + "sfs")>="sfdsdf")
+	a=2.0
+else
+	b=5.2
+end
+
+

@@ -1,0 +1,10 @@
+a=3520.000008e2
+retezec="slovo"
+
+b=0.00000000000
+
+if a<=retezec
+  b=b+2.3e-4
+else
+  b=2.69874
+end

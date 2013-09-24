@@ -1,0 +1,192 @@
+
+x = print("\nWelcome to IFJ12 - aplikace na prevod casu\n--------------------------------------------\n->>params format '(-<t|d|h|m|s> )<cislo>'\n\n\tYour params please: ")
+
+inp = input()
+
+param = inp[:1.0]
+
+if param == "-"
+  param = inp[:2.2]
+  in = inp[3.2:]
+else
+  param = ""
+  in = inp
+end
+
+in = numeric(in)
+
+if param == "-t"
+  param = ""
+end
+
+
+if param == ""
+  if in < 1.0
+    x = print("0 sekund\n")
+  else
+    x = pocet_tydnu(in)
+    x = pocet_dnu(x)
+    x = pocet_hodin(x)
+    x = pocet_minut(x)
+    x = pocet_sekund(x)
+    x = print("\n")
+  end
+  return
+end
+if param == "-h"
+  if in < 1.0
+    x = print("0 sekund\n")
+  else
+    x = pocet_hodin(in)
+    x = pocet_minut(x)
+    x = pocet_sekund(x)
+    x = print("\n")
+  end
+  return
+end
+if param == "-d"
+  if in < 1.0
+    x = print("0 sekund\n")
+  else
+    x = pocet_dnu(in)
+    x = pocet_hodin(x)
+    x = pocet_minut(x)
+    x = pocet_sekund(x)
+    x = print("\n")
+  end
+  return
+end
+if param == "-m"
+  if in < 1.0
+    x = print("0 sekund\n")
+  else
+    x = pocet_minut(in)
+    x = pocet_sekund(x)
+    x = print("\n")
+  end
+  return
+end
+if param == "-s"
+  if in <  1.0
+    x = print("0 sekund\n")
+  else
+    x = pocet_sekund(in)
+    x = print("\n")
+  end
+  return
+end
+
+
+function kolikrat(cislo, zaklad)
+  kolik = 0.0
+  vysl = (cislo - kolik * zaklad)
+  while  vysl > zaklad
+    kolik = kolik + 1.0
+    vysl = (cislo - kolik * zaklad)
+  end
+  return kolik
+end
+
+function pocet_sekund(x)
+  if x > 0.0
+    if x <= 1.0
+      m = print("1 sekunda ")
+    else
+      if x <= 4.0
+	m = print(x, " sekundy ")
+      else
+	m = print(x, " sekund ")
+      end
+    end
+  end
+  return nil
+end
+
+function pocet_minut(x)
+  
+  MINUTAS = 60.0
+  min = kolikrat(x, MINUTAS) //tady je desetinne cislo
+  
+  if min > 0.0
+   
+    x = x -  min * MINUTAS
+    
+    if min == 1.0
+      m = print("1 minuta ")
+    else
+      if min <= 4.0
+	m = print(min, " minuty ")
+      else
+	m = print(min, " minut ")
+      end
+    end
+  end
+  
+  return x
+end
+
+function pocet_dnu(x)
+  
+  DENS = 86400.0
+  dnu = kolikrat(x, DENS)
+  
+  if dnu > 0.0
+    x = x - dnu * DENS
+    if dnu == 1.0
+      m = print("1 den ")
+    else
+      if dnu <= 4.0
+	m = print(dnu, " dny ")
+      else
+	m = print(dnu, " dni ")
+      end
+    end
+  end
+  
+  return x
+end
+
+
+function pocet_hodin(x)
+  
+  HODINAS = 3600.0
+  hodin = kolikrat(x, HODINAS)
+  
+  if hodin > 0.0
+    x = x - hodin * HODINAS
+    if hodin == 1.0
+      m = print("1 hodina ")
+    else
+      if hodin <= 4.0
+	m = print(hodin, " hodiny ")
+      else
+	m = print(hodin, " hodin ")
+      end
+    end
+  end
+  
+  return x
+end
+
+function pocet_tydnu(x)
+  
+  TYDENS = 604800.0
+  tydnu = kolikrat(x, TYDENS)
+  
+  if tydnu > 0.0
+    x = x - tydnu * TYDENS
+    if tydnu == 1.0
+      m = print("1 tyden ")
+    else
+      if tydnu <= 4.0
+	m = print(tydnu, " tydny ")
+      else
+	m = print(tydnu, " tydnu ")
+      end
+    end
+  end
+  
+  return x
+end
+
+x = print("Spatny parametr\n")

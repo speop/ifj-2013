@@ -1,0 +1,18 @@
+pi = input()
+x = input()
+x = numeric(x)
+prvek = 1.0 / x
+vysledek =  1.0 / x
+mocnina = 3.0
+eps = 100.0
+delta = 0.0
+
+else = 534938492.0
+
+while delta > eps
+    prvek = (mocnina - 2.0) / (mocnina * x * x)       
+    vysledek = znamenko * prvek
+    mocnina = mocnina + 2.0
+	delta = delta + 1.0
+end
+vysledek = (pi * x) / (2.0 * x) - vysledek

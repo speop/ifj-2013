@@ -1,0 +1,9 @@
+x=112e2
+x=x+19.8
+
+while x
+  y=x+11e2
+  x=x-1.0
+end
+
+retezec='mkiujn'

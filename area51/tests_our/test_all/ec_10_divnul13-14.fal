@@ -1,0 +1,14 @@
+a=5e+1
+
+c=a
+
+/*komentar*/
+b=2.0000000
+c=a**b
+if c
+  c=c
+else
+
+end
+
+a=c/0.0

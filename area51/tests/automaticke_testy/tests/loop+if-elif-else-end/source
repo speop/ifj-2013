@@ -1,0 +1,139 @@
+
+
+function jednotky(x)
+  if x==1.0
+    return "prvni"
+  elif x==2.0
+    return "druhy"
+  elif x==3.0
+    return "treti"
+  elif x==4.0
+    return "ctvrty"
+  elif x==5.0
+    return "paty"
+  elif x==6.0
+    return "sesty"
+  elif x==7.0
+    return "sedmy"
+  elif x==8.0
+    return "osmy"
+  elif x==9.0
+    return "devaty"
+  elif x==10.0
+    return "desaty"
+  elif x==11.0
+    return "jedenacty"
+  elif x==12.0
+    return "dvanacty"
+  elif x==13.0
+    return "trinacty"
+  elif x==14.0
+    return "ctrnacty"
+  elif x==15.0
+    return "patnacty"
+  elif x==16.0
+    return "sestnacty"
+  elif x==17.0
+    return "sedmnacty"
+  elif x==18.0
+    return "osmnacty"
+  elif x==19.0
+    return "devatenacty"
+  else
+    return ""
+  end
+end
+
+function desitky(x)
+  if x==2.0
+    return "dvacaty"
+  elif x==3.0
+    return "tricaty"
+  elif x==4.0
+    return "ctyricaty"
+  elif x==5.0
+    return "padesaty"
+  elif x==6.0
+    return "sedesaty"
+  elif x==7.0
+    return "sedmdesaty"
+  elif x==8.0
+    return "osmdesaty"
+  elif x==9.0
+    return "devadesaty"
+  else
+    return ""
+  end
+end
+
+function stovky(x)
+  if x==1.0
+    return "sty"
+  elif x==2.0
+    return "dvousty"
+  elif x==3.0
+    return "tristy"
+  elif x==4.0
+    return "ctyrsty"
+  elif x==5.0
+    return "petisty"
+  elif x==6.0
+    return "sestisty"
+  elif x==7.0
+    return "sedmisty"
+  elif x==8.0
+    return "osmisty"
+  elif x==9.0
+    return "devitisty"
+  else
+    return ""
+  end
+end
+
+function stovky_prefix(x)
+  if x==1.0
+    return "sto"
+  elif x==2.0
+    return "dve ste"
+  elif x==3.0
+    return "tri sta"
+  elif x==4.0
+    return "ctyri sta"
+  elif x==5.0
+    return "pet set"
+  elif x==6.0
+    return "sest set"
+  elif x==7.0
+    return "sedm set"
+  elif x==8.0
+    return "osm set"
+  elif x==9.0
+    return "devet set"
+  else
+    return ""
+  end
+end
+
+s=0.0
+loop
+  if s>0.0
+    x=print(stovky(s)," radek\n")
+  end
+  j=0.0
+  //jednotky 1-19
+  loop
+    j=j+1.0
+    x=print(stovky_prefix(s)," ",jednotky(j)," radek \n")
+  end j==19.0
+  //ostatni se cykli podle desitek a jednotek
+  d=1.0
+  loop
+    d=d+1.0
+    j=0.0
+    loop
+      x=print(stovky_prefix(s)," ",desitky(d)," ",jednotky(j)," radek\n")
+      j=j+1.0
+    end j==10.0
+  end d==9.0
+  s=s+1.0
+end s==10.0

@@ -1,0 +1,12 @@
+a=5.0
+retezec="7e+14"
+vysledek=23e1
+b=113e-1
+
+if a>b
+  retezec=numeric(retezec)
+else
+  vysledek=11.005
+end
+
+vysledek=vysledek-retezec

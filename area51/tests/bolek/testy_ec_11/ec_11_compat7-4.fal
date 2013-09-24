@@ -1,0 +1,10 @@
+alfa=16.5
+beta="\nn\nn\nn"
+
+if alfa>=beta
+  retezec1=beta*alfa
+  //q=print(retezec1)
+else
+  retezec2=alfa*beta
+  //qq=print(retezec1)
+end

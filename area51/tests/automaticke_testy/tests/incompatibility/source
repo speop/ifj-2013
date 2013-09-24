@@ -1,0 +1,3 @@
+//nekorektni operace nad literaly
+var = 1.0
+var1 = var + "abc"

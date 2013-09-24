@@ -1,0 +1,4 @@
+//test funkce typeOf
+x = input()
+y = typeOf (x)
+z = print(y)

@@ -1,0 +1,112 @@
+function Fractal(x0,y0, minRe,maxRe,minIm, jRe,jIm, R,G,B)
+  imgHeight = 220.0
+  imgWidth  = 300.0
+ 
+  inCol  = 0.0   // mandelbrot set color
+  colFac = 12.0  // color gradient factor
+  maxIt  = 48.0  // number of iterations
+
+  maxIm = minIm+(maxRe-minRe)*(imgHeight/imgWidth)
+  reFac = (maxRe-minRe)/imgWidth
+  imFac = (maxIm-minIm)/imgHeight
+ 
+  y = 0.0
+  while y <= imgHeight-1.0
+    cIm = maxIm - y*imFac
+
+    x = 0.0
+    while x <= imgWidth-1.0
+      cRe = minRe + x*reFac
+      zRe = cRe
+      zIm = cIm
+ 
+      n = 0.0
+      isIn = true
+      outCol = colFac
+
+      doCycle = true
+      while doCycle
+        n = n + 1.0
+        zRe2 = zRe*zRe
+        zIm2 = zIm*zIm
+        zIm  = 2.0*zRe*zIm
+        if jIm
+          zIm = zIm+jIm
+        else
+          zIm = zIm+cIm
+        end
+        zRe = zRe2-zIm2
+        if jRe
+          zRe = zRe+jRe
+        else
+          zRe = zRe+cRe
+        end
+        if zRe2+zIm2 > 4.0
+          isIn = false
+        else
+          isIn = true
+        end
+
+        if n < maxIt/2.0-1.0
+          outCol = outCol + colFac
+        else
+          outCol = outCol - colFac
+        end
+
+        doCycle = isIn
+        if n>maxIt-1.0 
+          doCycle = false
+        else
+        end
+      end
+
+      if isIn
+        output = print(" -fill \"rgb(",inCol,",",inCol,",",inCol,")\"")
+      else
+        if R
+          r = R-outCol
+        else
+          r = outCol
+        end
+        if G
+          g = G-outCol
+        else
+          g = outCol
+        end
+        if B
+          b = B-outCol
+        else
+          b = outCol
+        end
+
+        output = print(" -fill \"rgb(",r,",",g,",",b,")\"")
+      end
+ 
+      outputHelpx = x+x0
+      outputHelpy = y+y0
+      output = print(" -draw 'color ",outputHelpx,",",outputHelpy," point'\n")
+      
+      x = x+1.0
+    end
+
+    y = y+1.0
+  end
+end
+
+a = 1.1
+b = 0.6
+c = 0.55
+d = 1.7
+e = 1.25
+f = 0.8
+g = 0.7
+a = 0.0-a
+b = 0.0-b
+c = 0.0-c
+d = 0.0-d
+e = 0.0-e
+f = 0.0-f
+g = 0.0-g
+vysl = Fractal(10.0, 60.0, a, b, c, nil, nil, nil, nil, 128.0)
+vysl = Fractal(10.0, 290.0, d, 1.7, e, f, 0.15, 128.0, nil, nil)
+vysl = Fractal(10.0, 520.0, d, 1.7, e, g, 0.38, nil, 128.0, nil)

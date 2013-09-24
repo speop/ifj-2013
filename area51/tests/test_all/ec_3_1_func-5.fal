@@ -1,0 +1,7 @@
+function ahoj (b,c)
+	i=b
+end
+
+h=c
+a=ahoj(h,2.6)
+

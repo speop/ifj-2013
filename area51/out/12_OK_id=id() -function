@@ -1,0 +1,20 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:lalalala
+ID value node:lalalala
+aktivni:138416624
+ID value list:lalalala
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+
+vypisuju seznam:
+1:	
+  +-[33]
+     |
+     +-[lalalala,14]
+---Vysledek: -1---

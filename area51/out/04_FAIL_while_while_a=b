@@ -1,0 +1,56 @@
+Jsem v progu 4
+Jsem v StList 4
+	 Jsem v ? 4
+Jsem v Stat 4
+	 Jsem v WHILE
+aktivni:146223536
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:vnitrek
+ID value node:vnitrek
+aktivni:146223632
+ID value list:vnitrek
+Jsem v Assign 33
+Jsem v Assign 15
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 4
+	 Jsem v ? 4
+Jsem v Stat 4
+	 Jsem v WHILE
+aktivni:146223880
+----------exprrr-----
+aktivni:146224016
+
+vypisuju seznam:
+1:	
+  +-[while,4]
+     |
+     |  +-[dobre,14]
+     |  |
+     +-[o,39]
+        |
+        +-[2.300000,15]
+2:	
+     +-[1.000000,15]
+     |
+  +-[33]
+     |
+     +-[vnitrek,14]
+3:	
+  +-[while,4]
+4:	
+  +-[2.300000,15]
+---Vysledek: -1---

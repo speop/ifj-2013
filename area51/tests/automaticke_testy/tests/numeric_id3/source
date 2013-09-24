@@ -1,0 +1,3 @@
+//test navratoveho kodu numeric
+x = numeric("    abc")
+y = print(x)

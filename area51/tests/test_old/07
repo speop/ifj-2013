@@ -1,0 +1,4 @@
+function id(a)
+	a=id(a)
+	return a
+end

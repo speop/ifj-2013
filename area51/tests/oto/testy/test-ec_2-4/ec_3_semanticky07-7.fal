@@ -1,0 +1,12 @@
+pi = input()
+mocnina = 3.0
+eps = 100.0
+delta = 0.0
+znamenko = 2.0
+
+if x > eps
+    prvek = (mocnina - 2.0)
+    vysledek = znamenko * prvek
+    mocnina = mocnina + 2.0
+	delta = delta + 1.0
+end

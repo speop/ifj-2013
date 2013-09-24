@@ -1,0 +1,4 @@
+//test retezcoveho literalu
+abc = "\x30"
+x = print(abc)
+

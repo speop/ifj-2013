@@ -1,0 +1,14 @@
+retezec="slovo"
+
+x=157.012
+y=15e-4
+
+if x>y
+  if retezec<x
+    y=y+2.2
+  else
+    y=y-4.5
+  end
+else
+  x=x+x
+end

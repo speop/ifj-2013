@@ -1,0 +1,12 @@
+par1=1.0
+par2=2.0
+par3="sdf"
+
+function a (par1,par2,par3)
+	telo=2.3
+	a=2.6
+	fff=2.3
+	while ((fff==2.3))
+		vnitrek=1.0
+	end
+end

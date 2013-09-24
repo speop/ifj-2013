@@ -1,0 +1,25 @@
+e="hovnosmrdi"[0.0:50.0]
+xx=print("prazdny:",e,"\n")
+
+e="hovnosmrdi"[6.0:0.0]
+xx=print("prazdny:",e,"\n")
+
+e="hovnosmrdi"[0.4:5.3]
+xx=print("hovno:",e,"\n")
+
+e="hovnosmrdi"[0.0:5.0]
+xx=print("hovno:",e,"\n")
+
+
+e="hovnosmrdi"[:5.0]
+xx=print("hovno:",e,"\n")
+
+e="hovnosmrdi"[1.0:]
+xx=print("ovnosmrdi:",e,"\n")
+
+//tady u tech 2 hodi lex chybu
+//e="hovnosmrdi"[0.0:-5.0]
+//xx=print("ok:",e,"\n")
+
+//e="hovnosmrdi"[-0.0:5.0]
+//xx=print("ok:",e,"\n")

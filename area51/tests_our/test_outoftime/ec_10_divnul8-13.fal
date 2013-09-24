@@ -1,0 +1,14 @@
+alfa=55.55
+
+if alfa>30e-1
+  beta=10e2
+else
+  beta=20.03
+end
+
+i=10.0
+
+while i>0.0
+  i=i-1e+0
+  beta=beta/i
+end

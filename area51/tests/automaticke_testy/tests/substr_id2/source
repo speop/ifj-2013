@@ -1,0 +1,3 @@
+//test 2 funkce substr
+str = "abeceda"[:]
+x = print(str)

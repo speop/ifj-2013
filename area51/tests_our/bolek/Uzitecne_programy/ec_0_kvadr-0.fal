@@ -1,0 +1,18 @@
+// spocita obsah a objem kvadru
+
+q=print("zadej a")
+a=input()
+a=numeric(a)
+
+qq=print("zadej b")
+b=input()
+b=numeric(b)
+
+qqq=print("zadej c")
+c=input()
+c=numeric(c)
+
+obsah=2.0*(a*b+a*c+b*c)
+objem=a*b*c
+
+qqqq=print("obsah=",obsah,"\nobjem=",objem)

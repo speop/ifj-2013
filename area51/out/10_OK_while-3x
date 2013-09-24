@@ -1,0 +1,144 @@
+Jsem v progu 4
+Jsem v StList 4
+	 Jsem v ? 4
+Jsem v Stat 4
+	 Jsem v WHILE
+aktivni:135291312
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:prvni
+ID value node:prvni
+aktivni:135291408
+ID value list:prvni
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 4
+	 Jsem v ? 4
+Jsem v Stat 4
+	 Jsem v WHILE
+aktivni:135291656
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:druhy
+ID value node:druhy
+	 1|aktivni:135291840
+ID value list:druhy
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 4
+	 Jsem v ? 4
+Jsem v Stat 4
+	 Jsem v WHILE
+aktivni:135292056
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:treti
+ID value node:treti
+	 -1|aktivni:135292240
+ID value list:treti
+Jsem v Assign 33
+Jsem v Assign 14
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 13
+	 Jsem v 2?
+aktivni:135292456
+Jsem v StList 13
+	 Jsem v 2?
+aktivni:135292504
+Jsem v StList 13
+	 Jsem v 2?
+aktivni:135292624
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+  +-[while,4]
+     |
+     |  +-[prvni,14]
+     |  |
+     +-[o,39]
+        |
+        +-[1.000000,15]
+2:	
+     +-[aaa,14]
+     |
+  +-[33]
+     |
+     +-[prvni,14]
+3:	
+  +-[while,4]
+     |
+     |  +-[druhy,14]
+     |  |
+     +-[o,39]
+        |
+        +-[1.100000,15]
+4:	
+     +-[bbb,14]
+     |
+  +-[33]
+     |
+     +-[druhy,14]
+5:	
+  +-[while,4]
+     |
+     |  +-[treti,14]
+     |  |
+     +-[o,39]
+        |
+        +-[1.200000,15]
+6:	
+     +-[ccc,14]
+     |
+  +-[33]
+     |
+     +-[treti,14]
+7:	
+  +-[end,13]
+8:	
+  +-[end,13]
+9:	
+  +-[end,13]
+---Vysledek: 0---

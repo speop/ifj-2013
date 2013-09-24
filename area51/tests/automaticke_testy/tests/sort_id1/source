@@ -1,0 +1,4 @@
+//test funkce sort
+x = input()
+y = sort(x)
+z = print(y)

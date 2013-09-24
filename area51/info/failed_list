@@ -1,0 +1,6 @@
+03_FAIL_while_a=b
+04_FAIL_while_while_a=b
+06_FAIL_EXPR1-2PLUS
+07_FAIL_EXPR1-EQ
+11_FAIL_if_else_a=b
+12_OK_id=id() -function

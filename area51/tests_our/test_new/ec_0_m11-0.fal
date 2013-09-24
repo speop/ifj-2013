@@ -1,0 +1,8 @@
+a=2.1
+if(("sdfsdf"+3.6)>="sfdsdf")
+	a=2.0
+else
+	b=5.2
+end
+
+

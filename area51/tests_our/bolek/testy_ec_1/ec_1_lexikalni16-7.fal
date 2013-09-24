@@ -1,0 +1,8 @@
+retezec_1="   "
+
+retezec_2="fgh"
+
+retezec_3=retezec_1+retezec_2
+
+x=112r2
+x=x+19.8

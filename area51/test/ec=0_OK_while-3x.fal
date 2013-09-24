@@ -1,0 +1,17 @@
+prvni=1.0
+druhy=1.1
+treti=1.2
+aaa=2.0
+bbb=3.0
+ccc=4.0
+	
+	while ((prvni==1.0))
+		prvni=aaa
+		while ((druhy==1.1))
+			druhy=bbb
+			while ((treti==1.2))
+				treti=ccc
+			end
+		end
+	end
+	

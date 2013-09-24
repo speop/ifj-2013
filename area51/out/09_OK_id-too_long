@@ -1,0 +1,27 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:qqqqqqqqqqqqwertyuiopasdfghjklzxcvbnmqqqqqqqqqqqqwertyuiopasdfghjklzxcvbnm
+ID value node:qqqqqqqqqqqqwertyuiopasdfghjklzxcvbnmqqqqqqqqqqqqwertyuiopasdfghjklzxcvbnm
+aktivni:161083952
+ID value list:qqqqqqqqqqqqwertyuiopasdfghjklzxcvbnmqqqqqqqqqqqqwertyuiopasdfghjklzxcvbnm
+Jsem v Assign 33
+Jsem v Assign 15
+	znaky
+----------exprrr-----
+prom
+end prom
+TRUEEEEEEEEEEEEE
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+     +-[2.300000,15]
+     |
+  +-[33]
+     |
+     +-[qqqqqqqqqqqqwertyuiopasdfghjklzxcvbnmqqqqqqqqqqqqwertyuiopasdfghjklzxcvbnm,14]
+---Vysledek: 0---

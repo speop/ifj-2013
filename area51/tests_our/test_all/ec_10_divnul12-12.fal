@@ -1,0 +1,17 @@
+a=5e+1
+b=8.0000000
+
+c=a*b
+xx=print(c)
+xx=print("\n")
+
+  c=c/40.0
+xx=print(c)
+xx=print("\n")
+  /*komentar*/
+
+c=c-10.0
+a=b/c
+
+xx=print(c)
+xx=print("\n")

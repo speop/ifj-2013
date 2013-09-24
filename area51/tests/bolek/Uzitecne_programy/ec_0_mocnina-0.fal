@@ -1,0 +1,18 @@
+// spocita celocislenou mocninu x na n
+
+q=print("zadej cislo")
+x=input()
+x=numeric(x)
+
+qq=print("zadej exponent")
+n=input()
+n=numeric(n)
+
+vysledek=1.0
+
+while n>0.0
+  vysledek=vysledek*x
+  n=n-1.0
+end
+
+qqq=print(x," na ",n," je ",vysledek)

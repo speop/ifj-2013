@@ -1,0 +1,122 @@
+Jsem v progu 14
+Jsem v StList 14
+	 Jsem v ? 14
+Jsem v Stat 14
+	 Jsem v ID
+ID value token:g
+ID value node:g
+aktivni:146129392
+ID value list:g
+Jsem v Assign 33
+Jsem v Assign 16
+	znaky
+----------exprrr-----
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+prom
+end prom
+prom
+end prom
+operator
+---------------JEDEN PRUCHOD------
+operator
+---------------JEDEN PRUCHOD------
+Jsem v StList 32
+	 Jsem v EOF
+
+vypisuju seznam:
+1:	
+                             +-[a,14]
+                             |
+                          +-[o,27]
+                          |  |
+                          |  +-[b,14]
+                          |
+                       +-[o,27]
+                       |  |
+                       |  +-[c,14]
+                       |
+                    +-[o,27]
+                    |  |
+                    |  +-[d,14]
+                    |
+                 +-[o,29]
+                 |  |
+                 |  |        +-[1.100000,15]
+                 |  |        |
+                 |  |     +-[o,27]
+                 |  |     |  |
+                 |  |     |  +-[2.200000,15]
+                 |  |     |
+                 |  |  +-[o,27]
+                 |  |  |  |
+                 |  |  |  +-[3.300000,15]
+                 |  |  |
+                 |  +-[o,27]
+                 |     |
+                 |     +-[4.400000,15]
+                 |
+              +-[o,30]
+              |  |
+              |  +-[888888.600000,15]
+              |
+           +-[o,29]
+           |  |
+           |  +-[ffff,14]
+           |
+        +-[o,29]
+        |  |
+        |  +-[gggg,14]
+        |
+     +-[o,29]
+     |  |
+     |  |  +-[hhhh,14]
+     |  |  |
+     |  +-[o,28]
+     |     |
+     |     +-[1.000000,15]
+     |
+  +-[33]
+     |
+     +-[g,14]
+---Vysledek: 0---

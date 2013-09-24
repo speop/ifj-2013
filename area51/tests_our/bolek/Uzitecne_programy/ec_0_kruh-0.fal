@@ -1,0 +1,12 @@
+// spocita obvod a obsah kruhu
+
+q=print("zadej r")
+r=input()
+r=numeric(r)
+
+pi=3.14159265358979323846
+
+obvod=2.0*pi*r
+obsah=pi*r*r
+
+q=print("obvod=",obvod,"\nobsah=",obsah)

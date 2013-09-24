@@ -1,0 +1,7 @@
+a=42e+3
+
+op=3.0*7e0
+zed= op*02.0
+a=a-zed
+op=op/a
+qq=print("inf=",op)

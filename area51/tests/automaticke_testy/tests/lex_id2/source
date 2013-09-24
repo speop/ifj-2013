@@ -1,0 +1,3 @@
+//test escape sekvence nad retezcovym literalem
+abs = "\n\\\""
+x = print(abs)
