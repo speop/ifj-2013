@@ -15,5 +15,6 @@ typedef struct {TGarbage* act;
 
 bool garbage_init();
 bool garbage_add(void *data, bool (*function)(void*));
-bool garbage_empty();
+bool garbage_empty(); // dealokuje vsechnz prvky v garbage collectoru
+bool garbage_default_erase(void *data);
 #endif

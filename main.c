@@ -7,6 +7,7 @@
 
 FILE *pSource_File;
 TGarbageList trash;
+int row = 0;
 
 bool test(void * data);
 
@@ -33,9 +34,12 @@ int main(int argc, char **argv)
 	garbage_init();
 	void *data;
 
-	garbage_add(data,&test);
-	garbage_add(data,&test);
-	garbage_empty();
+	data = malloc(sizeof (int));
+	(*(int*)data) = 20;
+	
+	garbage_add(data,&garbage_default_erase);
+	//garbage_add(data,&test);
+	
 
 	#if debug
 		printf("Volam lexikalni analyzator:\n");
@@ -50,11 +54,15 @@ int main(int argc, char **argv)
 		printf("Volam interpret: \n");
 	#endif
 	
+	
 
+	garbage_empty();
+	return 0;
 	
 }
 
 bool test(void * data){
-	printf("hello world!\n");
+	printf("hello world %d!\n",*(int*)data);
+
 	return true;
 }

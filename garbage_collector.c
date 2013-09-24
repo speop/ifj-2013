@@ -30,7 +30,7 @@ bool garbage_add(void *data, bool (*function)(void*)) // pridam prvek do garbage
 	newtrash = malloc(sizeof(struct TGarbage));
 	if (newtrash==NULL){
 		#if debug 
-			printf("Nepodarilo se alokovat novy prvek\n");
+			printf("\tNepodarilo se alokovat novy prvek\n");
 		#endif
 		return false;
 	}
@@ -41,7 +41,7 @@ bool garbage_add(void *data, bool (*function)(void*)) // pridam prvek do garbage
 	if(trash.act == NULL){ //seznam je prazdny
 
 		#if debug 
-			printf("Pidavam do prazdneho seznamu\n");
+			printf("\tPridavam do prazdneho seznamu\n");
 		#endif
 
 		newtrash->primaryKey = 1;
@@ -57,7 +57,7 @@ bool garbage_add(void *data, bool (*function)(void*)) // pridam prvek do garbage
 	else{ //pridavame jiz do existujiciho seznamu
 		
 		#if debug 
-			printf("Pidavam na posledni misto v seznamu\n");
+			printf("\tPridavam na posledni misto v seznamu\n");
 		#endif
 
 		newtrash->primaryKey = trash.last->primaryKey + 1;
@@ -88,7 +88,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 		trash.act = trash.last->prev;
 
 		#if debug 
-			printf("Mazu prvek cislo: %d \n",trash.last->primaryKey);
+			printf("\tMazu prvek cislo: %d \n",trash.last->primaryKey);
 		#endif
 
 		do
@@ -100,7 +100,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 
 		if (i>= POCET_POKUSU){
 			#if debug 
-				printf("Prekrocen pocet pokusu\n");
+				printf("\t\tPrekrocen pocet pokusu\n");
 			#endif
 			return false;
 		}
@@ -113,6 +113,17 @@ bool garbage_empty() // vyprazdni garbage_collector
 	#if debug 
 		printf("Kos je prazdny\n");
 	#endif
+
+	return true;
+}
+
+
+bool garbage_default_erase(void *data)
+{	
+	#if debug 
+		printf("\t\tDefaultni uvolnovac\n");
+	#endif
+	free(data);
 
 	return true;
 }
