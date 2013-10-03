@@ -1,4 +1,4 @@
-
+//xbucht18, Buchta David
 #include "garbage_collector.h"
 #include "stdio.h"
 #include "stdlib.h"
@@ -10,6 +10,7 @@ extern TGarbageList trash; //z main.c
 
 bool garbage_init()
 {
+	//inicializuji ponteru pro pousovani v GC
 	#if debug 
 		printf("Inicializuji garbage collector\n");
 	#endif
@@ -26,7 +27,7 @@ bool garbage_add(void *data, bool (*function)(void*)) // pridam prvek do garbage
 		printf("Pidavam prvek do garbage collectoru\n");
 	#endif
 
-	TGarbage *newtrash;
+	TGarbage *newtrash;	// vytvorim novy prvek seznamu			
 	newtrash = malloc(sizeof(struct TGarbage));
 	if (newtrash==NULL){
 		#if debug 
@@ -35,7 +36,7 @@ bool garbage_add(void *data, bool (*function)(void*)) // pridam prvek do garbage
 		return false;
 	}
 
-	newtrash->data = data;
+	newtrash->data = data;			
 	newtrash->function = function;
 
 	if(trash.act == NULL){ //seznam je prazdny
@@ -120,6 +121,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 
 bool garbage_default_erase(void *data)
 {	
+	//defaultni funkce pro uvolneni jednoduche pametove struktury
 	#if debug 
 		printf("\t\tDefaultni uvolnovac\n");
 	#endif

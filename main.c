@@ -1,5 +1,8 @@
 //Implementace interpretu imperativního jazyka IFJ13.
+//xbucht18, Buchta David
 
+//binarni strom
+// 1,2,4,3 razeni
 #include "stdlib.h"
 #include <stdio.h>
 #include "garbage_collector.h"
@@ -37,8 +40,8 @@ int main(int argc, char **argv)
 	data = malloc(sizeof (int));
 	(*(int*)data) = 20;
 	
-	garbage_add(data,&garbage_default_erase);
-	//garbage_add(data,&test);
+	//garbage_add(data,&garbage_default_erase);
+	garbage_add(data,&test);
 	
 
 	#if debug
@@ -62,7 +65,7 @@ int main(int argc, char **argv)
 }
 
 bool test(void * data){
-	printf("hello world %d!\n",*(int*)data);
+	printf("Karel  je brezi!\n",*(int*)data);
 
 	return true;
 }
