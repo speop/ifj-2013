@@ -1,0 +1,110 @@
+<program> -> php <st-list>
+
+<st-list> -> id <expr> ; <st-list>
+
+
+<st-list> -> if ( <expr> <cond> { <st-list>} <if-extra>
+
+<cond> -> <comp> <expr> <cond>
+<cond> -> )
+
+<comp> -> ===
+<comp> -> !==
+<comp> -> <
+<comp> -> >
+<comp> -> <=
+<comp> -> >=
+
+<if-extra> -> else { <st-list> }
+<if-extra> -> elseif ( <expr> <cond>	 { <st-list>} <if-extra>
+
+<st-list> -> while ( <expr> <cond>  {<st-list> }
+<st-list> -> function  id ( <functionHeader> { <st-list> } // definice funkce
+
+<functionHeader> -> )
+<functionHeader> -> <functionParam> <funcionList>
+
+<functionList> -> , <functionParam> <functionList>
+<functionList> -> )
+
+<functionParam> -> id <default>
+
+<default> -> = <item>
+<default> -> eps
+
+<st-list> -> return <expr> ;
+
+<item> -> string
+<item> -> int
+<item> -> double
+<item> -> bool
+
+
+
+
+
+
+
+
+
+
+// nejake zbytky z minula
+
+<st-list> -> function  id ( <functionParam> <functionList> { <st-list> } // zpracovani fce
+<functionList> -> , <functionParam> <funcionList>  // hlavicka funkce, dalsi parametry
+<functionList> -> ) //konec hlavicky
+<functionParam> -> <item> 
+<functionParam> ->id <default>
+<default> -> = <item> //defaultni hodnota parametru
+<default> -> eps
+
+<stat> -> id = <expr>
+<stat> -> if ( <expr> ) { <st-list> } else { <st-list> }
+<sta> ->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<stat> -> id = val
+<val> -> functionName ( <callParam> <callList>
+<callList> -> , <callParam> <callList>
+<callList> -> )
+<callParam> -> id
+<callParam> -> expr
+<callParam> -> ( expr )
+<val> -> id
+
+
+
+
+
+
+
+
+<stat> -> = <stat2>
+
+<stat2> -> <expr>
+<stat2> -> id (<param><paramList>
+
+<stat> -> (<param><paramList>
+
+<param> ->  eps
+<param> ->	id
+<param> -> <expr>
+
+<paramList> -> , <param><paramList>
+<paramList> -> )
