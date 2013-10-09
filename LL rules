@@ -32,7 +32,7 @@
 <default> -> = <item>
 <default> -> eps
 
-<st-list> -> return <expr> ;
+<st-list> -> return <expr>
 
 <item> -> string
 <item> -> int
