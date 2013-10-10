@@ -18,14 +18,14 @@
 
 <if-extra> -> else { <st-list> }
 <if-extra> -> elseif ( <expr> <cond>	 { <st-list>} <if-extra>
+<if-extra> -> eps
 
 <st-list> -> while ( <expr> <cond>  {<st-list> }
 <st-list> -> function  id ( <functionList> { <st-list> } // definice funkce
 
-<functionList> -> <item><functionList>
+<functionList> -> id <functionList>
 <functionList> -> )
-<functionList> -> , <item><functionList>
-
+<functionList> -> , id <functionList> // tohle si je treba specialne ohlidat v kodu.... pres zasobnik asi
 <st-list> -> return <expr>
 
 <item> -> string
