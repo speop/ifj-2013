@@ -1,6 +1,7 @@
 <program> -> php <st-list>
 
 <st-list> -> id <expr> ; <st-list>
+<st-lsit> eps
 
 
 <st-list> -> if ( <expr> <cond> { <st-list>} <if-extra>
@@ -19,18 +20,11 @@
 <if-extra> -> elseif ( <expr> <cond>	 { <st-list>} <if-extra>
 
 <st-list> -> while ( <expr> <cond>  {<st-list> }
-<st-list> -> function  id ( <functionHeader> { <st-list> } // definice funkce
+<st-list> -> function  id ( <functionList> { <st-list> } // definice funkce
 
-<functionHeader> -> )
-<functionHeader> -> <functionParam> <funcionList>
-
-<functionList> -> , <functionParam> <functionList>
+<functionList> -> <item><functionList>
 <functionList> -> )
-
-<functionParam> -> id <default>
-
-<default> -> = <item>
-<default> -> eps
+<functionList> -> , <item><functionList>
 
 <st-list> -> return <expr>
 
