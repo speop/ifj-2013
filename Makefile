@@ -1,4 +1,4 @@
-#Implementace interpretu imperativního jazyka IFJ12.
+#Implementace interpretu imperativního jazyka IFJ13.
  
 PROGS=main
 CC=gcc
@@ -9,8 +9,8 @@ all: $(PROGS)
 garbage_collector.o: garbage_collector.c garbage_collector.h
 	$(CC) $(CFLAGS) -c garbage_collector.c -o garbage_collector.o
 
-#built_in.o: built_in.c built_in.h
-#	$(CC) $(CFLAGS) -c built_in.c -o built_in.o
+ial.o: ial.c ial.h
+	$(CC) $(CFLAGS) -c ial.c -o ial.o
 
 #scanner.o: scanner.c scanner.h global.h
 #	$(CC) $(CFLAGS) -c scanner.c -o scanner.o
@@ -37,7 +37,7 @@ main.o:  main.c
 	#global.h parser.h global.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-main: main.o garbage_collector.o
+main: main.o garbage_collector.o ial.o
 #parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o
 	$(CC) $(CFLAGS) main.o garbage_collector.o -o main -lm
 	#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o -o main -lm
@@ -46,4 +46,4 @@ clean:
 	rm -f *.o *.out *.zip $(PROGS)
 
 pack:
-	zip xrajca00.zip *.c *.h rozdeleni dokumentace.pdf Makefile
+	zip xbucht18.zip *.c *.h rozdeleni dokumentace.pdf Makefile

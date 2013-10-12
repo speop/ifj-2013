@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include <stdio.h>
 #include "garbage_collector.h"
+#include "types.h"
 #define debug 1
 
 FILE *pSource_File;
