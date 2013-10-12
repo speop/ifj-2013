@@ -86,6 +86,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 
 	while (trash.act)
 	{
+		//nastavim jako aktivni predposledni prvek
 		trash.act = trash.last->prev;
 
 		#if debug 

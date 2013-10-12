@@ -44,23 +44,26 @@ typedef enum
 }ReturnCodesST;
 
 //tabulka symbolu
-void varSTInit (T_ST_Vars *pointer);
-ReturnCodesST addVarNodeToST(T_ST_VarsItem *newNode, T_ST_Vars *table);
-T_ST_Vars* findVarST( char *var, T_ST_Vars *table);
-bool removeVarST (char* var, T_ST_Vars *table);
+void varSTInit (T_ST_Vars *);
+ReturnCodesST addVarNodeToST(T_ST_VarsItem *, T_ST_Vars *);
+T_ST_Vars* findVarST( char *, T_ST_Vars *);
+bool removeVarST (char* , T_ST_Vars *);
+void printTree(T_ST_Vars *);
 
 //tabulka funkci
-void functionSTInit (T_ST_Funcs *pointer);
-ReturnCodesST addFuncNodeToST(T_ST_FuncsItem *newNode, T_ST_Funcs *table);
-T_ST_Funcs* findFunctionST( char *funcName, T_ST_Funcs *table);
-bool removeFunctionST (char* funcName, T_ST_Funcs *table);
+void functionSTInit (T_ST_Funcs *);
+ReturnCodesST addFuncNodeToST(T_ST_FuncsItem *, T_ST_Funcs *);
+T_ST_Funcs* findFunctionST( char *, T_ST_Funcs *);
+bool removeFunctionST (char* , T_ST_Funcs *);
 
 //garbage collector funkce
-bool freeVarST(void *tree);
-void freeVarSTpom(T_ST_Vars* tree, int smer);
+bool freeVarST(void *);
+void freeVarSTpom(T_ST_Vars* , int );
 
-bool freeFuncST(void *tree);
-void freeFuncSTpom(T_ST_Funcs* tree, int smer);
+bool freeFuncST(void *);
+void freeFuncSTpom(T_ST_Funcs* , int );
+
+
 
 
 #endif

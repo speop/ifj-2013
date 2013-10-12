@@ -1,7 +1,8 @@
 #define LEFT 1
 #define RIGHT 0
 #include "ial.h"
-
+#define FREE_VAR_NAME 0
+#define FREE_FUNC_NAME 1
 //funkce inicalizuje vsechny pointery korene na NULL
 void varSTInit (T_ST_Vars *pointer)
  {
@@ -23,9 +24,11 @@ ReturnCodesST addVarNodeToST(T_ST_VarsItem *newNode, T_ST_Vars *table)
 		return ADDING_SUCCESSFUL;
 	}
 
-	comp = strcmp(table->data->name, newNode->name);
+	comp = strcmp( newNode->name, table->data->name);
 
 	 T_ST_Vars *pointer;
+
+	
 
 	// prvek se stejnym nazvem jiz v tabulce existuje
 	if(!comp) return ITEM_EXIST;
@@ -71,13 +74,15 @@ ReturnCodesST addVarNodeToST(T_ST_VarsItem *newNode, T_ST_Vars *table)
 //funkce projde binarni strom a vrati uzel obsahujici danou promenou nebo NULL v pripade ze promena se v tabulce nenachazi
 T_ST_Vars* findVarST( char *var, T_ST_Vars *table)
 {	
+	
 	int comp;
 	//strom je prazdny
 	if(table->data == NULL) return NULL;
 
 	//aktualni koren obsahuje promenou s danym nazvem
-	if(!(comp = strcmp(var,table->data->name))) return table;
-
+	printf("%s %s\n",var, table->data->name );
+	if(!(comp = strcmp(var,table->data->name))){ printf("%s\n",table->data->name ); return table;}
+	printf("\t\t comp: %d\n",comp );
 	//promena se nachazi v prave casti stromu
 	if(comp > 0){
 		if (table->right == NULL) return NULL;
@@ -95,11 +100,13 @@ T_ST_Vars* findVarST( char *var, T_ST_Vars *table)
 //odstrani danou promenou z ST vraci true v pripade uspechu
 bool removeVarST (char* var, T_ST_Vars *table)
 {
+	printf("volal jsem fci\n");
 	T_ST_Vars *node = findVarST(var, table);
 	T_ST_Vars *tempNode;
-
+	if (node == NULL)	printf("nenasel jsem uzel\n");
 	bool right = false;
 
+	if (node == NULL) return false;
 	// zjistime si jestli odstranovanz uzel je levy, nebo pravy potomek
 	if(!(strcmp (node->parrent->right->data->name, var))) right = true;
 
@@ -160,7 +167,7 @@ ReturnCodesST addFuncNodeToST(T_ST_FuncsItem *newNode, T_ST_Funcs *table)
 		return ADDING_SUCCESSFUL;
 	}
 
-	comp = strcmp(table->data->name, newNode->name);
+	comp = strcmp(newNode->name, table->data->name);
 
 	 T_ST_Funcs *pointer;
 
@@ -274,14 +281,27 @@ bool removeFunctionST (char* funcName, T_ST_Funcs *table)
     return false;
 }
 
+//pomocna funkce ktera vypise tabulku symbolu podle abecedy
+void printTree(T_ST_Vars *table)
+{
+	if (table->left != NULL) printTree(table->left);
+
+	printf("%d. prvek: %s \n",table->data->type, table->data->name);
+	if (table->right != NULL) printTree(table->right);
+	//printf("kde to sakra padam?\n");
+	return;
+}
+
+
 //funkce pro garbage collector, uvolni cele stromy
 bool freeVarST(void *tree)
 {	
 	//existuje pravy podstrom
 	if(((T_ST_Vars*)tree)->right != NULL) freeVarSTpom(((T_ST_Vars*)tree)->right, RIGHT);
 	//existuje levy podstrom
-	else if (((T_ST_Vars*)tree)->left != NULL) freeVarSTpom(((T_ST_Vars*)tree)->right, LEFT);
+	if (((T_ST_Vars*)tree)->left != NULL) freeVarSTpom(((T_ST_Vars*)tree)->left, LEFT);
 
+	free(((T_ST_Vars*)tree)->data);
 	free ((T_ST_Vars*)tree);
 	return true;
 }
@@ -292,12 +312,17 @@ void freeVarSTpom(T_ST_Vars* tree, int smer){
 	//existuje pravy podstrom
 	if(tree->right != NULL) freeVarSTpom(tree->right, RIGHT);
 	//existuje levy podstrom
-	else if (tree->left != NULL) freeVarSTpom(tree->right, LEFT);
+	if (tree->left != NULL) freeVarSTpom(tree->left, LEFT);
 
 	if(smer== RIGHT) tree->parrent->right = NULL;
 	else tree->parrent->left = NULL;
 
+	#if FREE_VAR_NAME
+		free(tree->data->name);
+	#endif;		
+	free(tree->data);
 	free(tree);
+
 	return;
 }
 
@@ -306,8 +331,9 @@ bool freeFuncST(void *tree)
 	//existuje pravy podstrom
 	if(((T_ST_Funcs*)tree)->right != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->right, RIGHT);
 	//existuje levy podstrom
-	else if (((T_ST_Funcs*)tree)->left != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->right, LEFT);
+	if (((T_ST_Funcs*)tree)->left != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->left, LEFT);
 
+	free(((T_ST_Funcs*)tree)->data);
 	free ((T_ST_Funcs*)tree);
 	return true;
 }
@@ -318,11 +344,12 @@ void freeFuncSTpom(T_ST_Funcs* tree, int smer){
 	//existuje pravy podstrom
 	if(tree->right != NULL) freeFuncSTpom(tree->right, RIGHT);
 	//existuje levy podstrom
-	else if (tree->left != NULL) freeFuncSTpom(tree->right, LEFT);
+	if (tree->left != NULL) freeFuncSTpom(tree->left, LEFT);
 
 	if(smer== RIGHT) tree->parrent->right = NULL;
 	else tree->parrent->left = NULL;
 
+	free(tree->data);
 	free(tree);
 	return;
 }

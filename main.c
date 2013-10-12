@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "garbage_collector.h"
 #include "types.h"
+#include "parser.h"
 #define debug 1
 
 FILE *pSource_File;
@@ -43,30 +44,25 @@ int main(int argc, char **argv)
 	
 	//garbage_add(data,&garbage_default_erase);
 	garbage_add(data,&test);
-	
-
-	#if debug
-		printf("Volam lexikalni analyzator:\n");
-
-	#endif
 
 	#if debug 
-		printf("Volam syntakci analyzator: \n");
+		printf("Volam syntakci analyzator: \n");		
 	#endif
+	parser();
 
-	#if debug 
-		printf("Volam interpret: \n");
-	#endif
 	
 	
 
 	garbage_empty();
+	fclose(stdout);
+	fclose(pSource_File);
 	return 0;
 	
 }
 
 bool test(void * data){
-	printf("Karel  je brezi!\n",*(int*)data);
+	printf("Mazu cislo %d\n",*(int*)data);
+	free(data);
 
 	return true;
 }
