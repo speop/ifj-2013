@@ -12,6 +12,7 @@
 
 FILE *pSource_File;
 TGarbageList trash;
+T_Token prevToken;
 int row = 0;
 
 bool test(void * data);

@@ -3,10 +3,12 @@
 
 int parser();
 
+
+int functionList();
+int if_extra();
+int cond();
 int st_list();
-
-
-void printError(char*, int);
+int program();
 
 
 
