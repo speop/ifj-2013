@@ -45,8 +45,8 @@ typedef enum {
 	S_COLON = 19,	// :
 	S_PLUS = 20,	// +
 	S_MINUS = 21,	// -
-	S_MUL = 22,	// /
-	S_DIV = 23,	// *
+	S_DIV = 22,	// /
+	S_MUL = 23,	// *
 	S_POW = 24,	// mocnina
 	S_EOF = 25,
 	S_IS = 26,	// =
@@ -54,8 +54,8 @@ typedef enum {
 	S_LST = 28, // <
 	S_GEQ = 29, // >=
 	S_GRT = 30, // >
-	S_NEQ = 31, // !=
-	S_EQ = 32, // ==
+	S_NEQ = 31, // !==
+	S_EQ = 32, // ===
 	S_BOOL = 33,
 	S_ID = 34,
 	W_RESERVED = 35,
@@ -69,6 +69,15 @@ typedef enum {
   	S_BLOCK_END = 43,  // }
   	S_EOF = 44, // konec souboru
   	S_CONCATENATE = 45, // .
+  	
+  	 //KOMENTARE
+  	S_BLOCK_COMMENT = 46, // /*
+  	S_END_BLOCK_COMMENT = 47, // */
+  	S_LINE_COMMENT = 48, // //
+  	
+  	S_NUMBER = 49, // cislo
+  	S_ELSE = 50, // else
+  	S_ELSEIF = 51, // elseif 
 	
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
@@ -79,6 +88,7 @@ typedef enum {
 typedef struct { int type;
                  void *value;
 } T_Token;
+
 
 
 
