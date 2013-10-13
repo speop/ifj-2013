@@ -296,6 +296,9 @@ void printTree(T_ST_Vars *table)
 //funkce pro garbage collector, uvolni cele stromy
 bool freeVarST(void *tree)
 {	
+	//strom je prazdny
+	if(((T_ST_Vars*)tree)->data == NULL) return true;
+
 	//existuje pravy podstrom
 	if(((T_ST_Vars*)tree)->right != NULL) freeVarSTpom(((T_ST_Vars*)tree)->right, RIGHT);
 	//existuje levy podstrom
@@ -328,6 +331,10 @@ void freeVarSTpom(T_ST_Vars* tree, int smer){
 
 bool freeFuncST(void *tree)
 {	
+
+	//strom je prazdny
+	if(((T_ST_Funcs*)tree)->data == NULL) return true;
+
 	//existuje pravy podstrom
 	if(((T_ST_Funcs*)tree)->right != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->right, RIGHT);
 	//existuje levy podstrom

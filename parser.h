@@ -3,4 +3,11 @@
 
 int parser();
 
+int st_list();
+
+
+void printError(char*, int);
+
+
+
 #endif

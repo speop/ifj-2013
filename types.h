@@ -57,12 +57,15 @@ typedef enum {
 	S_NEQ = 31, // !=
 	S_EQ = 32, // ==
 	S_BOOL = 33,
-	S_VAR = 34,
+	S_ID = 34,
 	W_RESERVED = 35,
 	TYPS_OEF=36,
 	S_TRUE=37,
 	CUT_L=38,
 	CUT_R=39,
+	S_PHP = 40,
+	S_SEM = 41, // ;
+	
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
 	L_INTER_ERROR = 72
