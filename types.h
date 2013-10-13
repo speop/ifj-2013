@@ -65,6 +65,8 @@ typedef enum {
 	CUT_R=39,
 	S_PHP = 40,
 	S_SEM = 41, // ;
+	S_BLOCK_START = 31,  // {
+  	S_BLOCK_END = 32,  // }
 	
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
