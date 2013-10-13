@@ -1,10 +1,10 @@
 <program> -> php <st-list>
 
 <st-list> -> id <expr> ; <st-list>
-<st-lsit> eps
+<st-list> -> EPSILON
 
 
-<st-list> -> if ( <expr> <cond> { <st-list>} <if-extra>
+<st-list> -> if ( <expr> <cond> { <st-list> } <if-extra>
 
 <cond> -> <comp> <expr> <cond>
 <cond> -> )
@@ -17,17 +17,23 @@
 <comp> -> >=
 
 <if-extra> -> else { <st-list> }
-<if-extra> -> elseif ( <expr> <cond>	 { <st-list>} <if-extra>
-<if-extra> -> eps
+<if-extra> -> elseif ( <expr> <cond>	 { <st-list> } <if-extra>
+<if-extra> -> EPSILON
 
-<st-list> -> while ( <expr> <cond>  {<st-list> }
-<st-list> -> function  id ( <functionList> { <st-list> } // definice funkce
+<st-list> -> while ( <expr> <cond>  { <st-list> }
+<st-list> -> function  id ( <functionList> { <st-list> } 
 
 <functionList> -> id <functionList>
 <functionList> -> )
-<functionList> -> , id <functionList> // tohle si je treba specialne ohlidat v kodu.... pres zasobnik asi
+<functionList> -> , id <functionList> 
 <st-list> -> return <expr>
 
+
+
+
+
+
+// asi dalsi zbytek
 <item> -> string
 <item> -> int
 <item> -> double
