@@ -45,8 +45,8 @@ typedef enum {
 	S_COLON = 19,	// :
 	S_PLUS = 20,	// +
 	S_MINUS = 21,	// -
-	S_MUL = 22,	// /
-	S_DIV = 23,	// *
+	S_DIV = 22,	// /
+	S_MUL = 23,	// *
 	S_POW = 24,	// mocnina
 	S_EOF = 25,
 	S_IS = 26,	// =
@@ -69,6 +69,11 @@ typedef enum {
   	S_BLOCK_END = 43,  // }
   	S_EOF = 44, // konec souboru
   	S_CONCATENATE = 45, // .
+  	
+  	 //KOMENTARE
+  	S_BLOCK_COMMENT = 46, // /*
+  	S_END_BLOCK_COMMENT = 47, // */
+  	S_LINE_COMMENT = 48, // //
 	
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
