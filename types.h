@@ -54,8 +54,8 @@ typedef enum {
 	S_LST = 28, // <
 	S_GEQ = 29, // >=
 	S_GRT = 30, // >
-	S_NEQ = 31, // !=
-	S_EQ = 32, // ==
+	S_NEQ = 31, // !==
+	S_EQ = 32, // ===
 	S_BOOL = 33,
 	S_ID = 34,
 	W_RESERVED = 35,
@@ -74,6 +74,8 @@ typedef enum {
   	S_BLOCK_COMMENT = 46, // /*
   	S_END_BLOCK_COMMENT = 47, // */
   	S_LINE_COMMENT = 48, // //
+  	
+  	S_NUMBER = 49, // cislo
 	
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
