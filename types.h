@@ -76,6 +76,8 @@ typedef enum {
   	S_LINE_COMMENT = 48, // //
   	
   	S_NUMBER = 49, // cislo
+  	S_ELSE = 50, // else
+  	S_ELSEIF = 51, // elseif 
 	
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
