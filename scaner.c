@@ -10,6 +10,11 @@
 
 #define NDEBUG 0
 
+void putToken( T_Token *token)
+{
+    prevToken = token; 
+}
+
 FILE *pSource_File; //vstupni soubor
 static in state; //soucasny stav automatu
 extern T_Token prevToken; 
