@@ -19,6 +19,8 @@ FILE *pSource_File; //vstupni soubor
 static in state; //soucasny stav automatu
 extern T_Token prevToken; 
 
+
+
 //nastaveni vstupniho souboru
 void soubor(FILE *f)
 {
