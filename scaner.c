@@ -12,6 +12,7 @@
 
 FILE *pSource_File; //vstupni soubor
 static in state; //soucasny stav automatu
+extern T_Token prevToken; 
 
 //nastaveni vstupniho souboru
 void soubor(FILE *f)
@@ -59,12 +60,20 @@ int getToken(string *S)
                 }*/
 
 //==========================================================================================================
+if(prevToken != NULL){ 
+    token = prevToken; 
+    prevToken = NULL; 
+    return token; 
+}
 
+
+/*
 if (nextToken != null) {
   temp = nextToken;
   nextToken = null
   return temp;
-}
+}*/
+
 if (inSTring == 1) {
   readString();
 }
