@@ -79,8 +79,10 @@ int getToken(T_Token *token)
         return result;
     }
     else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || scanned == '_'){
-        result = readWord(&token);
-        return result;
+        token->type = S_FUNC;
+        return OK;
+        /*result = readWord(&token);
+        return result;*/
     }
 
     else{
@@ -88,8 +90,8 @@ int getToken(T_Token *token)
       switch(scanned){
 
         case '$':
-            result = readVariable(&token);
-            return result;
+            token->type = S_ID;
+            return OK;
 
         case '"':
             result = readString(&token);
