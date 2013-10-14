@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "scaner.h"
 #include "types.h"
@@ -65,7 +66,6 @@ int getToken(T_Token *token)
   }
 
 
-  int true;
   char scanned;
   int result;
 
