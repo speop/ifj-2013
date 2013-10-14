@@ -233,14 +233,18 @@ int getToken(T_Token *token)
 			}
 				
 			else
-				fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+				fprintf(stderr, "Lexikalni chyba porovnavani je ===.\n");
 				return ERROR_LEX;
 				
-             }
+             	}
+             	else
+			fprintf(stderr, "Lexikalni chyba porovnavani je ===.\n");
+			return ERROR_LEX;
+			
             
-	      	token->type = S_IS;
-              	fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
-              	return OK;
+	token->type = S_IS;
+        fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+        return OK;
 		
 	case '!':
 		
@@ -252,13 +256,17 @@ int getToken(T_Token *token)
 			}
 				
 			else
-				fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+				fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
 				return ERROR_LEX;
 				
-             }
+             	}
+             	else
+				fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
+				return ERROR_LEX;
+					
             
-		fprintf(stderr, "Uexpected symbols at the begining of file.\n");
-		return ERROR_LEX;
+	fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
+	return ERROR_LEX;
 		
 		
         default: return ERROR_LEX;
