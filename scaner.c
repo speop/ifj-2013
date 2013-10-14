@@ -18,7 +18,7 @@ void putToken( T_Token *token)
 FILE *pSource_File; //vstupni soubor
 static in state; //soucasny stav automatu
 extern T_Token *prevToken; 
-
+extern int row; // z main.c
 
 
 //nastaveni vstupniho souboru
@@ -124,24 +124,121 @@ if (nextToken != null) {
               scanned = fgetc(pSource_File)
 
               //komentar do konce radku
-              if(scanned = '/'){
+              if(scanned == '/'){
                 do{ scanned = fgetc(pSource_File);}
                 while(scanned != '\n' || scanned != EOF);
 
                 break;
               }
+
+              //blokovy komentar
+              else if (scanned == '*'){
+                  do{ 
+                        scanned = fgetc(pSource_File);
+                        
+                        //mozny konec komentare
+                        if (scanned == '*'){
+                            
+                            scanned = fgetc(pSource_File);
+                            if(scanned == '/') break; // konec komentare ukoncime nekonecnou smycku
+                        }
+                }
+                while(true);
+                break;
+              }
+
               else{
                 fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
                 token->type = S_DIV;  
                 return OK;
-
               }
+
+        case ',':
+            token->type = S_COMMA;
+            return OK;
+
+        case '+':
+            token->type = S_PLUS;
+            return OK;
+
+        case '-':
+            token->type = S_MINUS;
+            return OK;
+
+        case '*':
+            token->type = S_MUL;
+            return OK;
+
+        case '(':
+            token->type = S_LBRA;
+            return OK;
+
+        case ')': 
+            token->type = S_RBRA;
+            return OK;
+
+        case '{':
+            token->type = S_BLOCK_START;                                //   {
+            return OK;
+
+        case  '}':
+            token->type = S_BLOCK_END;
+            return OK;
+
+        case '<':
+            scanned = fgetc(pSource_File);
+
+            //jedna se o startujici terminal <?php
+            if (scanned == '?'){
+              //zkontrolujeme jestli se pred startujicim terminalem nenachazi zadne znaky
+               fseek(pFile, -2,SEEK_CUR);
+               if(tell(pFile) != SEEK_SET ){
+                  fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+                  return ERROR_SYN;
+               }
+
+               fseek(pFile, 2,SEEK_CUR);
+               if (fgetc(pSource_File) != 'h') return ERROR_LEX;
+               if (fgetc(pSource_File) != 'p') return ERROR_LEX;
+
+               scanned = fgetc(pSource_File) != 'p');
+               
+               if(scanned!= '\n' || scanned != '\t' || scanned != '\v' || scanned !=' ') return ERROR_LEX;
+
+               token->type = S_PHP;
+               return OK;
+
+            }
+
+            //   <=
+            else if( scanned == '='){
+                token->type = S_LEQ;
+                return OK;
+            }
+
+            token->type = S_LST;
+            fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+            return OK;
+
+        case '>':
               
+              scanned = fgetc(pSource_File);
+              if(scanned == '='){
+                token->type = S_GEQ;
+                return OK; 
+              }
+
+              token->type = S_GRT;
+              fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+              return OK;
+    
         case '\t': //tabulator
         case '\v': //vertical space
         case ' ': //obycejna mezera
-        case '\n': continue;
-        
+        case '\n': 
+            row++;
+            continue;
+
         default: return ERROR_LEX; 
       }
     }
@@ -154,76 +251,9 @@ if (nextToken != null) {
 
 //tu je konec funkce get token ten zblitek predelat do switche podle prikladu vyse
 
-  if (inSTring == 1) readString(&token);
+//  if (inSTring == 1) readString(&token);
 
 
-
-  else                                          //FUNKCE NA CTENI CISLA, VRATI TOKEN
-
-                                        //FUNKCE NA CTENI PROMENNE, VRATI TOKEN
-
-                                       //FUNKCE NA CTENI RETEZCE
-
-  
-
-                  //   .
-                              //   ;
-
-  else if (scanned == ',')  token.type = S_COMMA;                                      //   ,
-
-  else if (scanned == '+')  token.type = S_PLUS;                                        //   +
-
-  else if (scanned == '-')  token.type = S_MINUS;                                       //   -
-
-  else if (scanned == '*') {
-    
-    scanned = //CTENI DALSIHO ZNAKU;
-    if (scanned == '/') {
-      token.type = S_END_BLOCK_COMMENT;                        //   */
-  }
-  else {
-    //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    token.type = S_MUL;                           //   *
-  }
-}
-
-else if (scanned == '(') {
-  token.type = S_LBRA;                              //   (
-}
-else if (scanned == ')') {
-  token.type = S_RBRA;                              //   )
-}
-else if (scanned == '{') {
-  token.type = S_BLOCK_START;                                //   {
-}
-else if (scanned == '}') {
-  token.type = S_BLOCK_END;                                  //   }
-}
-else if (scanned == '<') {
-
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '=') {
-    token.type = S_LEQ;                                    //   <=
-  }
-  else if (scanned == '?') {
-    //ZKOUSKA PROTI PHP                                //   <?php
-  }
-  else {
-    //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    token.type = S_LST;                                     //   <
-  }
-
-}
-else if (scanned == '>') {
-
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '=') {
-    token.type = S_GEQ;                                    //   >=
-
-  else {
-    //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    token.type = S_GRT;                                      //   >
-  }
 
 }
 else if (scanned == '=') {
