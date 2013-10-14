@@ -78,6 +78,7 @@ typedef enum {
   	S_LINE_COMMENT = 48, // //
   	
   	S_NUMBER = 49, // cislo
+  	S_FUNC = 50, // funkce
   
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
