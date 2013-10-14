@@ -67,7 +67,7 @@ typedef enum {
 	S_SEM = 41, // ;
 	S_BLOCK_START = 42,  // {
   	S_BLOCK_END = 43,  // }
-  	S_EOF = 44, // konec souboru
+  	
   	S_CONCATENATE = 45, // .
   	
   	 //KOMENTARE
