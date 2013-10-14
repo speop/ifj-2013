@@ -223,42 +223,42 @@ int getToken(T_Token *token)
             row++;
             continue;
 
-		case '=':
+	case '=':
 		
-			scanned = fgetc(pSource_File);
-			if(scanned == '='){
-                if(scanned == '='){
-					token->type = S_EQ;
-					return OK;
-				}
+		scanned = fgetc(pSource_File);
+		if(scanned == '='){
+                	if(scanned == '='){
+				token->type = S_EQ;
+				return OK;
+			}
 				
-				else
-					fprintf(stderr, "Uexpected symbols at the begining of file.\n");
-					return ERROR_LEX;
-				
-             }
-            
-			  token->type = S_IS;
-              fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
-              return OK;
-		
-		case '!':
-		
-			scanned = fgetc(pSource_File);
-			if(scanned == '='){
-                if(scanned == '='){
-					token->type = S_NEQ;
-					return OK;
-				}
-				
-				else
-					fprintf(stderr, "Uexpected symbols at the begining of file.\n");
-					return ERROR_LEX;
-				
-             }
-            
-			  fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+			else
+				fprintf(stderr, "Uexpected symbols at the begining of file.\n");
 				return ERROR_LEX;
+				
+             }
+            
+	      	token->type = S_IS;
+              	fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+              	return OK;
+		
+	case '!':
+		
+		scanned = fgetc(pSource_File);
+		if(scanned == '='){
+                	if(scanned == '='){
+				token->type = S_NEQ;
+				return OK;
+			}
+				
+			else
+				fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+				return ERROR_LEX;
+				
+             }
+            
+		fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+		return ERROR_LEX;
 		
 		
         default: return ERROR_LEX;
