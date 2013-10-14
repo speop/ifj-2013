@@ -3,12 +3,12 @@
 #include "parser.h"
 #include "ial.h"
 #include "types.h"
-#include "scanner.h"
+#include "scaner.h"
 #define debug 1
 
 extern TGarbageList trash; //z main.c
 extern int row; // z main.c
-extern T_Token prevToken; // z main.c
+extern T_Token *prevToken; // z main.c
 
 T_ST_Vars *symbolTable;
 T_ST_Funcs *funcionTable;
@@ -46,7 +46,7 @@ int program(){
  			return result;
  			break;
 
- 		case: S_DOLAR
+ 		case S_DOLAR:
  			return result;
 
  	}

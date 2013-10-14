@@ -17,7 +17,7 @@ void putToken( T_Token *token)
 
 FILE *pSource_File; //vstupni soubor
 static in state; //soucasny stav automatu
-extern T_Token prevToken; 
+extern T_Token *prevToken; 
 
 
 
@@ -53,7 +53,7 @@ int next( int newst )
 }
 
 /** Hlavni fce lexikalniho analyzatoru */
-int getToken(string *S)
+T_Token getToken()
 {
    /* int ch = next(0); // soucasny znak na vstupu
     strClear(S); // vyprazdneni retezce
@@ -68,12 +68,12 @@ int getToken(string *S)
 
 //==========================================================================================================
 if(prevToken != NULL){ 
-    token = prevToken; 
+    token = *prevToken; 
     prevToken = NULL; 
     return token; 
 }
 
-
+token = malloc(sizeof(T_Token));
 /*
 if (nextToken != null) {
   temp = nextToken;
@@ -87,7 +87,7 @@ if (inSTring == 1) {
 
 
 if (scanned == EOF) {
-  return S_EOF;                                         //VRACI KONEC SOUBORU
+  token.type = S_EOF;                                  //VRACI KONEC SOUBORU
 }
 else if (scanned >= '0' && scanned <= '9') {
   readNumber();                                         //FUNKCE NA CTENI CISLA, VRATI TOKEN
@@ -102,69 +102,70 @@ else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z'
   readWord();
 }
 else if (scanned == '.') {
-  return S_CONCATENATE;                                 //   .
+  token.type = S_CONCATENATE;                  //   .
 }
 else if (scanned == ';') {
-  return S_SEM;                                   //   ;
+  token.type = S_SEM;                              //   ;
 }
 else if (scanned == ',') {
-  return S_COMMA;                                       //   ,
+  token.type = S_COMMA;                                      //   ,
 }
 else if (scanned == '+') {
-  return S_PLUS;                                        //   +
+  token.type = S_PLUS;                                        //   +
 }
 else if (scanned == '-') {
-  return S_MINUS;                                       //   -
+  token.type = S_MINUS;                                       //   -
 }
 else if (scanned == '*') {
 
   scanned = //CTENI DALSIHO ZNAKU;
   if (scanned == '/') {
-    return S_END_BLOCK_COMMENT;                        //   */
+    token.type = S_END_BLOCK_COMMENT;                        //   */
   }
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    return S_MUL;                           //   *
+    token.type = S_MUL;                           //   *
   }
 }
 else if (scanned == '/') {
 
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '/') {                                //   //
-    return S_LINE_COMMENT;
+  scanned = //CTENI DALSIHO ZNAKU; 
+  if (scanned == '/') {                                //   // opet nepotrebuju vedet ze se jedna o komtar
+    token.type = S_LINE_COMMENT;
   }
-  else if (scanned == '*') {
+  // predelat ignorovat komentare ty jsou mi v parseru na nic
+ /* else if (scanned == '*') {
     return S_BLOCK_COMMENT;                            //   /*
-  }
+  }*/
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    return S_DIV;                                 //   /
+    token.type = S_DIV;                                 //   /
   }
 }
 else if (scanned == '(') {
-  return S_LBRA;                              //   (
+  token.type = S_LBRA;                              //   (
 }
 else if (scanned == ')') {
-  return S_RBRA;                              //   )
+  token.type = S_RBRA;                              //   )
 }
 else if (scanned == '{') {
-  return S_BLOCK_START;                                //   {
+  token.type = S_BLOCK_START;                                //   {
 }
 else if (scanned == '}') {
-  return S_BLOCK_END;                                  //   }
+  token.type = S_BLOCK_END;                                  //   }
 }
 else if (scanned == '<') {
 
   scanned = //CTENI DALSIHO ZNAKU;
   if (scanned == '=') {
-    return S_LEQ;                                    //   <=
+    token.type = S_LEQ;                                    //   <=
   }
   else if (scanned == '?') {
     //ZKOUSKA PROTI PHP                                //   <?php
   }
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    return S_LST;                                     //   <
+    token.type = S_LST;                                     //   <
   }
 
 }
@@ -172,11 +173,11 @@ else if (scanned == '>') {
 
   scanned = //CTENI DALSIHO ZNAKU;
   if (scanned == '=') {
-    return S_GEQ;                                    //   >=
+    token.type = S_GEQ;                                    //   >=
 
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    return S_GRT;                                      //   >
+    token.type = S_GRT;                                      //   >
   }
 
 }
@@ -185,16 +186,16 @@ else if (scanned == '=') {
   if (scanned == '=') {
     scanned == //CTENI DALSIHO ZNAKU
     if (scanned == '=') {
-      return S_EQ;                                  //   ===
+      token.type = S_EQ;                                  //   ===
     }
     else {
       //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-      return //CHYBA;
+      token.type = //CHYBA;
     }
   }
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    return S_IS;                                   //   =
+    token.type = S_IS;                                   //   =
   }
 }
 else if (scanned == '!') {
@@ -202,8 +203,9 @@ else if (scanned == '!') {
   if (scanned == '=') {
     scanned == //CTENI DALSIHO ZNAKU
     if (scanned == '=') {
-      return S_NEQ;                              //   !==
+      token.type = S_NEQ;                              //   !==
     }
+    //tuhle cast jsem neopravil nerozumim ji
     else {
       //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
       return //CHYBA;
@@ -214,13 +216,19 @@ else if (scanned == '!') {
     return //CHYBA;
   }
 }
-else {
-  return //CHYBA;
+else return ERROR_LEX;
+
+return token;
 }
 
 //==========================================================================================================
 
-readString() {
+
+// je super ze mi vracite ze se jedna o retezec ale jaksik potrebuju vedet jeho hodnotu tzn.
+// token.type = S_STR;
+// token.data = malloc(sizeof(char * DELKA));
+// samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat token.((char*)data)
+T_Token readString() {
   inString = 1;
   //ZACATEK SMYCKY
   scanned = //CTENI DALSIHO ZNAKU;
@@ -276,8 +284,8 @@ readString() {
 }
 
 //==========================================================================================================
-
-readNumber() {
+//info viz string
+T_Token readNumber() {
   decimal = 10;
   exp = 0;
   expM = 1;

@@ -322,7 +322,8 @@ void freeVarSTpom(T_ST_Vars* tree, int smer){
 
 	#if FREE_VAR_NAME
 		free(tree->data->name);
-	#endif;		
+	#endif
+		
 	free(tree->data);
 	free(tree);
 

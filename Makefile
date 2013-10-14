@@ -12,8 +12,8 @@ garbage_collector.o: garbage_collector.c garbage_collector.h
 ial.o: ial.c ial.h
 	$(CC) $(CFLAGS) -c ial.c -o ial.o
 
-scanner.o: scanner.c scanner.h types.h
-	$(CC) $(CFLAGS) -c scanner.c -o scanner.o
+scaner.o: scaner.c scaner.h types.h
+	$(CC) $(CFLAGS) -c scaner.c -o scaner.o
 
 #list.o: list.c list.h global.h parser.h
 #	$(CC) $(CFLAGS) -c list.c -o list.o
@@ -22,7 +22,7 @@ scanner.o: scanner.c scanner.h types.h
 #	$(CC) $(CFLAGS) -c expr.c -o expr.o
 
 
-parser.o: parser.c parser.h types.h ial.h garbage_collector.h scanner.h
+parser.o: parser.c parser.h types.h ial.h garbage_collector.h scaner.h
 	$(CC) $(CFLAGS) -c parser.c -o parser.o
 
 #vnitrni_kod.o: vnitrni_kod.c parser.h scanner.h list.h
@@ -35,9 +35,9 @@ main.o:  main.c parser.h
 	#global.h parser.h global.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-main: main.o garbage_collector.o ial.o parser.o scanner.o
+main: main.o garbage_collector.o ial.o parser.o scaner.o
 #parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o
-	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o scanner.o -o main -lm
+	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o scaner.o -o main -lm
 	#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o -o main -lm
 
 clean:
