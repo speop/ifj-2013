@@ -26,9 +26,10 @@ int parser(){
 	garbage_add(functionTable,&freeFuncST);
 
 	prevToken = NULL;
-	token = getToken();
-
 	int result;
+
+	if ((result = getToken(&token)) != OK) return result;
+	
 	result = program();	
 	return result;
 
@@ -41,7 +42,7 @@ int program(){
  	switch (token.type){
  		// pravidllo 1. <program> → php <st-list>
  		case S_PHP:
- 			token = getToken();
+ 			if ((result = getToken(&token)) != OK) return result;
  			result = st_list();
  			return result;
  			break;
@@ -63,7 +64,7 @@ int st_list(){
 
 		// pravidlo: 2. <st-list> → id <expr> ; <st-list>
 		case S_ID: 
-			token = getToken();
+			
 
 			// z duvodu semantiky zkontrolujeme jestli nechceme prirazovat do funkce
 			if(token.type == S_IS){
@@ -78,7 +79,7 @@ int st_list(){
 				return ERROR_SYN;
 			} 
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = st_list();
 			return result;
 			break;
@@ -91,33 +92,33 @@ int st_list(){
 
 			if(token.type == IF) pom = true;
 
- 			token = getToken();
+ 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_LBRA ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
 				return ERROR_SYN;
 			}
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = cond();
 			if(result != OK ) return result;
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
 				return ERROR_SYN;
 			}
 
 			
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
 				result = st_list();
 				if(result != OK ) return result;
-				token = getToken();
+				if ((result = getToken(&token)) != OK) return result;
 			}
 
 			// mel byt konece
@@ -128,7 +129,7 @@ int st_list(){
 
 			//v tokenu byl if pridavame podminku if extra
 			if(pom){
-				token = getToken();
+				if ((result = getToken(&token)) != OK) return result;
 				
 				//  nejedna se o pravidlo 18. <if-extra> → ε
 				if( token.type == ELSE || token.type == ELSEIF){
@@ -136,7 +137,7 @@ int st_list(){
 					if(result != OK ) return result;
 				}
 				// jednalo se tak vratime token abychom ho priste znova dostali
-				else putToken(token);
+				else putToken(&token);
 				
 			} 
 
@@ -146,34 +147,34 @@ int st_list(){
 		// pravidlo 6. <st-list> → function id ( <functionList> { <st-list> }
 		case FUNCTION: 
 			
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_ID){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
 				return ERROR_SYN;
 			}
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_LBRA){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"(\" \n",row);
 				return ERROR_SYN;
 			}
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = functionList();
 			if(result != OK ) return result;
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
 				return ERROR_SYN;
 			}
 
-			token =getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
 				result = st_list();
 				if(result != OK ) return result;
-				token = getToken();
+				if ((result = getToken(&token)) != OK) return result;
 			}
 
 			if(token.type != S_BLOCK_END ){ 
@@ -186,7 +187,7 @@ int st_list(){
 
 		// pravidlo 7. <st-list> → return <expr>
 		case RETURN:
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
 
@@ -216,11 +217,11 @@ int cond(){
 
 			// tento case zaroven supluje  vsechny comp podminky, takze neni treba psat funkci pro tento neterminal
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = cond();
 			if(result != OK ) return result;
 
@@ -229,7 +230,7 @@ int cond(){
 
 		// pravidlo 9. <cond> → )
 		case S_LBRA: 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			return OK;
 
 	}
@@ -245,19 +246,19 @@ int if_extra(){
 		// pravidlo 16. <if-extra> → else { <st-list> }
 		case ELSE: 
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
 			}
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
 				result = st_list();
 				if(result != OK ) return result;
-				token = getToken();
+				if ((result = getToken(&token)) != OK) return result;
 			}
 
 			if(token.type != S_BLOCK_END ){ 
@@ -270,33 +271,33 @@ int if_extra(){
 
 		// pravidlo 17. <if-extra> → elseif ( <expr> <cond> { <st-list> } <if-extra>
 		case ELSEIF:
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_LBRA ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
 				return ERROR_SYN;
 			}
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = cond();
 			if(result != OK ) return result;
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
 				return ERROR_SYN;
 			}
 
 			
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
 				result = st_list();
 				if(result != OK ) return result;
-				token = getToken();
+				if ((result = getToken(&token)) != OK) return result;
 			}
 
 			// mel byt konece
@@ -306,7 +307,7 @@ int if_extra(){
 			}
 
 			
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 
 			//  nejedna se o pravidlo 18. <if-extra> → ε
 			if( token.type == ELSE || token.type == ELSEIF){
@@ -314,7 +315,7 @@ int if_extra(){
 				if(result != OK ) return result;
 			}
 			// jednalo se tak vratime token abychom ho priste znova dostali
-			else putToken(token);
+			else putToken(&token);
 			
 			
 
@@ -336,7 +337,7 @@ int functionList(){
 		// pravidlo 19. <functionList> → id <functionList>
 		case S_ID:
 			
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = functionList();
 			if(result != OK ) return result;
 
@@ -351,13 +352,13 @@ int functionList(){
 		//pravidlo 21. <functionList> → , id <functionList>
 		case S_COMMA:
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_ID){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
 				return ERROR_SYN;
 			}
 
-			token = getToken();
+			if ((result = getToken(&token)) != OK) return result;
 			result = functionList();
 			
 			if(result != OK) return ERROR_SYN;

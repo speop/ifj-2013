@@ -18,7 +18,9 @@ enum lex_tecodes
 
 //funkce
 void soubor(FILE *f); // nastaveni vstupniho souboru
-void putToken( T_Token token);
+void putToken( T_Token *token);
 int next(int newst);   // prechod do noveho stavu
-T_Token getToken(); /* hlavni fce lexikalniho an. */
+
+int getToken(T_Token *token); /* hlavni fce lexikalniho an. */
+int readNumber(T_Token * token); 
 #endif

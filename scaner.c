@@ -6,7 +6,7 @@
 
 #include "scaner.h"
 #include "types.h"
-#include "string.h"
+//#include "string.h"
 
 #define NDEBUG 0
 
@@ -52,9 +52,11 @@ int next( int newst )
     return fgetc(file);
 }
 
+
 /** Hlavni fce lexikalniho analyzatoru */
-T_Token getToken()
+int getToken(T_Token *token)
 {
+ 
    /* int ch = next(0); // soucasny znak na vstupu
     strClear(S); // vyprazdneni retezce
     for( ; ; )
@@ -67,13 +69,13 @@ T_Token getToken()
                 }*/
 
 //==========================================================================================================
-if(prevToken != NULL){ 
-    token = *prevToken; 
-    prevToken = NULL; 
-    return token; 
-}
+  if(prevToken != NULL){ 
+      token = prevToken; 
+      prevToken = NULL; 
+      return token; 
+  }
 
-token = malloc(sizeof(T_Token));
+
 /*
 if (nextToken != null) {
   temp = nextToken;
@@ -81,67 +83,110 @@ if (nextToken != null) {
   return temp;
 }*/
 
-if (inSTring == 1) {
-  readString();
+  char scanned;
+  int result;   
+
+  while((scanned = fgetc(pSource_File)) != EOF){
+
+    result = OK;
+
+    // slozitejsi podminky se vezmou pres if tam kde zalezi jen na jednom znaku se pouzije switch
+    if (scanned >= '0' && scanned <= '9'){
+        result = readNumber(&token);
+        return result;
+    }
+    else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || scanned == '_'){
+        result = readWord(&token);
+        return result;
+    }
+
+    else{
+
+      switch(scanned){
+
+        case '$': 
+            result = readVariable(&token);
+            return result;
+
+        case  '"':
+            result = readString(&token);
+            return result;
+
+        case '.':
+            token->type = S_CONCATENATE;  
+            return OK;
+
+        case ';':
+            token->type = S_SEM;
+            return OK;
+
+        case '/': 
+              scanned = fgetc(pSource_File)
+
+              //komentar do konce radku
+              if(scanned = '/'){
+                do{ scanned = fgetc(pSource_File);}
+                while(scanned != '\n' || scanned != EOF);
+
+                break;
+              }
+              else{
+                fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+                token->type = S_DIV;  
+                return OK;
+
+              }
+              
+        case '\t': //tabulator
+        case '\v': //vertical space
+        case ' ': //obycejna mezera
+        case '\n': continue;
+        
+        default: return ERROR_LEX; 
+      }
+    }
+
+  }
+
+  token->type = EOF;
+  return OK;
 }
 
+//tu je konec funkce get token ten zblitek predelat do switche podle prikladu vyse
 
-if (scanned == EOF) {
-  token.type = S_EOF;                                  //VRACI KONEC SOUBORU
-}
-else if (scanned >= '0' && scanned <= '9') {
-  readNumber();                                         //FUNKCE NA CTENI CISLA, VRATI TOKEN
-}
-else if (scanned == '$') {
-  readVariable();                                       //FUNKCE NA CTENI PROMENNE, VRATI TOKEN
-}
-else if (scanned == '"') {
-  readString();                                         //FUNKCE NA CTENI RETEZCE
-}
-else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || scanned == '_') {
-  readWord();
-}
-else if (scanned == '.') {
-  token.type = S_CONCATENATE;                  //   .
-}
-else if (scanned == ';') {
-  token.type = S_SEM;                              //   ;
-}
-else if (scanned == ',') {
-  token.type = S_COMMA;                                      //   ,
-}
-else if (scanned == '+') {
-  token.type = S_PLUS;                                        //   +
-}
-else if (scanned == '-') {
-  token.type = S_MINUS;                                       //   -
-}
-else if (scanned == '*') {
+  if (inSTring == 1) readString(&token);
 
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '/') {
-    token.type = S_END_BLOCK_COMMENT;                        //   */
+
+
+  else                                          //FUNKCE NA CTENI CISLA, VRATI TOKEN
+
+                                        //FUNKCE NA CTENI PROMENNE, VRATI TOKEN
+
+                                       //FUNKCE NA CTENI RETEZCE
+
+  
+
+                  //   .
+                              //   ;
+
+  else if (scanned == ',')  token.type = S_COMMA;                                      //   ,
+
+  else if (scanned == '+')  token.type = S_PLUS;                                        //   +
+
+  else if (scanned == '-')  token.type = S_MINUS;                                       //   -
+
+  else if (scanned == '*') {
+    
+    scanned = //CTENI DALSIHO ZNAKU;
+    if (scanned == '/') {
+      token.type = S_END_BLOCK_COMMENT;                        //   */
   }
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
     token.type = S_MUL;                           //   *
   }
 }
-else if (scanned == '/') {
 
-  scanned = //CTENI DALSIHO ZNAKU; 
-  if (scanned == '/') {                                //   // opet nepotrebuju vedet ze se jedna o komtar
-    token.type = S_LINE_COMMENT;
-  }
-  // predelat ignorovat komentare ty jsou mi v parseru na nic
- /* else if (scanned == '*') {
-    return S_BLOCK_COMMENT;                            //   /*
-  }*/
-  else {
-    //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    token.type = S_DIV;                                 //   /
-  }
-}
 else if (scanned == '(') {
   token.type = S_LBRA;                              //   (
 }
@@ -228,7 +273,7 @@ return token;
 // token.type = S_STR;
 // token.value = malloc(sizeof(char * DELKA));
 // samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat ((char*)token->value)
-T_Token readString() {
+int readString(T_Token *token) {
   inString = 1;
   //ZACATEK SMYCKY
   scanned = //CTENI DALSIHO ZNAKU;
@@ -285,7 +330,7 @@ T_Token readString() {
 
 //==========================================================================================================
 //info viz string
-T_Token readNumber() {
+int readNumber(T_Token *token) {
   decimal = 10;
   exp = 0;
   expM = 1;
