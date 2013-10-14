@@ -198,10 +198,11 @@ if (nextToken != null) {
                }
 
                fseek(pFile, 2,SEEK_CUR);
+               if (fgetc(pSource_File) != 'p') return ERROR_LEX;
                if (fgetc(pSource_File) != 'h') return ERROR_LEX;
                if (fgetc(pSource_File) != 'p') return ERROR_LEX;
 
-               scanned = fgetc(pSource_File) != 'p');
+               scanned = fgetc(pSource_File);
                
                if(scanned!= '\n' || scanned != '\t' || scanned != '\v' || scanned !=' ') return ERROR_LEX;
 
