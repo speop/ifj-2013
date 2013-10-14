@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "scanner.h"
+#include "scaner.h"
 #include "types.h"
 #include "string.h"
 
@@ -226,8 +226,8 @@ return token;
 
 // je super ze mi vracite ze se jedna o retezec ale jaksik potrebuju vedet jeho hodnotu tzn.
 // token.type = S_STR;
-// token.data = malloc(sizeof(char * DELKA));
-// samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat token.((char*)data)
+// token.value = malloc(sizeof(char * DELKA));
+// samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat ((char*)token->value)
 T_Token readString() {
   inString = 1;
   //ZACATEK SMYCKY

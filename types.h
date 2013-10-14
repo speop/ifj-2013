@@ -20,11 +20,13 @@ typedef enum{
 
 typedef enum {
 	//KLICOVA SLOVA 
-	ELSE = 1,
-	FUNCTION = 2,
-	IF = 3,
-	RETURN = 4,
-	WHILE = 5,
+	ELSE = 0,
+	FUNCTION = 1,
+	IF = 2,
+	RETURN = 3,
+	WHILE = 4,
+  	ELSEIF = 5, // elseif 
+	
 
 	//KONSTANTY
 	C_FALSE = 6,
@@ -76,9 +78,7 @@ typedef enum {
   	S_LINE_COMMENT = 48, // //
   	
   	S_NUMBER = 49, // cislo
-  	S_ELSE = 50, // else
-  	S_ELSEIF = 51, // elseif 
-	
+  
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
 	L_INTER_ERROR = 72

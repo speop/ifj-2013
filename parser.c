@@ -11,7 +11,7 @@ extern int row; // z main.c
 extern T_Token *prevToken; // z main.c
 
 T_ST_Vars *symbolTable;
-T_ST_Funcs *funcionTable;
+T_ST_Funcs *functionTable;
 T_Token token;
 
 int parser(){
@@ -21,9 +21,9 @@ int parser(){
 	varSTInit(symbolTable);
 	garbage_add(symbolTable,&freeVarST);
 
-	funcionTable = (T_ST_Funcs*)malloc(sizeof(T_ST_Funcs));
-	varSTInit(funcionTable);
-	garbage_add(funcionTable,&freeFuncST);
+	functionTable = (T_ST_Funcs*)malloc(sizeof(T_ST_Funcs));
+	functionSTInit(functionTable);
+	garbage_add(functionTable,&freeFuncST);
 
 	prevToken = NULL;
 	token = getToken();
@@ -67,7 +67,7 @@ int st_list(){
 
 			// z duvodu semantiky zkontrolujeme jestli nechceme prirazovat do funkce
 			if(token.type == S_IS){
-				if((findFunctionST( token.((char*)value), functionTable)) != NULL) return SEM_OTHER_ERROR;
+				if((findFunctionST( ((char*)token.value), functionTable)) != NULL) return SEM_OTHER_ERROR;
 			}
 
 			result = expr();
@@ -181,7 +181,7 @@ int st_list(){
 				return ERROR_SYN;
 			}
 
-			return OK
+			return OK;
 			break;
 
 		// pravidlo 7. <st-list> → return <expr>
@@ -238,7 +238,8 @@ int cond(){
 }
 
 int if_extra(){
-	
+	int result;
+
 	switch(token.type){
 
 		// pravidlo 16. <if-extra> → else { <st-list> }
@@ -264,7 +265,7 @@ int if_extra(){
 				return ERROR_SYN;
 			}
 
-			return OK
+			return OK;
 			break;
 
 		// pravidlo 17. <if-extra> → elseif ( <expr> <cond> { <st-list> } <if-extra>
@@ -373,5 +374,8 @@ int functionList(){
 }
 
 
+int expr(){
 
+	return OK;
+}
 
