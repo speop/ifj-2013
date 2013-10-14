@@ -10,16 +10,16 @@
 
 #define NDEBUG 0
 
-void putToken( T_Token *token)
-{
-    prevToken = token; 
-}
-
 FILE *pSource_File; //vstupni soubor
-static in state; //soucasny stav automatu
-extern T_Token *prevToken; 
+//static int state; //soucasny stav automatu
+extern T_Token *prevToken;
 extern int row; // z main.c
 
+
+void putToken( T_Token *token)
+{
+    prevToken = token;
+}
 
 //nastaveni vstupniho souboru
 void soubor(FILE *f)
@@ -46,45 +46,28 @@ const int ASCII_A_TO_HEX=55;
 const int ASCII_a_TO_HEX=87;
 
 //prechod do noveho stavu
-int next( int newst )
+/*int next( int newst )
 {
     state = newst;
     return fgetc(file);
-}
+}*/
 
 
 /** Hlavni fce lexikalniho analyzatoru */
 int getToken(T_Token *token)
 {
  
-   /* int ch = next(0); // soucasny znak na vstupu
-    strClear(S); // vyprazdneni retezce
-    for( ; ; )
-    {
-        switch(state) {
-            case 0: // stav 0 - startovaci stav
-                if(ch == '\n') // konec radku 
-                {
-                    return S_END_OF_LINE;
-                }*/
-
 //==========================================================================================================
-  if(prevToken != NULL){ 
-      token = prevToken; 
-      prevToken = NULL; 
-      return token; 
+  if(prevToken != NULL){
+      token = prevToken;
+      prevToken = NULL;
+      return token;
   }
 
 
-/*
-if (nextToken != null) {
-  temp = nextToken;
-  nextToken = null
-  return temp;
-}*/
-
+  int true;
   char scanned;
-  int result;   
+  int result;
 
   while((scanned = fgetc(pSource_File)) != EOF){
 
@@ -104,24 +87,24 @@ if (nextToken != null) {
 
       switch(scanned){
 
-        case '$': 
+        case '$':
             result = readVariable(&token);
             return result;
 
-        case  '"':
+        case '"':
             result = readString(&token);
             return result;
 
         case '.':
-            token->type = S_CONCATENATE;  
+            token->type = S_CONCATENATE;
             return OK;
 
         case ';':
             token->type = S_SEM;
             return OK;
 
-        case '/': 
-              scanned = fgetc(pSource_File)
+        case '/':
+              scanned = fgetc(pSource_File);
 
               //komentar do konce radku
               if(scanned == '/'){
@@ -133,7 +116,7 @@ if (nextToken != null) {
 
               //blokovy komentar
               else if (scanned == '*'){
-                  do{ 
+                  do{
                         scanned = fgetc(pSource_File);
                         
                         //mozny konec komentare
@@ -148,8 +131,8 @@ if (nextToken != null) {
               }
 
               else{
-                fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
-                token->type = S_DIV;  
+                fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+                token->type = S_DIV;
                 return OK;
               }
 
@@ -173,15 +156,15 @@ if (nextToken != null) {
             token->type = S_LBRA;
             return OK;
 
-        case ')': 
+        case ')':
             token->type = S_RBRA;
             return OK;
 
         case '{':
-            token->type = S_BLOCK_START;                                //   {
+            token->type = S_BLOCK_START; // {
             return OK;
 
-        case  '}':
+        case '}':
             token->type = S_BLOCK_END;
             return OK;
 
@@ -191,13 +174,13 @@ if (nextToken != null) {
             //jedna se o startujici terminal <?php
             if (scanned == '?'){
               //zkontrolujeme jestli se pred startujicim terminalem nenachazi zadne znaky
-               fseek(pFile, -2,SEEK_CUR);
-               if(tell(pFile) != SEEK_SET ){
+               fseek(pSource_File, -2,SEEK_CUR);
+               if(tell(pSource_File) != SEEK_SET ){
                   fprintf(stderr, "Uexpected symbols at the begining of file.\n");
                   return ERROR_SYN;
                }
 
-               fseek(pFile, 2,SEEK_CUR);
+               fseek(pSource_File, 2,SEEK_CUR);
                if (fgetc(pSource_File) != 'p') return ERROR_LEX;
                if (fgetc(pSource_File) != 'h') return ERROR_LEX;
                if (fgetc(pSource_File) != 'p') return ERROR_LEX;
@@ -211,14 +194,14 @@ if (nextToken != null) {
 
             }
 
-            //   <=
+            // <=
             else if( scanned == '='){
                 token->type = S_LEQ;
                 return OK;
             }
 
             token->type = S_LST;
-            fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+            fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
             return OK;
 
         case '>':
@@ -226,21 +209,59 @@ if (nextToken != null) {
               scanned = fgetc(pSource_File);
               if(scanned == '='){
                 token->type = S_GEQ;
-                return OK; 
+                return OK;
               }
 
               token->type = S_GRT;
-              fseek(pFile, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+              fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
               return OK;
     
         case '\t': //tabulator
         case '\v': //vertical space
         case ' ': //obycejna mezera
-        case '\n': 
+        case '\n':
             row++;
             continue;
 
-        default: return ERROR_LEX; 
+		case '=':
+		
+			scanned = fgetc(pSource_File);
+			if(scanned == '='){
+                if(scanned == '='){
+					token->type = S_EQ;
+					return OK;
+				}
+				
+				else
+					fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+					return ERROR_LEX;
+				
+             }
+            
+			  token->type = S_IS;
+              fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
+              return OK;
+		
+		case '!':
+		
+			scanned = fgetc(pSource_File);
+			if(scanned == '='){
+                if(scanned == '='){
+					token->type = S_NEQ;
+					return OK;
+				}
+				
+				else
+					fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+					return ERROR_LEX;
+				
+             }
+            
+			  fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+				return ERROR_LEX;
+		
+		
+        default: return ERROR_LEX;
       }
     }
 
@@ -252,17 +273,17 @@ if (nextToken != null) {
 
 //tu je konec funkce get token ten zblitek predelat do switche podle prikladu vyse
 
-//  if (inSTring == 1) readString(&token);
+// if (inSTring == 1) readString(&token);
 
 
-
+/*
 }
 else if (scanned == '=') {
   scanned == //CTENI DALSIHO ZNAKU
   if (scanned == '=') {
     scanned == //CTENI DALSIHO ZNAKU
     if (scanned == '=') {
-      token.type = S_EQ;                                  //   ===
+      token.type = S_EQ; // ===
     }
     else {
       //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
@@ -271,7 +292,7 @@ else if (scanned == '=') {
   }
   else {
     //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    token.type = S_IS;                                   //   =
+    token.type = S_IS; // =
   }
 }
 else if (scanned == '!') {
@@ -279,7 +300,7 @@ else if (scanned == '!') {
   if (scanned == '=') {
     scanned == //CTENI DALSIHO ZNAKU
     if (scanned == '=') {
-      token.type = S_NEQ;                              //   !==
+      token.type = S_NEQ; // !==
     }
     //tuhle cast jsem neopravil nerozumim ji
     else {
@@ -365,7 +386,7 @@ int readNumber(T_Token *token) {
   decimal = 10;
   exp = 0;
   expM = 1;
-  n = firstNum;                                       //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
+  n = firstNum; //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
   num = n - ASCII_ZERO;
   //ZACATEK SMYCKY
   n = //CTENI DALSIHO ZNAKU;
@@ -380,7 +401,7 @@ int readNumber(T_Token *token) {
       exp *= 10;
       exp += n - ASCII_ZERO;
     }
-    else if (n != /*BILY ZNAK*/) {
+    else if (n != //BILY ZNAK) {
       return //CHYBA;
     }
     else {
@@ -405,5 +426,5 @@ int readNumber(T_Token *token) {
       return //CHYBA;
     }
   }
-  return S_NUMBER;                                                //DOPLNIT ROZDELENI NA INT, DOUBLE
-}
+  return S_NUMBER; //DOPLNIT ROZDELENI NA INT, DOUBLE
+}*/
