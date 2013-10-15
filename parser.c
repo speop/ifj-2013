@@ -10,7 +10,7 @@ extern TGarbageList trash; //z main.c
 extern int row; // z main.c
 extern T_Token *prevToken; // z main.c
 
-T_ST_Vars *symbolTable;
+T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
 T_Token token;
 
@@ -59,9 +59,11 @@ int program(){
 
 int st_list(){
 
-	int result;
+	int result, ret;
 	bool pom = false;
 	T_Token pomToken;
+	T_ST_VarsItem *promena;
+	T_ST_Funcs *func;
 
 	switch (token.type){
 
@@ -76,6 +78,16 @@ int st_list(){
 
 			if(token.type == S_IS){
 				if(pomToken.type  != S_ID) return SEM_OTHER_ERROR;
+				
+				//priradime promenou do tabulky symbolu
+				if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return INTERNAL_ERROR;
+				promena->name = mystrdup(pomToken.value);
+
+				ret = addVarNodeToST(promena , actualST); // v actualSt je bud hlavni tabulka symbolu nebo tanulka funkce ve ktere jsme, tyto veci se preinaji v definici funkce a pri returnu
+				if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
+				else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
+
+
 			}
 
 			result = expr();
@@ -105,7 +117,7 @@ int st_list(){
 				return ERROR_SYN;
 			}
 
-			if ((result = getToken(&token)) != OK) return result;
+			//if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
 
@@ -115,7 +127,7 @@ int st_list(){
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
+				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
 			}
 
@@ -159,6 +171,7 @@ int st_list(){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
 				return ERROR_SYN;
 			}
+			pomToken = token;
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_LBRA){
@@ -172,13 +185,20 @@ int st_list(){
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
+				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\" \n",row);
 				return ERROR_SYN;
 			}
 
 			if ((result = getToken(&token)) != OK) return result;
+			
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
+				
+				//zmenime tabulku symbolu na danou funkci
+				func = findFunctionST(pomToken.value , functionTable);
+				if(func == NULL ) return ERROR_INTER;
+				actualST = func->data->symbolTable;
+
 				result = st_list();
 				if(result != OK ) return result;
 				if ((result = getToken(&token)) != OK) return result;
@@ -198,6 +218,8 @@ int st_list(){
 			result = expr();
 			if(result != OK ) return result;
 
+			//nastavime zpet na hlavni tabulku symbolu.. tu me rekurze nemusi trapit 
+			actualST = symbolTable;
 			return OK;
 			break;
 
@@ -294,7 +316,7 @@ int if_extra(){
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
+				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
 			}
 
@@ -381,11 +403,6 @@ int functionList(){
 	return ERROR_SYN;
 }
 
-int expr(){
-
-	return OK;
-}
-
 
 int functionHeaders(){
 	// funkce implementuje tohle <st-list> → function id ( <functionList> ) pouze zjistujeme hlavicky fci
@@ -403,7 +420,7 @@ int functionHeaders(){
 
 	paramCount = 0;
 
-
+	//pockame az nam  scanner posle tokken FUNCTION popripad pokud neni (uz) zadna definice funkce dostaname EOF a to se vratime 
 	do{
 		if ((result = getFunctionHeader(&token, NEXT_READ)) != OK) return result;
 		if(token.type == S_EOF) return OK;			
@@ -414,7 +431,7 @@ int functionHeaders(){
 	// ocekavame jmeno funkce
 	if (token.type != S_FUNC) return ERROR_SYN;
 
-	//pridame do tabulky funkci novou funkci a vztvorime ji tabulku symbolu
+	//pridame do tabulky funkci novou funkci a vytvorime ji tabulku symbolu
 	if (( funkce = (T_ST_FuncsItem *)malloc (sizeof(T_ST_FuncsItem)))  == NULL) return INTERNAL_ERROR;	
 	ret = addFuncNodeToST(funkce ,functionTable);
 
@@ -439,10 +456,8 @@ int functionHeaders(){
 		funkce->paramCount = paramCount;
 		return OK; 
 	}
-
-
 	
-
+	//funkce ma nejake paramtery
 	while(true){
 		if(token.type != S_ID) return ERROR_SYN;
 
@@ -451,7 +466,7 @@ int functionHeaders(){
 		promena->name = mystrdup(token.value);
 
 		//pridame promenou do tabulky symbolu promenych u funkce
-		ret = addFuncNodeToST(funkce ,functionTable);
+		ret = addVarNodeToST(promena , symboly);
 		if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
 		else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
 
@@ -478,3 +493,7 @@ int functionHeaders(){
 	return OK;
 }
 
+int expr(){
+
+	return OK;
+}
