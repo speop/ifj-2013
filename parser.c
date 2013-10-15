@@ -59,16 +59,21 @@ int st_list(){
 
 	int result;
 	bool pom = false;
+	T_Token pomToken;
 
 	switch (token.type){
 
 		// pravidlo: 2. <st-list> → id <expr> ; <st-list>
+		case S_FUNC:
 		case S_ID: 
 			
 
 			// z duvodu semantiky zkontrolujeme jestli nechceme prirazovat do funkce
+			pomToken = token;
+			if ((result = getToken(&token)) != OK) return result;
+
 			if(token.type == S_IS){
-				if((findFunctionST( ((char*)token.value), functionTable)) != NULL) return SEM_OTHER_ERROR;
+				if(pomToken.type  != S_ID) return SEM_OTHER_ERROR;
 			}
 
 			result = expr();
@@ -144,11 +149,11 @@ int st_list(){
 			return OK;
 			break;
 
-		// pravidlo 6. <st-list> → function id ( <functionList> { <st-list> }
+		// pravidlo 6. <st-list> → function funcId ( <functionList> { <st-list> }
 		case FUNCTION: 
 			
 			if ((result = getToken(&token)) != OK) return result;
-			if(token.type != S_ID){
+			if(token.type != S_FUNC){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
 				return ERROR_SYN;
 			}
