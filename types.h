@@ -86,6 +86,10 @@ typedef enum {
 
 	}TERMINALY;
 
+typedef enum {	NEXT_REAS = 0,
+				CONTINUE_READ = 1,
+}FUn;
+
 typedef struct { int type;
                  void *value;
 } T_Token;
