@@ -28,8 +28,10 @@ int parser(){
 	prevToken = NULL;
 	int result;
 
+
+	result = functionHeaders();
 	if ((result = getToken(&token)) != OK) return result;
-	
+
 	result = program();	
 	return result;
 
@@ -379,8 +381,99 @@ int functionList(){
 	return ERROR_SYN;
 }
 
-
 int expr(){
+
+	return OK;
+}
+
+
+int functionHeaders(){
+	// funkce implementuje tohle <st-list> → function id ( <functionList> ) pouze zjistujeme hlavicky fci
+
+	T_ST_FuncsItem *funkce;
+	T_ST_VarsItem *promena;
+	T_ST_Vars *symboly;
+	int result, paramCount;
+	ReturnCodesST ret;
+
+
+	//scanner nam posle klicove slovo function
+	while(true)
+	{
+
+	paramCount = 0;
+
+
+	do{
+		if ((result = getFunctionHeader(&token, NEXT_READ)) != OK) return result;
+		if(token.type == S_EOF) return OK;			
+	}while(token.type == FUNCTION);
+
+
+	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;	
+	// ocekavame jmeno funkce
+	if (token.type != S_FUNC) return ERROR_SYN;
+
+	//pridame do tabulky funkci novou funkci a vztvorime ji tabulku symbolu
+	if (( funkce = (T_ST_FuncsItem *)malloc (sizeof(T_ST_FuncsItem)))  == NULL) return INTERNAL_ERROR;	
+	ret = addFuncNodeToST(funkce ,functionTable);
+
+	if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
+	else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
+
+	if ((symboly = (T_ST_Vars*) malloc(sizeof(T_ST_Vars)))== NULL ) return INTERNAL_ERROR;
+	varSTInit(symboly);
+	funkce->name = mystrdup(token.value);
+	funkce->symbolTable = symboly;
+	
+
+
+	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
+	if (token.type != S_LBRA) return ERROR_SYN;
+
+	
+	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
+	//zacneme zpracovavat parametry
+	// funkce nema parametr
+	if(token.type == S_RBRA){
+		funkce->paramCount = paramCount;
+		return OK; 
+	}
+
+
+	
+
+	while(true){
+		if(token.type != S_ID) return ERROR_SYN;
+
+		//vytvorime  novou promenou v tabulce symbolu
+		if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return INTERNAL_ERROR;
+		promena->name = mystrdup(token.value);
+
+		//pridame promenou do tabulky symbolu promenych u funkce
+		ret = addFuncNodeToST(funkce ,functionTable);
+		if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
+		else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
+
+		paramCount++;
+
+		if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
+
+		//docetli jsme vsechny parametry
+		if(token.type == S_RBRA) break;
+		else if(token.type!= S_COMMA){
+			fprintf(stderr, "Row: %d, unexpected symbol it should be some \",\" \n",row);
+			return ERROR_SYN;
+		}
+
+		//nacteme si dalsi id a smycku zopakujem
+		if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
+
+	}
+
+	funkce->paramCount = paramCount;
+
+	}
 
 	return OK;
 }
