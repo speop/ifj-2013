@@ -86,7 +86,7 @@ typedef enum {
 
 	}TERMINALY;
 
-typedef enum {	NEXT_REAS = 0,
+typedef enum {	NEXT_READ = 0,
 				CONTINUE_READ = 1,
 }FUn;
 
