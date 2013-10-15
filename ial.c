@@ -341,6 +341,8 @@ bool freeFuncST(void *tree)
 	//existuje levy podstrom
 	if (((T_ST_Funcs*)tree)->left != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->left, LEFT);
 
+	//uvolnime tabulku symbolu dane funkce
+	if(((T_ST_Funcs*)tree)->data->symbolTable != NULL) freeVarST(((T_ST_Funcs*)tree)->data->symbolTable);
 	free(((T_ST_Funcs*)tree)->data);
 	free ((T_ST_Funcs*)tree);
 	return true;
@@ -357,6 +359,8 @@ void freeFuncSTpom(T_ST_Funcs* tree, int smer){
 	if(smer== RIGHT) tree->parrent->right = NULL;
 	else tree->parrent->left = NULL;
 
+	//uvolnime tabulku symbolu dane funkce
+	if(tree->data->symbolTable != NULL)freeVarST((void*)tree->data->symbolTable);
 	free(tree->data);
 	free(tree);
 	return;

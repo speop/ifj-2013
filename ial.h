@@ -26,7 +26,7 @@ typedef struct T_ST_FuncsItem // Hlavicka funkce
 {
 	char *name;
 	int paramCount;
-	T_ST_Vars symbolTable;
+	T_ST_Vars *symbolTable;
 
 }	T_ST_FuncsItem;
 
