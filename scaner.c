@@ -438,3 +438,11 @@ int readNumber(T_Token *token) {
   }
   return S_NUMBER; //DOPLNIT ROZDELENI NA INT, DOUBLE
 }*/
+
+
+char* mystrdup(const char* s)
+{
+    char* p = malloc(strlen(s)+1);
+    if (p) strcpy(p, s);
+    return p;
+}
