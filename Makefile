@@ -35,9 +35,10 @@ main.o:  main.c parser.h
 	#global.h parser.h global.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-main: main.o garbage_collector.o ial.o parser.o scaner.o
+main: main.o garbage_collector.o ial.o parser.o scaner.o 
 #parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o
 	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o scaner.o -o main -lm
+	#
 	#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o -o main -lm
 
 clean:

@@ -7,10 +7,10 @@ E -> E/E
 E -> E-E
 E -> E,E
 E -> f(E)
-E -> i
-E -> int
-E -> double
-E -> bool
-E -> str
-E -> null
+E -> id
+E -> i //int
+E -> d //double
+E -> b //bool
+E -> s //string
+E -> n // null
 

@@ -20,6 +20,7 @@ bool test(void * data);
 
 int main(int argc, char **argv)
 {
+	int result = OK;
 	#if debug
 		printf("\x1B[1;40m================================================\nAhoj! Ja jsem \x1B[1;31m MAX \x1B[37m a jsem spustena v debug modu \n================================================\n\x1B[0;40m");
 		printf("\nBylo zadano: %d parametru\n\n",argc-1);
@@ -40,24 +41,34 @@ int main(int argc, char **argv)
 	garbage_init();
 	void *data;
 
+	// priklad uziti GC
+	data = malloc(sizeof (int));
+	(*(int*)data) = 30;
+	garbage_add(data,&test);
+	
 	data = malloc(sizeof (int));
 	(*(int*)data) = 20;
-	
-	//garbage_add(data,&garbage_default_erase);
-	garbage_add(data,&test);
+	garbage_add(data,&garbage_default_erase);
 
+	garbage_delete_by_pointer(data, FREE_DATA);
+	garbage_delete_by_id(1, FREE_DATA);
+	
+
+	//garbage_add(data,&garbage_default_erase);
+	
 	#if debug 
 		printf("Volam syntakci analyzator: \n");		
 	#endif
-	parser();
+	result = parser();
 
+	
 	
 	
 
 	garbage_empty();
 	fclose(stdout);
 	fclose(pSource_File);
-	return 0;
+	return result;
 	
 }
 
