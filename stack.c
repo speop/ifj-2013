@@ -18,22 +18,15 @@ tStack* SInit(){
 	return stack;
 }
 
-int push(tStack *stack, T_Token data){
+int push(tStack *stack, void* data){
 
-	T_Token *terminal;
 	tStackItem *prvek;
-
-	//alokujeme novy token kam nakopirujeme informace z tokenu co nam prisel
-	if((terminal = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
-
-	terminal->type=data.type;
-	terminal->value = data.value;
 
 	//pridame novy prvek na zasobnik
 	if((prvek = (tStackItem*)malloc(sizeof(tStackItem))) == NULL) return ERROR_INTER;
 	prvek->prev =  NULL;
 	prvek->next = NULL;
-	prvek->data = terminal;
+	prvek->data = data;
 
 	//zasobnik je prazdny
 	if(stack->top == NULL){
@@ -83,23 +76,17 @@ tStackItem *top(tStack *stack){
 }
 
 
-int push_back(tStack *stack, T_Token data){
+int push_back(tStack *stack, void* data){
 
-
-	T_Token *terminal;
 	tStackItem *prvek;
 
-	//alokujeme novy token kam nakopirujeme informace z tokenu co nam prisel
-	if((terminal = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
-
-	terminal->type=data.type;
-	terminal->value = data.value;
+	
 
 	//pridame novy prvek na zasobnik
 	if((prvek = (tStackItem*)malloc(sizeof(tStackItem))) == NULL) return ERROR_INTER;
 	prvek->prev =  NULL;
 	prvek->next = NULL;
-	prvek->data = terminal;
+	prvek->data = data;
 
 	//zasobnik je prazdny
 	if(stack->top == NULL){
