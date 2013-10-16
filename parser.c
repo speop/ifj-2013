@@ -14,6 +14,29 @@ T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
 T_Token token;
 
+//precedenci tabulka				
+static int prtable [17][17] = {
+/*
+				0		1		2		3		4		5		6		7		8		9		10		11		12		13		14		15		16	
+				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  */
+/*  0  + */	{	H,		L,		L,		H,		X,		H,		L,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H},
+/*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H},
+/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		X,		X},
+/*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
+/*  4  = */	{	L,		L,		L,		X,		X,		H,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		H},
+/*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H},
+/*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H},
+/*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H},
+/*  8  , */ {	L,		L,		L,		H,		X,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L,		L,		X},
+/*  9  f */ {	X,		X,		EQ,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X},
+/*  10 id */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
+/*  11  i */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
+/*  12  d */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
+/*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
+/*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X},
+/*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X},
+/*  16  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		X,		X,		X}		
+};
 int parser(){
 
 	//vytvorime inicializujeme a pridame do garbage colloectoru tabulky symbolu

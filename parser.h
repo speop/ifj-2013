@@ -12,5 +12,10 @@ int program();
 
 int expr();
 
-
+typedef enum PREC_SYMBOLY{
+	L = 0, // < nacitame na zasobnik
+	H = 1, // > redujujeme
+	X = 3, // pravidlo neexistuje syntakticka chyba
+	EQ = 4
+}PREC_SYMBOLY;
 #endif
