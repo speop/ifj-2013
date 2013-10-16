@@ -244,6 +244,8 @@ int cond(){
 		case S_NEQ:
 		case S_EQ:
 
+		//bude tu treba pro generovani ass kontrolovat priositu porovnavani
+
 			// tento case zaroven supluje  vsechny comp podminky, takze neni treba psat funkci pro tento neterminal
 
 			if ((result = getToken(&token)) != OK) return result;

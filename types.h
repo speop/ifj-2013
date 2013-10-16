@@ -18,6 +18,8 @@ typedef enum{
 	
 }RETURN_VALUES;
 
+#define preTableOffset = 20;
+
 typedef enum {
 	//KLICOVA SLOVA 
 	ELSE = 0,
@@ -35,32 +37,35 @@ typedef enum {
 
 	//SYMBOLY
 	S_LITERAL = 9,
-	S_LBRA = 10,	// left bracket - (
-	S_RBRA = 11,	// )
+		
+	
 	S_LSBRA = 12,	// [
 	S_RSBRA = 13,	// ]
 	S_EOL = 14,
-	S_DOLAR = 15, //nevim jestli to neni zbytecne
-	S_COMMA = 16,	// ,
+	
 	S_FALSE = 17,
 	S_STR = 18,	// retezec
 	S_COLON = 19,	// :
+	
+	//nasledujici symboly jsou serazenz tak abz jima po odecteni ofsetu se dala adresovat precedencni tabulka
 	S_PLUS = 20,	// +
-	S_MINUS = 21,	// -
-	S_DIV = 22,	// /
-	S_MUL = 23,	// *
-	S_POW = 24,	// mocnina
-	S_EOF = 25,
-	S_IS = 26,	// =
-	S_LEQ = 27, // <=
-	S_LST = 28, // <
-	S_GEQ = 29, // >=
-	S_GRT = 30, // >
-	S_NEQ = 31, // !==
-	S_EQ = 32, // ===
+	S_MUL = 21,		// *
+	S_LBRA = 22,	// left bracket - (
+	S_RBRA = 23,	// )
+	S_IS = 24,	// =
+	S_CONCATENATE = 25, // .
+	S_DIV = 26,	// /
+	S_MINUS = 27,	// -
+	S_COMMA = 28,	// ,
+	S_FUNC = 29, // funkce
+	S_ID = 30,
+	S_INT = 31,
+	S_DOUB = 32,
 	S_BOOL = 33,
-	S_ID = 34,
-	W_RESERVED = 35,
+	S_NULL = 34,
+	S_DOLAR = 35, 	
+	
+
 	TYPS_OEF=36,
 	S_TRUE=37,
 	CUT_L=38,
@@ -69,16 +74,16 @@ typedef enum {
 	S_SEM = 41, // ;
 	S_BLOCK_START = 42,  // {
   	S_BLOCK_END = 43,  // }
-  	
-  	S_CONCATENATE = 45, // .
-  	
-  	 //KOMENTARE
-  	S_BLOCK_COMMENT = 46, // /*
-  	S_END_BLOCK_COMMENT = 47, // */
-  	S_LINE_COMMENT = 48, // //
-  	
-  	S_NUMBER = 49, // cislo
-  	S_FUNC = 50, // funkce
+
+  	S_EOF = 44,	
+	S_LEQ = 45, // <=
+	S_LST = 46, // <
+	S_GEQ = 47, // >=
+	S_GRT = 48, // >
+	S_NEQ = 49, // !==
+	S_EQ = 50, // ===
+	W_RESERVED = 51, // ale tohle netreba posilat, tohle je lexikalni chyba   	
+  	    	
   
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
