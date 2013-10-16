@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "stack.h"
 #include <stdlib.h>
+#include "ial.h"
 
 //funkce vytvori a inicializuje zasobnik, vraci ukazatel na zasobnik
 tStack* SInit(){
@@ -137,7 +138,7 @@ tStackItem* bottom(tStack *stack){
 
 
 
-int empty(tStack *stack){
+int empty(tStack *stack, bool (*function)(void*)){
 
 	tStackItem *temp;
 
@@ -146,17 +147,33 @@ int empty(tStack *stack){
 
 		temp = pop_top(stack);
 		if(temp == NULL) break;
+		function(temp->data);
 		free(temp);
 	}
 
 	return OK;
 }
 
-int delete(tStack *stack){
+int deleteSt(tStack *stack, bool (*function)(void*)){
 	
 	if (stack == NULL) return OK;
 
-	empty(stack);
+	empty(stack, function);
 	free(stack);
 	return OK;
+}
+
+
+// funkce ktere lze pridat do GC ktery je pak zavola na uvolneni pameti, v techto funkcich pak volam delte kde druhy parametr je opet funkce na uvolneni pameti ktera je stejna jak v GC
+bool emptyST(void * data){ 	deleteSt((tStack*)data, &freeVarST); return true;}
+bool emptySTFunc(void * data) { 	deleteSt((tStack*)data, &freeFuncST); return true;}
+bool emptyToken(void * data) { 	deleteSt((tStack*)data, &tokenFree); return true;}
+
+
+//funkce pro dealokaci tokenu
+bool tokenFree(void *token){
+
+	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value );
+	free(token);
+	return true;
 }

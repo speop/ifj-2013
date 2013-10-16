@@ -23,7 +23,17 @@ int push_back(tStack *stack, void* data); //prida prvek na spod zasobniku
 tStackItem* pop_back(tStack *stack);  //odstrani ze spod zasobniku a vrati jej
 tStackItem* bottom(tStack *stack); //vrati prvek ze spod zasobniku
 
-int empty(tStack *stack); //vyprazdni zasobnik
-int delete(tStack *stack); //odstrani zasobnik, pokud nebyl prazdny tak se jeho prvky dealokujou
+// 2. parametr je odkay na funkci ktera vyprazdni interni data
+int empty(tStack *stack, bool (*function)(void*)); //vyprazdni zasobnik
+int deleteSt(tStack *stack, bool (*function)(void*)); //odstrani zasobnik, pokud nebyl prazdny tak se jeho prvky dealokujou
+
+//funcke pro vyprazdeni stacku a jeho dealokaci pro struktury na ktere ho pouzijeme, tyto funkce lze hodit do garbage collectoru
+bool emptySTVar(void *);
+bool emptySTFunc(void *);
+bool emptyToken(void *);
+
+//funkce pro dealokaci tokenu - nebylo ji kam umistit :D
+bool tokenFree(void *);
+
 
 #endif

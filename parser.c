@@ -4,6 +4,7 @@
 #include "ial.h"
 #include "types.h"
 #include "scaner.h"
+#include "stack.h"
 #define debug 1
 
 extern TGarbageList trash; //z main.c
@@ -13,6 +14,7 @@ extern T_Token *prevToken; // z main.c
 T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
 T_Token token;
+tStack *zasobnik;
 
 //precedenci tabulka				
 static int prtable [17][17] = {
@@ -48,7 +50,14 @@ int parser(){
 	functionSTInit(functionTable);
 	garbage_add(functionTable,&freeFuncST);
 
+	//vytvorime zasobik 
+	zasobnik = SInit();
+	garbage_add(zasobnik, &emptyToken);
+
 	prevToken = NULL;
+	token.value = NULL;
+
+
 	int result;
 
 
@@ -518,7 +527,62 @@ int functionHeaders(){
 	return OK;
 }
 
+
+//precedenci analyza
 int expr(){
 
+	//((int)pomItem->)->data
+	//(T_Token*)(pomItem->data)->type
+
+	//(((int)((T_Token*)pomItem)->data)->type
+
+
+	tStackItem *pomItem;
+	int radek, sloupec;
+
+	//nahrajeme dolar mame prazdny zasobnik
+	T_Token *exprToken;
+	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
+	
+
+	exprToken->type = S_DOLAR;
+	if((push(zasobnik, exprToken)) != OK ) return ERROR_INTER;
+
+	//tabulka -radek  co je na zasobniku, sloupec prichozi token
+
+	do{	
+		//zkontrolujeme si co mame delat na zaklade precedenci tabulky	
+		pomItem = top(zasobnik);
+		radek = (((T_Token*)(pomItem)->data)->type) - 20;
+		sloupec = (token.type) - 20;
+			
+		// nacitame na zasobnik
+		if(prtable[radek][sloupec] == L){
+
+			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
+
+			//pri puvodnim vytvoreni tokenu nebo vzdy pri zpracovani dat z neho se nahraje na ukazatel ukazujici na data NULL
+			if(token.value != NULL){
+
+				/*switch(token.type){
+					case S_STR:
+
+				}*/
+			}
+
+		}
+		// syntakticka chyba
+		else if (prtable[radek][sloupec] == X){
+			fprintf(stderr, "Row: %d, syntax error\n",row );
+			return ERROR_SYN;
+
+		}
+
+		//redukujeme
+		else if (prtable[radek][sloupec] == H){
+		}
+		else return ERROR_INTER;
+
+	}while(true);
 	return OK;
 }
