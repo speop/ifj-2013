@@ -283,6 +283,7 @@ int getToken(T_Token *token)
 
 int getFunctionHeader(T_Token* , FUn)
 {
+  // zkouska
   /* I am iron man! */
 	scanned = fgetc(pSource_File);
 
