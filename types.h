@@ -82,7 +82,9 @@ typedef enum {
 	S_GRT = 48, // >
 	S_NEQ = 49, // !==
 	S_EQ = 50, // ===
-	W_RESERVED = 51, // ale tohle netreba posilat, tohle je lexikalni chyba   	
+	W_RESERVED = 51, // ale tohle netreba posilat, tohle je lexikalni chyba 
+
+	S_E = 52, //neterminial E pro precedenci tabulku  	
   	    	
   
 	L_PARSE_ERROR = 70,
