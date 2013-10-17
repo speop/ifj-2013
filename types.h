@@ -44,7 +44,7 @@ typedef enum {
 	S_EOL = 14,
 	
 	S_FALSE = 17,
-	S_STR = 18,	// retezec
+	
 	S_COLON = 19,	// :
 	
 	//nasledujici symboly jsou serazenz tak abz jima po odecteni ofsetu se dala adresovat precedencni tabulka
@@ -62,11 +62,12 @@ typedef enum {
 	S_INT = 31,
 	S_DOUB = 32,
 	S_BOOL = 33,
-	S_NULL = 34,
-	S_DOLAR = 35, 	
+	S_NULL = 34
+	S_STR = 35,	// retezec
+	S_DOLAR = 36, 	
 	//konec, u tohle bloku co byl se nesmi zmenit cisla
 
-	TYPS_OEF=36,
+	
 	S_TRUE=37,
 	CUT_L=38,
 	CUT_R=39,
@@ -74,6 +75,8 @@ typedef enum {
 	S_SEM = 41, // ;
 	S_BLOCK_START = 42,  // {
   	S_BLOCK_END = 43,  // }
+
+
 
   	S_EOF = 44,	
 	S_LEQ = 45, // <=
@@ -83,8 +86,9 @@ typedef enum {
 	S_NEQ = 49, // !==
 	S_EQ = 50, // ===
 	W_RESERVED = 51, // ale tohle netreba posilat, tohle je lexikalni chyba 
+	TYPS_OEF=52,
 
-	S_E = 52, //neterminial E pro precedenci tabulku  	
+	S_E = 53, //neterminial E pro precedenci tabulku  	
   	    	
   
 	L_PARSE_ERROR = 70,
