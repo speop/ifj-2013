@@ -88,7 +88,10 @@ typedef enum {
 	W_RESERVED = 51, // ale tohle netreba posilat, tohle je lexikalni chyba 
 	TYPS_OEF=52,
 
-	S_E = 53, //neterminial E pro precedenci tabulku  	
+	S_E = 53, //neterminial E pro precedenci tabulku  
+	
+	S_NUM = 54,
+	S_EXP = 55,
   	    	
   
 	L_PARSE_ERROR = 70,
