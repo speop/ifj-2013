@@ -222,7 +222,9 @@ int getToken(T_Token *token)
     
         case '\t': //tabulator
         case '\v': //vertical space
-        //case ' ': //obycejna mezera
+        // hazi to chybu 
+        //case ' ': //obycejna mezera 
+        
         case '\n':
             row++;
             continue;
