@@ -49,8 +49,8 @@ const int ASCII_a_TO_HEX=87;
 //prechod do noveho stavu
 /*int next( int newst )
 {
-    state = newst;
-    return fgetc(file);
+state = newst;
+return fgetc(file);
 }*/
 
 
@@ -75,14 +75,16 @@ int getToken(T_Token *token)
 
     // slozitejsi podminky se vezmou pres if tam kde zalezi jen na jednom znaku se pouzije switch
     if (scanned >= '0' && scanned <= '9'){
-        result = readNumber(&token);
-        return result;
+        token->type = S_INT;
+        return OK;
+        //result = readNumber(&token);
+        //return result;
     }
     else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || scanned == '_'){
         token->type = S_FUNC;
         return OK;
         /*result = readWord(&token);
-        return result;*/
+return result;*/
     }
 
     else{
@@ -225,53 +227,145 @@ int getToken(T_Token *token)
             row++;
             continue;
 
-	case '=':
-		
-		scanned = fgetc(pSource_File);
-		if(scanned == '='){
-                	if(scanned == '='){
-				token->type = S_EQ;
-				return OK;
-			}
-				
-			else
-				fprintf(stderr, "Lexikalni chyba porovnavani je ===.\n");
-				return ERROR_LEX;
-				
-             	}
-             	else
-			fprintf(stderr, "Lexikalni chyba porovnavani je ===.\n");
-			return ERROR_LEX;
-			
+        case '=':
+                
+                scanned = fgetc(pSource_File);
+                if(scanned == '='){
+                        if(scanned == '='){
+                                token->type = S_EQ;
+                                return OK;
+                        }
+                                
+                        else{
+                                fprintf(stderr, "Lexikalni chyba porovnavani je ===.\n");
+                                return ERROR_LEX;
+                        }        
+                     }
+                     else{
+                        fprintf(stderr, "Lexikalni chyba porovnavani je ===.\n");
+                        return ERROR_LEX;
+                     }   
             
-	token->type = S_IS;
+        token->type = S_IS;
         fseek(pSource_File, -1,SEEK_CUR); // nacetli jsme znak ktery pozdeji muzeme potrebovat
         return OK;
-		
-	case '!':
-		
-		scanned = fgetc(pSource_File);
-		if(scanned == '='){
-                	if(scanned == '='){
-				token->type = S_NEQ;
-				return OK;
-			}
-				
-			else
-				fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
-				return ERROR_LEX;
-				
-             	}
-             	else
-				fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
-				return ERROR_LEX;
-					
+                
+        case '!':
+                
+                scanned = fgetc(pSource_File);
+                if(scanned == '='){
+                        if(scanned == '='){
+                                token->type = S_NEQ;
+                                return OK;
+                        }
+                                
+                        else{
+                                fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
+                                return ERROR_LEX;
+                        }        
+                     }
+                     else{
+                                fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
+                                return ERROR_LEX;
+                     }                   
             
-	fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
-	return ERROR_LEX;
-		
-		
-        default: return ERROR_LEX;
+        fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
+        return ERROR_LEX;
+                
+                
+
+case S_INT:
+{
+  scanned = fgetc(pSource_File);
+
+    //cele cislo
+    if (scanned >= '0' && scanned <= '9'){
+      token->type = S_INT;
+      return OK;
+    }
+
+    // narazime na tecku == jde o double
+    else if (scanned == '.')
+    {
+      token->type = S_DOUB;
+      return OK;
+    }
+
+    //narazim na e nebo E == jde o exponent
+    else if ((scanned == 'e') || (scanned == 'E'))
+    {
+      token->type = S_EXP
+    }
+
+    //neco jineho tak chyba
+    else{
+       fprintf(stderr, "Lexikalni chyba s cislem.\n");
+        return ERROR_LEX;
+    }
+  break;
+}
+
+case S_DOUB:
+{
+  scanned = fgetc(pSource_File);
+    
+    //cislo
+    if ( scanned >= '0' && scanned <= '9')
+    {
+      token->type = S_DOUB;
+      return OK;
+    }
+
+    //exponent
+    else if ((scanned == 'e') || (scanned == 'E'))
+    {
+      token->type = S_EXP;
+      return OK;
+    }
+
+    //neco jineho tak chyba
+     else{
+       fprintf(stderr, "Lexikalni chyba s doub. cislem.\n");
+        return ERROR_LEX;
+    }
+
+  break;
+}
+
+case S_EXP:
+{
+  scanned = fgetc(pSource_File);
+
+    if ((scanned == '-') || (scanned == '+'))
+    {
+      if ( scanned >= '0' && scanned <= '9')
+      {
+        token->type = S_EXP;
+        return 0;
+      }
+
+      else{
+        fprintf(stderr, "Lexikalni chyba s exp. cislem.\n");
+        return ERROR_LEX;
+      }
+
+      else if ( scanned >= '0' && scanned <= '9')
+      {
+        token->type = S_EXP;
+        return OK;
+        
+      }
+
+      else{
+        fprintf(stderr, "Lexikalni chyba s exp. cislem.\n");
+        return ERROR_LEX;
+      }
+      
+  break;
+    }
+}
+
+      default: return ERROR_LEX;
       }
     }
 
@@ -281,60 +375,7 @@ int getToken(T_Token *token)
   return OK;
 }
 
-int getFunctionHeader(T_Token* , FUn)
-{
-  // zkouska
-  /* I am iron man! */
-	scanned = fgetc(pSource_File);
 
-}
-
-//tu je konec funkce get token ten zblitek predelat do switche podle prikladu vyse
-
-// if (inSTring == 1) readString(&token);
-
-
-/*
-}
-else if (scanned == '=') {
-  scanned == //CTENI DALSIHO ZNAKU
-  if (scanned == '=') {
-    scanned == //CTENI DALSIHO ZNAKU
-    if (scanned == '=') {
-      token.type = S_EQ; // ===
-    }
-    else {
-      //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-      token.type = //CHYBA;
-    }
-  }
-  else {
-    //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    token.type = S_IS; // =
-  }
-}
-else if (scanned == '!') {
-  scanned = //CTENI DLASIHO ZNAKU
-  if (scanned == '=') {
-    scanned == //CTENI DALSIHO ZNAKU
-    if (scanned == '=') {
-      token.type = S_NEQ; // !==
-    }
-    //tuhle cast jsem neopravil nerozumim ji
-    else {
-      //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-      return //CHYBA;
-    }
-  }
-  else {
-    //ULOZENI SCANNED DO STRUKTURY K PREVIOUSLY READ
-    return //CHYBA;
-  }
-}
-else return ERROR_LEX;
-
-return token;
-}
 
 //==========================================================================================================
 
@@ -343,108 +384,109 @@ return token;
 // token.type = S_STR;
 // token.value = malloc(sizeof(char * DELKA));
 // samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat ((char*)token->value)
+/*
 int readString(T_Token *token) {
-  inString = 1;
-  //ZACATEK SMYCKY
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '"') {
-    inString = 0;
-    return S_STR;
-  }
-  else if (scanned == '$') {
-    nextToken = S_CONCATENATE;
-    return S_STR;
-  }
-  else if (scanned == '\\' ) {
-    scanned = //CTENI DLASIHO ZNAKU;
-    if (scanned == 'x') {
-      nextChar = 0;
-      for (i = 0; i < 2; i++) {
-        s = //CTENI DLASIHO ZNAKU;
-        if (s1 >= 'A' && s1 <= 'F') {
-          nextChar += s1 - ASCII_A_TO_HEX;
-        }
-        else if (s1 >= 'a' && s1 <= 'f') {
-          nextChar += s1 - ASCII_a_TO_HEX;
-        }
-      }
+inString = 1;
+//ZACATEK SMYCKY
+scanned = //CTENI DALSIHO ZNAKU;
+if (scanned == '"') {
+inString = 0;
+return S_STR;
+}
+else if (scanned == '$') {
+nextToken = S_CONCATENATE;
+return S_STR;
+}
+else if (scanned == '\\' ) {
+scanned = //CTENI DLASIHO ZNAKU;
+if (scanned == 'x') {
+nextChar = 0;
+for (i = 0; i < 2; i++) {
+s = //CTENI DLASIHO ZNAKU;
+if (s1 >= 'A' && s1 <= 'F') {
+nextChar += s1 - ASCII_A_TO_HEX;
+}
+else if (s1 >= 'a' && s1 <= 'f') {
+nextChar += s1 - ASCII_a_TO_HEX;
+}
+}
 
-      string //PRIDAT NEXTCHAR;
+string //PRIDAT NEXTCHAR;
 
-    }
-    else if (scanned == '$') {
-      string //PRIDAT $;
-    }
-    else if (scanned == 'n') {
-      string //PRIDAT \n;
-    }
-    else if (scanned == 't') {
-      string //PRIDAT \t;
-    }
-    else if (scanned == '\\') {
-      string //PRIDAT \;
-    }
-    else if (scanned == '"') {
-      string //PRIDAT ";
-    }
-  }
-  else if (scanned == ' ') {
-    string //PRIDAT MEZERU;
-  }
-  else if (scanned > 31) {
-    string //PRIDAT scanned;
-  }
-  //SMYCKOVAT
-  return S_STR;
+}
+else if (scanned == '$') {
+string //PRIDAT $;
+}
+else if (scanned == 'n') {
+string //PRIDAT \n;
+}
+else if (scanned == 't') {
+string //PRIDAT \t;
+}
+else if (scanned == '\\') {
+string //PRIDAT \;
+}
+else if (scanned == '"') {
+string //PRIDAT ";
+}
+}
+else if (scanned == ' ') {
+string //PRIDAT MEZERU;
+}
+else if (scanned > 31) {
+string //PRIDAT scanned;
+}
+//SMYCKOVAT
+return S_STR;
 }
 
 //==========================================================================================================
 //info viz string
 int readNumber(T_Token *token) {
-  decimal = 10;
-  exp = 0;
-  expM = 1;
-  n = firstNum; //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
-  num = n - ASCII_ZERO;
-  //ZACATEK SMYCKY
-  n = //CTENI DALSIHO ZNAKU;
-  if (exp == 1) {
-    if (n == '+') {
-      expM = 1;
-    }
-    else if (n == '-') {
-      expM == -1;
-    }
-    else if (n >= '0' && n <= '9') {
-      exp *= 10;
-      exp += n - ASCII_ZERO;
-    }
-    else if (n != //BILY ZNAK) {
-      return //CHYBA;
-    }
-    else {
-      exp *= expM;
-      //PRIDANI EXPONENTU
-    }
-  }
-  else {
-    if (n >= '0' && n <= '9') {
-      num *= 10;
-      num += n - ASCII_ZERO;
-    }
-    else if (n == '.') {
-      n = n / decimal;
-      num += n;
-      decimal *= 10;
-    }
-    else if (n == 'e' || n == 'E') {
-      exp = 1;
-    }
-    else {
-      return //CHYBA;
-    }
-  }
-  return S_NUMBER; //DOPLNIT ROZDELENI NA INT, DOUBLE
+decimal = 10;
+exp = 0;
+expM = 1;
+n = firstNum; //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
+num = n - ASCII_ZERO;
+//ZACATEK SMYCKY
+n = //CTENI DALSIHO ZNAKU;
+if (exp == 1) {
+if (n == '+') {
+expM = 1;
+}
+else if (n == '-') {
+expM == -1;
+}
+else if (n >= '0' && n <= '9') {
+exp *= 10;
+exp += n - ASCII_ZERO;
+}
+else if (n != //BILY ZNAK) {
+return //CHYBA;
+}
+else {
+exp *= expM;
+//PRIDANI EXPONENTU
+}
+}
+else {
+if (n >= '0' && n <= '9') {
+num *= 10;
+num += n - ASCII_ZERO;
+}
+else if (n == '.') {
+n = n / decimal;
+num += n;
+decimal *= 10;
+}
+else if (n == 'e' || n == 'E') {
+exp = 1;
+}
+else {
+return //CHYBA;
+}
+}
+return S_NUMBER; //DOPLNIT ROZDELENI NA INT, DOUBLE
 }*/
 
 
