@@ -179,7 +179,7 @@ int getToken(T_Token *token)
             if (scanned == '?'){
               //zkontrolujeme jestli se pred startujicim terminalem nenachazi zadne znaky
                fseek(pSource_File, -2,SEEK_CUR);
-               if(tell(pSource_File) != SEEK_SET ){
+               if(ftell(pSource_File) != SEEK_SET ){
                   fprintf(stderr, "Uexpected symbols at the begining of file.\n");
                   return ERROR_SYN;
                }
