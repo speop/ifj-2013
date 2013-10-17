@@ -62,7 +62,7 @@ typedef enum {
 	S_INT = 31,
 	S_DOUB = 32,
 	S_BOOL = 33,
-	S_NULL = 34
+	S_NULL = 34,
 	S_STR = 35,	// retezec
 	S_DOLAR = 36, 	
 	//konec, u tohle bloku co byl se nesmi zmenit cisla

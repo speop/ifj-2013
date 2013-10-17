@@ -6,6 +6,7 @@
 #include "scaner.h"
 #include "stack.h"
 #define debug 1
+#define POLE 17
 
 extern TGarbageList trash; //z main.c
 extern int row; // z main.c
@@ -17,7 +18,7 @@ T_Token token;
 tStack *zasobnik;
 
 //precedenci tabulka				
-static int prtable [17][17] = {
+static int prtable [POLE][POLE] = {
 /*
 				0		1		2		3		4		5		6		7		8		9		10		11		12		13		14		15		16	
 				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  */
@@ -37,7 +38,7 @@ static int prtable [17][17] = {
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
 /*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X},
 /*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X},
-/*  16  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		X,		X,		X}		
+/*  16  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X}		
 };
 int parser(){
 
@@ -540,11 +541,10 @@ int expr(){
 	tStackItem *pomItem;
 	int radek, sloupec;
 	char *retezec;
-
-	//nahrajeme dolar mame prazdny zasobnik
-	T_Token *exprToken;
+	bool ukoncovac;
+	T_Token *exprToken, exprTempToken;
 	
-
+	//nahrajeme dolar mame prazdny zasobnik
 	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 	exprToken->type = S_DOLAR;
 	if((push(zasobnik, exprToken)) != OK ) return ERROR_INTER;
@@ -554,13 +554,33 @@ int expr(){
 	do{	
 		//zkontrolujeme si co mame delat na zaklade precedenci tabulky	
 		pomItem = top(zasobnik);
+		//jelikoz na vrcholu zasobniku muze byt neterrminal E, ktery je fyzicky reprzentovan jako token jehoz typ je E, ve skutecnosti bude stacit sebrat jen ten dalsi co je pod nim ale radeji to udelam obecne
+		while((((T_Token*)(pomItem)->data)->type) == S_E)	pomItem = pomItem->prev;
+
+
 		radek = (((T_Token*)(pomItem)->data)->type) - 20;
 		sloupec = (token.type) - 20;
+		
+		//pokud nahodou se objevil token ktery nema co v zasobniku delat nebo prijde na vstup, tak skocim mimo velikost pole coz je szyntakticka chyba
+		if(radek< 0 || radek > (POLE - 1)  ){
+			fprintf(stderr,"Row %d, unexpected symbol\n",row );
+			return ERROR_SYN; 
+		}
+
+		//jedna se uz o jiny neterminal takze konec vstupu expru 
+		if(sloupec < 0 || sloupec > (POLE - 1)  ){
+			// zalohujeme si token
+			exprTempToken.type = token.type;
+			exprTempToken.value = token.value;
+			token.type = S_DOLAR;
+			sloupec = POLE - 1;
+		}
+		
 			
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 
-			//nahrajeme mensitko na stack
+		 	//nahrajeme mensitko na stack
 			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			exprToken->value = NULL;
 			exprToken->type = L;
@@ -598,7 +618,7 @@ int expr(){
 				}
 
 				free(token.value);
-				//token.value ==  NULL; //nevim jestli free nastavi na NULL				
+				token.value =  NULL; 				
 			}
 			else exprToken->value = NULL;
 			//zkopirujeme typ do nami vytvoreneho tokenu
@@ -621,19 +641,159 @@ int expr(){
 		//redukujeme
 		else if (prtable[radek][sloupec] == H){
 
+		   do{ // ve smycce abychom pri dolaru sjeli cely zasobnik, neocekavame zaden vstup
+		   	ukoncovac = false; // nastavi si ho dolar na true takze se pojede znova
+			if(token.type == S_DOLAR) ukoncovac = true; 
+
 			//redukujeme tak ze budeme postupne brat tokeny ze zasobniku a zezadu budeme porovnavat s pravidlem dokud nenarazime
 			// na mensitko, pokud bude porad se nam v nekter fazi stane ze uz nemuzeme  pokracovat a nemame mensitko je to syntax error
 			pomItem = pop_top(zasobnik);
-			do{
+			
+			//je tu treba hodit smycku ktera se postara ze se to vycisti pri dolaru
+			switch(((T_Token*)(pomItem)->data)->type){
 
-				/*switch(((T_Token*)(pomItem)->data)->type){
+				//pravidla 10. E -> id, 11. E -> i //int, 12. E -> d //double, 13. E -> b //bool, 14. E -> s //string, 15. E -> n // null
+				case S_ID:
+				case S_INT:
+				case S_DOUB:
+				case S_BOOL:
+				case S_STR: 
+				case S_NULL:
+					//todo: pred uvolnenim tokenu ho nahrat do ASS
 
-					case  
-				} */
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
+
+					if((((T_Token*)(pomItem)->data)->type) != L) {
+						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+						return ERROR_SYN;
+					}
+
+					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
+					((T_Token*)(pomItem)->data)->type= S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
+					break;
+
+				//pravidla 3. E -> (E), 9. E -> f(E)
+				case S_RBRA:
+					//todo: pred uvolnenim tokenu ho nahrat do ASS
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = pop_top(zasobnik); 
+
+					if((((T_Token*)(pomItem)->data)->type) != S_E) {
+						tokenFree (((T_Token*)(pomItem)->data));
+						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+						return ERROR_SYN;
+					}
+
+					//todo: pred uvolnenim tokenu ho nahrat do ASS
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = pop_top(zasobnik); 
+
+					if((((T_Token*)(pomItem)->data)->type) != S_RBRA){
+						tokenFree (((T_Token*)(pomItem)->data));
+						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+						return ERROR_SYN;
+					}
+
+
+					//todo: pred uvolnenim tokenu ho nahrat do ASS
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = pop_top(zasobnik); 
+
+					// pravidlo 3. E -> (E)
+					if((((T_Token*)(pomItem)->data)->type)== L){
+						if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
+						((T_Token*)(pomItem)->data)->type = S_E;
+						if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free(exprToken);return ERROR_INTER;}
+
+						break;
+					}
+					//dale pokracuje pravidlo 9. E -> f(E)
+					else if((((T_Token*)(pomItem)->data)->type) != S_FUNC) {
+						tokenFree (((T_Token*)(pomItem)->data));
+						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+						return ERROR_SYN;
+					}
+
+					
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
+
+					if((((T_Token*)(pomItem)->data)->type) != L) {
+						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+						return ERROR_SYN;
+					}
+
+					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
+					((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
+					break;
+
+
+				case S_E:
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = pop_top(zasobnik); 
+
+					switch(((T_Token*)(pomItem)->data)->type){
+
+							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E
+							case S_PLUS:
+							case S_MUL:
+							case S_CONCATENATE:
+							case S_DIV:
+							case S_COMMA:
+									break;									
+
+							//pravidlo 4. E ->  = E  
+							case S_IS:
+									tokenFree (((T_Token*)(pomItem)->data));
+									pomItem = pop_top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
+
+									if((((T_Token*)(pomItem)->data)->type) != S_DOLAR) {
+										fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+										return ERROR_SYN;
+									}
+
+									tokenFree (((T_Token*)(pomItem)->data));
+									if (zasobnik->top != NULL)	return ERROR_INTER;
+
+							// stav zasobniku by mel byt $E
+							case S_DOLAR:
+								if(token.type == S_DOLAR){
+									//vratime si zpet co bylo v tokenu nez jsme ho prehrali dolarem
+									token.type = exprTempToken.type;
+									token.value = exprTempToken.value;
+									tokenFree (((T_Token*)(pomItem)->data));
+									return OK;
+								}
+
+								//dle pravidel a kosntrukce muzu mit na stacku $= nebo $( pak se tam neco muze nahrat takze muzu s jistotou prohlasit ze se jedna o syntax error
+								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+								return ERROR_SYN;
+
+							default: 
+								tokenFree (((T_Token*)(pomItem)->data));
+								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+								return ERROR_SYN;
+					}
+
+					tokenFree (((T_Token*)(pomItem)->data));
+					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
+
+					if((((T_Token*)(pomItem)->data)->type) != L) {
+							fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+							return ERROR_SYN;
+					}
+
+					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
+					((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
+					break;
+
+
+			} 
 
 
 			pomItem = pop_top(zasobnik);	
-			}while((((T_Token*)(pomItem)->data)->type) != L);
+		  }while(ukoncovac);
 
 
 		}

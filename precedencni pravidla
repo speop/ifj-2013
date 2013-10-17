@@ -1,7 +1,7 @@
 E -> E+E
 E -> E*E
 E -> (E)
-E -> E = E
+E ->  = E // ocekavam uz prazdy zasobnik
 E -> E.E
 E -> E/E
 E -> E-E
