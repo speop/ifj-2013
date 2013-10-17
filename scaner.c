@@ -281,6 +281,12 @@ int getToken(T_Token *token)
   return OK;
 }
 
+int getFunctionHeader(T_Token* , FUn)
+{
+	scanned = fgetc(pSource_File);
+
+}
+
 //tu je konec funkce get token ten zblitek predelat do switche podle prikladu vyse
 
 // if (inSTring == 1) readString(&token);
