@@ -539,12 +539,13 @@ int expr(){
 
 	tStackItem *pomItem;
 	int radek, sloupec;
+	char *retezec;
 
 	//nahrajeme dolar mame prazdny zasobnik
 	T_Token *exprToken;
-	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 	
 
+	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 	exprToken->type = S_DOLAR;
 	if((push(zasobnik, exprToken)) != OK ) return ERROR_INTER;
 
@@ -559,17 +560,56 @@ int expr(){
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 
+			//nahrajeme mensitko na stack
+			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
+			exprToken->value = NULL;
+			exprToken->type = L;
+			if((push(zasobnik, exprToken)) != OK ) {free(exprToken);return ERROR_INTER;}
+
+			//vytvareni si noveho tokenu je z duvodu ze pri returnu s chybou a naslednme uvolnovani pameti bychom mohli uvolnovat znova stejny token
+			//coz by hodilo segfault, nepomuze ani nastavit pointer pak na NULL, jelikoz v garbage collectoru by ten pointer NULL nebyl
 			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 
 			//pri puvodnim vytvoreni tokenu nebo vzdy pri zpracovani dat z neho se nahraje na ukazatel ukazujici na data NULL
+			//zkopirujeme si data
 			if(token.value != NULL){
 
-				/*switch(token.type){
+				switch(token.type){
 					case S_STR:
+							 	retezec = mystrdup((char*)token.value);
+							 	exprToken->value = retezec;
+							 	break;
 
-				}*/
+					case S_INT:
+								exprToken->value = malloc(sizeof(int));
+								*(int*)exprToken->value = *(int*)token.value;
+								break;
+
+					case S_DOUB:
+								exprToken->value = malloc(sizeof(double));
+								*(double*)exprToken->value = *(double*)token.value;
+								break;
+
+				}
+
+				if(exprToken->value == NULL){
+						free(exprToken);
+						return ERROR_INTER;
+				}
+
+				free(token.value);
+				//token.value ==  NULL; //nevim jestli free nastavi na NULL				
 			}
+			else exprToken->value = NULL;
+			//zkopirujeme typ do nami vytvoreneho tokenu
+			exprToken->type= token.type;
 
+			//pushneme nami nove vytvoreny token na zasobnik
+			if((push(zasobnik, exprToken)) != OK ) {
+					if(exprToken->value != NULL) free(exprToken->value);
+					free(exprToken); 
+					return ERROR_INTER;
+			}
 		}
 		// syntakticka chyba
 		else if (prtable[radek][sloupec] == X){
@@ -580,7 +620,24 @@ int expr(){
 
 		//redukujeme
 		else if (prtable[radek][sloupec] == H){
+
+			//redukujeme tak ze budeme postupne brat tokeny ze zasobniku a zezadu budeme porovnavat s pravidlem dokud nenarazime
+			// na mensitko, pokud bude porad se nam v nekter fazi stane ze uz nemuzeme  pokracovat a nemame mensitko je to syntax error
+			pomItem = pop_top(zasobnik);
+			do{
+
+				/*switch(((T_Token*)(pomItem)->data)->type){
+
+					case  
+				} */
+
+
+			pomItem = pop_top(zasobnik);	
+			}while((((T_Token*)(pomItem)->data)->type) != L);
+
+
 		}
+
 		else return ERROR_INTER;
 
 	}while(true);
