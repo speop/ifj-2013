@@ -17,7 +17,8 @@ T_ST_Funcs *functionTable;
 T_Token token;
 tStack *zasobnik;
 
-//precedenci tabulka				
+//precedenci tabulka
+// TODO: dle zadani doplnit priority do tabulky					
 static int prtable [POLE][POLE] = {
 /*
 				0		1		2		3		4		5		6		7		8		9		10		11		12		13		14		15		16	
@@ -140,6 +141,7 @@ int st_list(){
 		// pravidlo 5. <st-list> → while ( <expr> <cond> { <st-list> }
 		case WHILE: pom = false;
 		// pravidlo 4. <st-list> → if ( <expr> <cond> { <st-list> } <if-extra>
+		//edited cele v zavorce je expr
 		case IF: 
 
 			if(token.type == IF) pom = true;
@@ -153,10 +155,19 @@ int st_list(){
 			//if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
+		
+		
+			if(token.type != S_RBRA ){
+				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
+				return ERROR_SYN;
+			}
 
+			/*
 			if ((result = getToken(&token)) != OK) return result;
 			result = cond();
-			if(result != OK ) return result;
+			if(result != OK ) return result; 
+			*/ 
+			
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
@@ -344,10 +355,16 @@ int if_extra(){
 			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
-
+			
+			if(token.type != S_RBRA ){
+				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
+				return ERROR_SYN;
+			}
+	
+			/*
 			if ((result = getToken(&token)) != OK) return result;
 			result = cond();
-			if(result != OK ) return result;
+			if(result != OK ) return result; */
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
@@ -537,18 +554,26 @@ int expr(){
 
 	//(((int)((T_Token*)pomItem)->data)->type
 
-
+	int porovnavani = 0; // promena ktera mi zaruci ze budu porovnavat jen kdyz muzu, kazde pushnuti funkce  nebo = ji inkrementuje, kazde popnuti dekremenutuje,
+						 // avsak pokud je prazdny zasobnik  tak se vracim tak mi je jedno ze se to dekrementuje na 0
+	
 	tStackItem *pomItem;
 	int radek, sloupec;
 	char *retezec;
 	bool ukoncovac;
 	T_Token *exprToken, exprTempToken;
 	
+
+	
 	//nahrajeme dolar mame prazdny zasobnik
 	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 	exprToken->type = S_DOLAR;
 	if((push(zasobnik, exprToken)) != OK ) return ERROR_INTER;
 
+	//jestli pporovnavat povolene jset, povime promene ctene
+	if(token.type == S_FUNC) porovnavani++; // pri function(...) nemuze byt jiz nikde porovnavani
+	
+	
 	//tabulka -radek  co je na zasobniku, sloupec prichozi token
 
 	do{	
@@ -579,7 +604,9 @@ int expr(){
 			
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
-
+			//mame nahravat tak si pro jistotu ykontrolujem jelikoz = muze byt nahrano jen  za stavu $ E =
+			
+			
 		 	//nahrajeme mensitko na stack
 			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			exprToken->value = NULL;
@@ -735,15 +762,21 @@ int expr(){
 
 					switch(((T_Token*)(pomItem)->data)->type){
 
-							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E
+							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E, 16. E -> E <= E, 17. E -> E < E, 18. E -> E >= E, 19. E -> E > E, 20. E -> E !== E, 21. E -> E === E
 							case S_PLUS:
 							case S_MUL:
 							case S_CONCATENATE:
 							case S_DIV:
 							case S_COMMA:
+							case S_LEQ:
+							case S_LST:
+							case S_GEQ:
+							case S_GRT:
+							case S_NEQ:
+							case S_EQ: 
 									break;									
 
-							//pravidlo 4. E ->  = E  
+							//pravidlo 4. E ->  = E 
 							case S_IS:
 									tokenFree (((T_Token*)(pomItem)->data));
 									pomItem = pop_top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data

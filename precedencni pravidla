@@ -13,4 +13,10 @@ E -> d //double
 E -> b //bool
 E -> s //string
 E -> n // null
+E -> E <= E
+E -> E < E
+E -> E >= E
+E -> E > E
+E -> E !== E
+E -> E === E
 
