@@ -279,79 +279,84 @@ int getToken(T_Token *token)
 
 
 
-/*
-int getFunctionHeader(T_Token* , FUn)
+case S_STR:
 {
-  // zkouska
-	scanned = fgetc(pSource_File);
+    scanned = fgetc(pSource_File);
 
-}
-*/
-
-//==========================================================================================================
-
-
-// je super ze mi vracite ze se jedna o retezec ale jaksik potrebuju vedet jeho hodnotu tzn.
-// token.type = S_STR;
-// token.value = malloc(sizeof(char * DELKA));
-// samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat ((char*)token->value)
-/*int readString(T_Token *token) {
-  inString = 1;
-  //ZACATEK SMYCKY
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '"') {
-    inString = 0;
-    return S_STR;
-  }
-  else if (scanned == '$') {
-    nextToken = S_CONCATENATE;
-    return S_STR;
-  }
-  else if (scanned == '\\' ) {
-    scanned = //CTENI DLASIHO ZNAKU;
-    if (scanned == 'x') {
-      nextChar = 0;
-      for (i = 0; i < 2; i++) {
-        s = //CTENI DLASIHO ZNAKU;
-        if (s1 >= 'A' && s1 <= 'F') {
-          nextChar += s1 - ASCII_A_TO_HEX;
-        }
-        else if (s1 >= 'a' && s1 <= 'f') {
-          nextChar += s1 - ASCII_a_TO_HEX;
-        }
+      if(scanned == EOF){
+        token->type = S_EOF;
+        fprintf(stderr, "Lexikalni chyba v stringu \n");
+        return ERROR_LEX;
       }
 
-      string //PRIDAT NEXTCHAR;
+      //prazdny retezec
+      else if (scanned == '"'){
+        token->type = S_STR;
+        return OK;
+      }
 
-    }
-    else if (scanned == '$') {
-      string //PRIDAT $;
-    }
-    else if (scanned == 'n') {
-      string //PRIDAT \n;
-    }
-    else if (scanned == 't') {
-      string //PRIDAT \t;
-    }
-    else if (scanned == '\\') {
-      string //PRIDAT \;
-    }
-    else if (scanned == '"') {
-      string //PRIDAT ";
-    }
-  }
-  else if (scanned == ' ') {
-    string //PRIDAT MEZERU;
-  }
-  else if (scanned > 31) {
-    string //PRIDAT scanned;
-  }
-  //SMYCKOVAT
-  return S_STR;
+      //pak asi jeste escape sekvence 
+      //nepovoleny znaky
+      else if (scanned < '1' || scanned > '255'){
+        fprintf(stderr, "Lexikalni chyba nepovoleny znak ve stringu");
+        return ERROR_LEX;
+      }
+
+     /* else if (scanned == '\\' ) {
+        scanned = fgetc(pSource_File);
+          if (scanned == 'x') {
+            nextChar = 0;
+            for (int i = 0; i < 2; i++) {
+                scanned = fgetc(pSource_File);
+                return OK;
+               
+               if (s1 >= 'A' && s1 <= 'F') {
+                    nextChar += s1 - ASCII_A_TO_HEX;
+                }
+
+                else if (s1 >= 'a' && s1 <= 'f') {
+                    nextChar += s1 - ASCII_a_TO_HEX;
+                }*/
+      
+
+
+    break;
 }
-*/
-//==========================================================================================================
-//info viz string
+
+case S_ID:
+{
+    scanned = fgetc(pSource_File);
+
+    //identifikator muze byt posloupnost cisel znaku a podtrzitka
+    if((scanned >= '0' && scanned <= '9') || ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z')) || scanned == '_'){
+       token->type = S_ID;
+       return OK;
+     } 
+
+     //neco jineho tak ykusime klicove slovo
+    else 
+        if((strcmp(scanned, "function")) == 0) return FUNCTION;
+        else if(scanned = "function"){
+          token->type = FUNCTION;
+          return OK;
+        }
+        /*else if((strcmp(token->type, "if")) == 0) return IF;
+        else if((strcmp(token->type, "else")) == 0) return ELSE;
+        else if((strcmp(token->type, "return")) == 0) return RETURN;
+        else if((strcmp(token->type, "while")) == 0) return WHILE;
+        else if((strcmp(token->type, "true")) == 0) return C_TRUE;
+        else if((strcmp(token->type, "false")) == 0) return C_FALSE;
+        else if((strcmp(token->type, "null")) == 0) return C_NULL;*/
+        else fprintf(stderr, "Lexikalni chyba v cisle.\n");
+        return ERROR_LEX;       
+    
+
+    break;
+}
+
+
+
+
 case S_NUM:
 { 
     scanned = fgetc(pSource_File);
@@ -447,6 +452,82 @@ case S_EXP:
   token->type = EOF;
   return OK;
 }
+
+
+/*
+int getFunctionHeader(T_Token* , FUn)
+{
+  // zkouska
+  scanned = fgetc(pSource_File);
+
+}
+*/
+
+//==========================================================================================================
+
+
+// je super ze mi vracite ze se jedna o retezec ale jaksik potrebuju vedet jeho hodnotu tzn.
+// token.type = S_STR;
+// token.value = malloc(sizeof(char * DELKA));
+// samozrejme budete potrebovat nahrat ten retezec a jelikoz to je void pointer tak musite pri kazde praci pretypovat ((char*)token->value)
+/*int readString(T_Token *token) {
+  inString = 1;
+  //ZACATEK SMYCKY
+  scanned = //CTENI DALSIHO ZNAKU;
+  if (scanned == '"') {
+    inString = 0;
+    return S_STR;
+  }
+  else if (scanned == '$') {
+    nextToken = S_CONCATENATE;
+    return S_STR;
+  }
+  else if (scanned == '\\' ) {
+    scanned = //CTENI DLASIHO ZNAKU;
+    if (scanned == 'x') {
+      nextChar = 0;
+      for (i = 0; i < 2; i++) {
+        s = //CTENI DLASIHO ZNAKU;
+        if (s1 >= 'A' && s1 <= 'F') {
+          nextChar += s1 - ASCII_A_TO_HEX;
+        }
+        else if (s1 >= 'a' && s1 <= 'f') {
+          nextChar += s1 - ASCII_a_TO_HEX;
+        }
+      }
+
+      string //PRIDAT NEXTCHAR;
+
+    }
+    else if (scanned == '$') {
+      string //PRIDAT $;
+    }
+    else if (scanned == 'n') {
+      string //PRIDAT \n;
+    }
+    else if (scanned == 't') {
+      string //PRIDAT \t;
+    }
+    else if (scanned == '\\') {
+      string //PRIDAT \;
+    }
+    else if (scanned == '"') {
+      string //PRIDAT ";
+    }
+  }
+  else if (scanned == ' ') {
+    string //PRIDAT MEZERU;
+  }
+  else if (scanned > 31) {
+    string //PRIDAT scanned;
+  }
+  //SMYCKOVAT
+  return S_STR;
+}
+*/
+//==========================================================================================================
+//info viz string
+
 
 /*
 int readNumber(T_Token *token) {
