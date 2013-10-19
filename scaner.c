@@ -440,7 +440,7 @@ int getFunctionHeader(T_Token*  token, FUn what)
                }
              }
            }
-           else if(scanned == EOF){ token->type = S_EOF; rewind(pSource_File); return OK;}
+           else if(scanned == EOF){ token->type = S_EOF; rewind(pSource_File); row = 1; return OK;}
            //printf("%c",scanned);
     }while(true);    
   }
