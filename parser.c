@@ -11,6 +11,7 @@
 extern TGarbageList trash; //z main.c
 extern int row; // z main.c
 extern T_Token *prevToken; // z main.c
+extern FILE* pSource_File; // z main.c
 
 T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
@@ -69,9 +70,7 @@ int parser(){
 
 	int result;
 
-
-	result = functionHeaders();
-	if ((result = getToken(&token)) != OK) return result;
+	
 
 	result = program();	
 	return result;
@@ -81,16 +80,31 @@ int parser(){
 int program(){
 
 	int result = OK;
+	if ((result = getToken(&token)) != OK) return result;
 
  	switch (token.type){
  		// pravidllo 1. <program> → php <st-list>
- 		case S_PHP:
- 			if ((result = getToken(&token)) != OK) return result;
+ 			
+ 			#if debug 
+				printf("byl znak php zpracuju hlavicky funkci\n");		
+			#endif
+
+			if ((result = getToken(&token)) != OK) return result;
+ 			//zaciname php zajistime si hlavicky funkci
+ 			result = functionHeaders();
+			if ((result = getToken(&token)) != OK) return result;
+
+			#if debug 
+				printf("hlavicky zpracovane zadne se v programu nenachazi\n");		
+			#endif
+
+			//rewindli jsme... zase se nam posle <?php tak to preskocime
+			if ((result = getToken(&token)) != OK) return result;
  			result = st_list();
  			return result;
  			break;
 
- 		case S_DOLAR:
+ 		default: 
  			return result;
 
  	}
@@ -483,7 +497,7 @@ int functionHeaders(){
 	do{
 		if ((result = getFunctionHeader(&token, NEXT_READ)) != OK) return result;
 		if(token.type == S_EOF) return OK;			
-	}while(token.type == FUNCTION);
+	}while(token.type != FUNCTION);
 
 
 	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;	
@@ -540,15 +554,14 @@ int functionHeaders(){
 			return ERROR_SYN;
 		}
 
+		funkce->paramCount = paramCount;
 		//nacteme si dalsi id a smycku zopakujem
-		if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
+		//if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
 
 	}
 
-	funkce->paramCount = paramCount;
-
+	
 	}
-
 	return OK;
 }
 
@@ -804,7 +817,7 @@ int expr(){
 									tokenFree (((T_Token*)(pomItem)->data));
 									return OK;
 								}
-
+								// stejne ani nic jeineho nez vyse nemuze nastat jinac s ebude shiftovat
 								//dle pravidel a kosntrukce muzu mit na stacku $= nebo $( pak se tam neco muze nahrat takze muzu s jistotou prohlasit ze se jedna o syntax error
 								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 								return ERROR_SYN;

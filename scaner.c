@@ -9,7 +9,7 @@
 #include "types.h"
 //#include "string.h"
 
-#define NDEBUG 0
+#define debug 1
 
 FILE *pSource_File; //vstupni soubor
 //static int state; //soucasny stav automatu
@@ -55,9 +55,17 @@ const int ASCII_a_TO_HEX=87;
 
 
 /** Hlavni fce lexikalniho analyzatoru */
-int getToken(T_Token *token)
+//kvuli testum getToken budu volat pres tuto pomocnou funkci abych mohl jednoduse vypsat co mi vraci
+int getToken(T_Token *token){
+   
+  int result = getTokenReal(token);
+
+  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
+  return result;
+}
+
+int getTokenReal(T_Token *token)
 {
- 
 //==========================================================================================================
   if(prevToken != NULL){
       token = prevToken;
@@ -256,24 +264,28 @@ int getToken(T_Token *token)
 
         case '<':
             scanned = fgetc(pSource_File);
-
+            
             //jedna se o startujici terminal <?php
             if (scanned == '?'){
               //zkontrolujeme jestli se pred startujicim terminalem nenachazi zadne znaky
                fseek(pSource_File, -2,SEEK_CUR);
                if(ftell(pSource_File) != SEEK_SET ){
-                  fprintf(stderr, "Uexpected symbols at the begining of file.\n");
+                  fprintf(stderr, "Unexpected symbols at the begining of file.\n");
                   return ERROR_SYN;
                }
 
-               fseek(pSource_File, 2,SEEK_CUR);
+
+               fseek(pSource_File, 2,SEEK_SET);
+              // scanned = fgetc(pSource_File); printf("znak: %c\n",scanned);
+              // scanned = fgetc(pSource_File); printf("znak: %c\n",scanned);
+               //scanned = fgetc(pSource_File); printf("znak: %c\n",scanned);
+
                if (fgetc(pSource_File) != 'p') return ERROR_LEX;
                if (fgetc(pSource_File) != 'h') return ERROR_LEX;
                if (fgetc(pSource_File) != 'p') return ERROR_LEX;
-
                scanned = fgetc(pSource_File);
                
-               if(scanned!= '\n' || scanned != '\t' || scanned != '\v' || scanned !=' ') return ERROR_LEX;
+               if(scanned!= '\n' && scanned != '\t' && scanned != '\v' && scanned !=' ') return ERROR_SYN;
 
                token->type = S_PHP;
                return OK;
@@ -347,6 +359,7 @@ int getToken(T_Token *token)
 	        return ERROR_LEX;
 
         case EOF: 
+        printf("dostanu se do eof oblasti?");
           token->type = EOF;
           return OK;
         default: return ERROR_LEX;
@@ -361,7 +374,9 @@ int getFunctionHeader(T_Token*  token, FUn what)
 { 
   // hledame klicove slovo slovo function
   char scanned;
-
+ #if debug 
+      printf("posilam hlavicky \n");    
+  #endif
   if(what ==NEXT_READ){
     do{
         scanned = fgetc(pSource_File);
@@ -397,7 +412,7 @@ int getFunctionHeader(T_Token*  token, FUn what)
                }
              }
            }
-           else if(scanned == EOF) return OK;
+           else if(scanned == EOF){ token->type = S_EOF; rewind(pSource_File); return OK;}
     }while(true);    
   }
   else  return getToken(token);

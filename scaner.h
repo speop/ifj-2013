@@ -27,4 +27,6 @@ int readString(T_Token *token);
 
 int getFunctionHeader(T_Token* , FUn);
 char* mystrdup(const char* );
+
+int getTokenReal(T_Token *token);
 #endif

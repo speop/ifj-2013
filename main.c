@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 	//garbage_add(data,&garbage_default_erase);
 	
 	#if debug 
-		printf("Volam syntakci analyzator: \n");		
+		printf("Volam syntakci analyzator: \n\n");		
 	#endif
 	result = parser();
 
