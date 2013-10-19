@@ -64,27 +64,33 @@ typedef enum {
 	S_BOOL = 33,
 	S_NULL = 34,
 	S_STR = 35,	// retezec
-	S_DOLAR = 36, 	
+	S_DOLAR = 36,
+	S_LST = 37,  // <
+	S_GRT = 38, // >
+	S_LEQ = 39, // <=
+	S_GEQ = 40, // >=
+	S_EQ = 41, // ===
+	S_NEQ = 42, // !==
 	//konec, u tohle bloku co byl se nesmi zmenit cisla
 
 	
-	S_TRUE=37,
-	CUT_L=38,
-	CUT_R=39,
-	S_PHP = 40,
-	S_SEM = 41, // ;
-	S_BLOCK_START = 42,  // {
-  	S_BLOCK_END = 43,  // }
+	S_TRUE=43,
+	CUT_L=44,
+	CUT_R=45,
+	S_PHP = 46,
+	S_SEM = 47, // ;
+	S_BLOCK_START = 48,  // {
+  	S_BLOCK_END = 49,  // }
 
 
 
-  	S_EOF = 44,	
-	S_LEQ = 45, // <=
-	S_LST = 46, // <
-	S_GEQ = 47, // >=
-	S_GRT = 48, // >
-	S_NEQ = 49, // !==
-	S_EQ = 50, // ===
+  	S_EOF = 50,	
+	
+	
+	
+	
+	
+	
 	W_RESERVED = 51, // ale tohle netreba posilat, tohle je lexikalni chyba 
 	TYPS_OEF=52,
 
