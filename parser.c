@@ -17,6 +17,7 @@ T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
 T_Token token;
 tStack *zasobnik;
+int konecBloku = 0;
 
 //precedenci tabulka
 // TODO: dle zadani doplnit priority do tabulky					
@@ -28,7 +29,7 @@ static int prtable [POLE][POLE] = {
 /*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		X,		X,		L,		L,		L,		L,		L,		L},
 /*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  4  = */	{	L,		L,		L,		X,		X,		H,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		H,		X,		X,		X,		X,		X,		X},
+/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		H,		X,		X,		X,		X,		X,		X},
 /*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
@@ -131,75 +132,40 @@ int st_list(){
 		case S_FUNC:
 		case S_ID: 
 			
-
-			// z duvodu semantiky zkontrolujeme jestli nechceme prirazovat do funkce
-			/*
-			pomToken = token;
-			if ((result = getToken(&token)) != OK) return result;
-
-			if(token.type == S_IS){
-				if(pomToken.type  != S_ID) return SEM_OTHER_ERROR;
-				
-				//priradime promenou do tabulky symbolu
-				if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return INTERNAL_ERROR;
-				promena->name = mystrdup(pomToken.value);
-
-				ret = addVarNodeToST(promena , actualST); // v actualSt je bud hlavni tabulka symbolu nebo tanulka funkce ve ktere jsme, tyto veci se preinaji v definici funkce a pri returnu
-				if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
-				else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
-
-
-			}*/
-			//if ((result = getToken(&token)) != OK) return result;
 			result = expr();
+
 			#if debug 
 				printf("Zpracovany epxr\n");		
 			#endif
+				
 			if(result != OK ) return result;
-
 			if (token.type != S_SEM){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \";\"\n",row);
 				return ERROR_SYN;
 			} 
 
 			if ((result = getToken(&token)) != OK) return result;
+			//konec bloku je jen ve while a if a elseif, nemuye byt v hlavnim programu ale stlist je stejny jako v tam tech jako v tehle takze si to jen otestujeme
 			result = st_list();
 			return result;
 			break;
 
 
-		// pravidlo 5. <st-list> → while ( <expr> <cond> { <st-list> }
+		// pravidlo 5. <st-list> → while ( <expr> <cond> { <st-list> } <st-list>
 		case WHILE: pom = false;
-		// pravidlo 4. <st-list> → if ( <expr> <cond> { <st-list> } <if-extra>
+		// pravidlo 4. <st-list> → if  <expr>  { <st-list> } <if-extra>
 		//edited cele v zavorce je expr
+		//edited zavorka vubec neni :D
 		case IF: 
-
+			konecBloku++;
 			if(token.type == IF) pom = true;
 
  			if ((result = getToken(&token)) != OK) return result;
-			if(token.type != S_LBRA ){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
-				return ERROR_SYN;
-			}
-
-			//if ((result = getToken(&token)) != OK) return result;
+ 			
 			result = expr();
 			if(result != OK ) return result;
 		
-		
-			if(token.type != S_RBRA ){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
-				return ERROR_SYN;
-			}
-
-			/*
-			if ((result = getToken(&token)) != OK) return result;
-			result = cond();
-			if(result != OK ) return result; 
-			*/ 
 			
-
-			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
@@ -207,19 +173,20 @@ int st_list(){
 
 			
 			if ((result = getToken(&token)) != OK) return result;
+
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
-			if(token.type != S_BLOCK_END ){
+			if(token.type != S_BLOCK_END ){ printf("BLOK IF: %d\n",token.type);
 				result = st_list();
 				if(result != OK ) return result;
-				if ((result = getToken(&token)) != OK) return result;
 			}
-
+			printf(" konec je: %d\n",token.type);
 			// mel byt konece
 			if(token.type != S_BLOCK_END ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
-
+			konecBloku--;
+			
 			//v tokenu byl if pridavame podminku if extra
 			if(pom){
 				if ((result = getToken(&token)) != OK) return result;
@@ -234,12 +201,16 @@ int st_list(){
 				
 			} 
 
+			if ((result = getToken(&token)) != OK) return result;
+			result = st_list();
+			if(result != OK) return result;
+
 			return OK;
 			break;
 
-		// pravidlo 6. <st-list> → function funcId ( <functionList> { <st-list> }
+		// pravidlo 6. <st-list> → function funcId ( <functionList> { <st-list> } <st-list>
 		case FUNCTION: 
-			
+			konecBloku++;
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_FUNC){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
@@ -275,18 +246,23 @@ int st_list(){
 
 				result = st_list();
 				if(result != OK ) return result;
-				if ((result = getToken(&token)) != OK) return result;
+				//if ((result = getToken(&token)) != OK) return result;
 			}
 
 			if(token.type != S_BLOCK_END ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
+			konecBloku--;
+
+			if ((result = getToken(&token)) != OK) return result;
+			result = st_list();
+			if(result != OK) return result;
 
 			return OK;
 			break;
 
-		// pravidlo 7. <st-list> → return <expr>
+		// pravidlo 7. <st-list> → return <expr> <st-list>
 		case RETURN:
 			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
@@ -294,54 +270,24 @@ int st_list(){
 
 			//nastavime zpet na hlavni tabulku symbolu.. tu me rekurze nemusi trapit 
 			actualST = symbolTable;
+
+			if ((result = getToken(&token)) != OK) return result;
+			result = st_list();
+			if(result != OK) return result;
+
 			return OK;
 			break;
 
 		case S_EOF: return OK;
-		// jeste je  treba napsat pravidlo pro $ akorat nevim jak na to
+		default: 
+			if(token.type == S_BLOCK_END && konecBloku) return OK;
+			else return  ERROR_SYN; 
 	}
 
 	return ERROR_SYN; 
 
 }
 
-int cond(){
-	int result;
-
-	switch(token.type){
-
-		//pravidlo 8. <cond> → <comp> <expr> <cond>
-		case S_LEQ:
-		case S_LST:
-		case S_GEQ:
-		case S_GRT:
-		case S_NEQ:
-		case S_EQ:
-
-		//bude tu treba pro generovani ass kontrolovat priositu porovnavani
-
-			// tento case zaroven supluje  vsechny comp podminky, takze neni treba psat funkci pro tento neterminal
-
-			if ((result = getToken(&token)) != OK) return result;
-			result = expr();
-			if(result != OK ) return result;
-
-			if ((result = getToken(&token)) != OK) return result;
-			result = cond();
-			if(result != OK ) return result;
-
-			return OK;
-			break;
-
-		// pravidlo 9. <cond> → )
-		case S_LBRA: 
-			if ((result = getToken(&token)) != OK) return result;
-			return OK;
-
-	}
-
-	return ERROR_SYN;
-}
 
 int if_extra(){
 	int result;
@@ -350,7 +296,7 @@ int if_extra(){
 
 		// pravidlo 16. <if-extra> → else { <st-list> }
 		case ELSE: 
-
+			konecBloku++;
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
@@ -363,40 +309,33 @@ int if_extra(){
 			if(token.type != S_BLOCK_END ){
 				result = st_list();
 				if(result != OK ) return result;
-				if ((result = getToken(&token)) != OK) return result;
+				//if ((result = getToken(&token)) != OK) return result;
 			}
 
 			if(token.type != S_BLOCK_END ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
+			konecBloku--;
+
+			if ((result = getToken(&token)) != OK) return result;
+			result = st_list();
+			if(result != OK) return result;
 
 			return OK;
 			break;
 
-		// pravidlo 17. <if-extra> → elseif ( <expr> <cond> { <st-list> } <if-extra>
+		// pravidlo 17. <if-extra> → elseif { <st-list> } <if-extra> <st-lsit>
 		case ELSEIF:
+			
+			konecBloku++;
+			
 			if ((result = getToken(&token)) != OK) return result;
-			if(token.type != S_LBRA ){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \")\"\n",row);
-				return ERROR_SYN;
-			}
-
-			if ((result = getToken(&token)) != OK) return result;
+			
 			result = expr();
 			if(result != OK ) return result;
 			
-			if(token.type != S_RBRA ){
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
-				return ERROR_SYN;
-			}
-	
-			/*
-			if ((result = getToken(&token)) != OK) return result;
-			result = cond();
-			if(result != OK ) return result; */
-
-			if ((result = getToken(&token)) != OK) return result;
+			
 			if(token.type != S_BLOCK_START ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
@@ -408,7 +347,6 @@ int if_extra(){
 			if(token.type != S_BLOCK_END ){
 				result = st_list();
 				if(result != OK ) return result;
-				if ((result = getToken(&token)) != OK) return result;
 			}
 
 			// mel byt konece
@@ -419,16 +357,19 @@ int if_extra(){
 
 			
 			if ((result = getToken(&token)) != OK) return result;
+			konecBloku--;
 
 			//  nejedna se o pravidlo 18. <if-extra> → ε
 			if( token.type == ELSE || token.type == ELSEIF){
 				result = if_extra();
 				if(result != OK ) return result;
 			}
-			// jednalo se tak vratime token abychom ho priste znova dostali
-			else putToken(&token);
+			// nejednalo se tak vratime token abychom ho priste znova dostali
+			//else putToken(&token);
 			
-			
+			//if ((result = getToken(&token)) != OK) return result;
+			result = st_list();
+			if(result != OK) return result;
 
 			return OK;
 			break;
@@ -442,7 +383,7 @@ int if_extra(){
 int functionList(){
 
 	int result;
-
+	//printf("\n");
 	switch(token.type){
 		
 		// pravidlo 19. <functionList> → id <functionList>
@@ -508,7 +449,7 @@ int functionHeaders(){
 		if(token.type == S_EOF) return OK;			
 	}while(token.type != FUNCTION);
 
-
+	
 	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;	
 	// ocekavame jmeno funkce
 	if (token.type != S_FUNC) return ERROR_SYN;
@@ -528,7 +469,7 @@ int functionHeaders(){
 
 
 	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
-	if (token.type != S_LBRA) return ERROR_SYN;
+		if (token.type != S_LBRA) return ERROR_SYN;
 
 	
 	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
@@ -536,12 +477,15 @@ int functionHeaders(){
 	// funkce nema parametr
 	if(token.type == S_RBRA){
 		funkce->paramCount = paramCount;
-		return OK; 
+		continue;
 	}
 	
 	//funkce ma nejake paramtery
 	while(true){
-		if(token.type != S_ID) return ERROR_SYN;
+		if(token.type != S_ID) {
+			fprintf(stderr, "Row: %d, unexpected symbol it should be some id \n",row);
+			return ERROR_SYN;
+		}
 
 		//vytvorime  novou promenou v tabulce symbolu
 		if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return INTERNAL_ERROR;
@@ -557,15 +501,16 @@ int functionHeaders(){
 		if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
 
 		//docetli jsme vsechny parametry
+
 		if(token.type == S_RBRA) break;
 		else if(token.type!= S_COMMA){
-			fprintf(stderr, "Row: %d, unexpected symbol it should be some \",\" \n",row);
+			fprintf(stderr, "Row: %d, unexpected symbol it should be \",\" \n",row);
 			return ERROR_SYN;
 		}
 
 		funkce->paramCount = paramCount;
 		//nacteme si dalsi id a smycku zopakujem
-		//if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
+		if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
 
 	}
 
@@ -603,7 +548,7 @@ int expr(){
 
 	do{	
 		//zkontrolujeme si co mame delat na zaklade precedenci tabulky
-		printStack(zasobnik);	
+		
 		pomItem = top(zasobnik);
 		//jelikoz na vrcholu zasobniku muze byt neterrminal E, ktery je fyzicky reprzentovan jako token jehoz typ je E, ve skutecnosti bude stacit sebrat jen ten dalsi co je pod nim ale radeji to udelam obecne
 		while((((T_Token*)(pomItem)->data)->type) == S_E)	pomItem = pomItem->prev;
@@ -627,10 +572,12 @@ int expr(){
 		}
 		
 		printf("Typ tokenu pro expr je: %d \n",token.type);
+		printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
+		printStack(zasobnik);	
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 			#if debug 
-				printf("Nahravam na stack: \n\n");		
+				//printf("Nahravam na stack: \n\n");		
 			#endif
 			
 			//vytvareni si noveho tokenu je z duvodu ze pri returnu s chybou a naslednme uvolnovani pameti bychom mohli uvolnovat znova stejny token
@@ -684,7 +631,7 @@ int expr(){
 		}
 		// syntakticka chyba
 		else if (prtable[radek][sloupec] == X){
-			printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
+			//printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 			fprintf(stderr, "Row: %d, syntax error\n",row );
 			return ERROR_SYN;
 
@@ -693,7 +640,7 @@ int expr(){
 		//redukujeme
 		else if (prtable[radek][sloupec] == H){
 			#if debug 
-				printf("redukuju \n");		
+				//printf("redukuju \n");		
 			#endif
 
 			if(token.type == S_DOLAR) ukoncovac = true; 
@@ -702,7 +649,7 @@ int expr(){
 			pomItem = pop_top(zasobnik);
 			
 			//je tu treba hodit smycku ktera se postara ze se to vycisti pri dolaru
-			printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
+			//printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 			switch(((T_Token*)(pomItem)->data)->type){
 
 				//pravidla 10. E -> id, 11. E -> i //int, 12. E -> d //double, 13. E -> b //bool, 14. E -> s //string, 15. E -> n // null
@@ -724,6 +671,7 @@ int expr(){
 
 				//pravidla 3. E -> (E), 9. E -> f(E)
 				case S_RBRA:
+						
 					//todo: pred uvolnenim tokenu ho nahrat do ASS
 					tokenFree (((T_Token*)(pomItem)->data));
 					pomItem = pop_top(zasobnik); 
@@ -738,7 +686,7 @@ int expr(){
 					tokenFree (((T_Token*)(pomItem)->data));
 					pomItem = pop_top(zasobnik); 
 
-					if((((T_Token*)(pomItem)->data)->type) != S_RBRA){
+					if((((T_Token*)(pomItem)->data)->type) != S_LBRA){
 						tokenFree (((T_Token*)(pomItem)->data));
 						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 						return ERROR_SYN;
@@ -746,7 +694,7 @@ int expr(){
 
 
 					//todo: pred uvolnenim tokenu ho nahrat do ASS
-					tokenFree (((T_Token*)(pomItem)->data));
+					//tokenFree (((T_Token*)(pomItem)->data));
 					pomItem2 = top(zasobnik); 
 
 					// pravidlo 3. E -> (E)
@@ -771,7 +719,7 @@ int expr(){
 				case S_E:
 					tokenFree (((T_Token*)(pomItem)->data));
 					pomItem = pop_top(zasobnik); 
-					printf("Bylo e na vstupu\n");
+					
 					switch(((T_Token*)(pomItem)->data)->type){
 
 							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E, 16. E -> E <= E, 17. E -> E < E, 18. E -> E >= E, 19. E -> E > E, 20. E -> E !== E, 21. E -> E === E, 4. E=E
@@ -779,6 +727,7 @@ int expr(){
 							case S_MUL:
 							case S_CONCATENATE:
 							case S_DIV:
+							case S_MINUS:
 							case S_COMMA:
 							case S_LEQ:
 							case S_LST:
@@ -829,9 +778,28 @@ int expr(){
 
 		}
 		else if (prtable[radek][sloupec] == EQ){
-			
-			pomItem = pop_top(zasobnik);
-			switch (((T_Token*)(pomItem)->data)->type ){
+			printf("EQ\n");
+			//zatim nevim jak toudelat lepe ale z podstaty veci je to treba pushnout na zasobnik
+			if(token.type == S_RBRA){
+				if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
+				exprToken->value = NULL;
+				exprToken->type = S_RBRA;
+
+				if((push(zasobnik, exprToken)) != OK ) {
+					if(exprToken->value != NULL) free(exprToken->value);
+					free(exprToken); 
+					return ERROR_INTER;
+				}
+
+				if ((result = getToken(&token)) != OK) return result;
+				pomItem = top(zasobnik);
+				printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
+
+			}
+			else pomItem = pop_top(zasobnik);
+
+			//printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
+			switch (((T_Token*)(pomItem)->data)->type ){				
 				case S_E: 
 						pomItem = pop_top(zasobnik);
 						if(pomItem == NULL) return ERROR_INTER;
@@ -842,6 +810,17 @@ int expr(){
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
 						return OK;
+
+				case S_LBRA:
+					break;
+						//printf("Pravidlo EQ zavorky\n");
+						//pomItem = pop_top(zasobnik);
+						//if(pomItem == NULL) return ERROR_INTER;
+						//if(((T_Token*)(pomItem)->data)->type!= S_LBRA){
+						//	fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+						//	return ERROR_SYN;
+						//}
+						
 			}
 		}
 		else return ERROR_INTER;
