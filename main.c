@@ -13,7 +13,7 @@
 FILE *pSource_File;
 TGarbageList trash;
 T_Token *prevToken;
-int row = 0;
+int row;
 
 bool test(void * data);
 

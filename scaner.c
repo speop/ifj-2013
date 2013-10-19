@@ -314,6 +314,7 @@ int getTokenReal(T_Token *token)
                scanned = fgetc(pSource_File);
                
                if(scanned!= '\n' && scanned != '\t' && scanned != '\v' && scanned !=' ') return ERROR_SYN;
+               if(scanned == '\n') row++;
 
                token->type = S_PHP;
                return OK;

@@ -56,7 +56,6 @@ tStackItem* pop_top(tStack *stack){
 	//jediny prvek na zasobniku
 	if(stack->top == stack->bottom && stack->top != NULL){
 		temp = stack->top ;
-
 		stack->top = NULL;
 		stack->bottom = NULL;
 		return temp;

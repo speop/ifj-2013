@@ -40,7 +40,7 @@ static int prtable [POLE][POLE] = {
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
 /*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
-/*  17  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		L,		L,		X,		X,		X,		X,		X,		X,		L,		L,		L,		L,		L,		L},
+/*  17  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		L,		L,		X,		X,		X,		X,		X,		EQ,		L,		L,		L,		L,		L,		L},
 /*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
 /*  19  > */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  20  <=*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
@@ -67,6 +67,7 @@ int parser(){
 	prevToken = NULL;
 	token.value = NULL;
 
+	row = 1;
 
 	int result;
 
@@ -150,8 +151,10 @@ int st_list(){
 
 			}*/
 			//if ((result = getToken(&token)) != OK) return result;
-			printf("%d",token.type);
 			result = expr();
+			#if debug 
+				printf("Zpracovany epxr\n");		
+			#endif
 			if(result != OK ) return result;
 
 			if (token.type != S_SEM){
@@ -825,7 +828,22 @@ int expr(){
 
 
 		}
-
+		else if (prtable[radek][sloupec] == EQ){
+			
+			pomItem = pop_top(zasobnik);
+			switch (((T_Token*)(pomItem)->data)->type ){
+				case S_E: 
+						pomItem = pop_top(zasobnik);
+						if(pomItem == NULL) return ERROR_INTER;
+						if(((T_Token*)(pomItem)->data)->type!= S_DOLAR){
+							fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+							return ERROR_SYN;
+						}
+						token.type = exprTempToken.type;
+						token.value = exprTempToken.value;
+						return OK;
+			}
+		}
 		else return ERROR_INTER;
 
 		
