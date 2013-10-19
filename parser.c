@@ -6,7 +6,7 @@
 #include "scaner.h"
 #include "stack.h"
 #define debug 1
-#define POLE 17
+#define POLE 23
 
 extern TGarbageList trash; //z main.c
 extern int row; // z main.c
@@ -21,25 +21,32 @@ tStack *zasobnik;
 // TODO: dle zadani doplnit priority do tabulky					
 static int prtable [POLE][POLE] = {
 /*
-				0		1		2		3		4		5		6		7		8		9		10		11		12		13		14		15		16	
-				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  */
-/*  0  + */	{	H,		L,		L,		H,		X,		H,		L,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H},
-/*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H},
-/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		X,		X},
-/*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
-/*  4  = */	{	L,		L,		L,		X,		X,		H,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		H},
-/*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H},
-/*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H},
-/*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H},
-/*  8  , */ {	L,		L,		L,		H,		X,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L,		L,		X},
-/*  9  f */ {	X,		X,		EQ,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X},
-/*  10 id */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
-/*  11  i */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
-/*  12  d */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
-/*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H},
-/*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X},
-/*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X},
-/*  16  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X}		
+				0		1		2		3		4		5		6		7		8		9		10		11		12		13		14		15		16		18		19		20		21		22		23
+				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  		<		>		<=		>=		===		!==*/
+/*  0  + */	{	H,		L,		L,		H,		X,		H,		L,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		X,		X,		L,		L,		L,		L,		L,		L},
+/*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  4  = */	{	L,		L,		L,		X,		X,		H,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		H,		X,		X,		X,		X,		X,		X},
+/*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  8  , */ {	L,		L,		L,		H,		X,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
+/*  9  f */ {	X,		X,		EQ,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X},
+/*  10 id */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  11  i */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  12  d */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
+/*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
+/*  17  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		L,		L,		L,		L,		L,		L},
+/*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
+/*  19  > */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
+/*  20  <=*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
+/*  21  >=*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
+/*  22 ===*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		L,		L,		L,		L,		H,		H},
+/*  23 !==*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		L,		L,		L,		L,		H,		H}
+
 };
 int parser(){
 
@@ -604,7 +611,6 @@ int expr(){
 			
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
-			//mame nahravat tak si pro jistotu ykontrolujem jelikoz = muze byt nahrano jen  za stavu $ E =
 			
 			
 		 	//nahrajeme mensitko na stack

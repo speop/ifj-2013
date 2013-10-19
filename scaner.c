@@ -62,7 +62,7 @@ int getToken(T_Token *token)
   if(prevToken != NULL){
       token = prevToken;
       prevToken = NULL;
-      return token;
+      return OK;
   }
 
 
@@ -454,14 +454,53 @@ case S_EXP:
 }
 
 
-/*
-int getFunctionHeader(T_Token* , FUn)
-{
-  // zkouska
-  scanned = fgetc(pSource_File);
 
+int getFunctionHeader(T_Token*  token, FUn what)
+{ 
+  // hledame klicove slovo slovo function
+  if(what ==NEXT_READ){
+    do{
+        scanned = fgetc(pSource_File);
+        if(scanned == 'f'){
+           
+           scanned = fgetc(pSource_File)
+           if(scanned == 'u'){
+              
+              scanned = fgetc(pSource_File)
+              if(scanned == 'n'){
+                
+                scanned = fgetc(pSource_File)
+                if(scanned == 'c'){
+                  
+                  scanned = fgetc(pSource_File)
+                  if(scanned == 't'){
+
+                    scanned = fgetc(pSource_File)
+                    if(scanned == 'i'){
+
+                       scanned = fgetc(pSource_File)
+                       if(scanned == 'o'){
+
+                         scanned = fgetc(pSource_File)
+                         if(scanned == 'n'){
+                              token->type = FUNCTION;
+                              return OK;
+                         }
+                       }
+                     }
+                   }
+                 }
+               }
+             }
+           }
+           else if(scanned == EOF) return OK;
+    }while(true);    
+  }
+  else  return =  getToken(token);
+
+  return ERROR_LEX;
 }
-*/
+
 
 //==========================================================================================================
 
