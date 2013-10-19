@@ -60,7 +60,7 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
+  //printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
   return result;
 }
 
@@ -76,14 +76,17 @@ int getTokenReal(T_Token *token)
 
   char scanned;
   int result;
+  int pozice = 0;
+  int alokovano = 32;
+  char *str, *more_str;
 
   while((scanned = fgetc(pSource_File)) != EOF){
-
+    //printf("nacteny znak je: %c\n",scanned);
     result = OK;
 
     // slozitejsi podminky se vezmou pres if tam kde zalezi jen na jednom znaku se pouzije switch
     if (scanned >= '0' && scanned <= '9'){
-        token->type = S_NUM;
+        
         result = OK;
         result = readNumber(token);
         return result;
@@ -92,9 +95,8 @@ int getTokenReal(T_Token *token)
     }
     else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || scanned == '_'){
         
-        int pozice = 0;
-        int alokovano = 32;
-        char *str, *more_str;
+        pozice = 0;
+        alokovano = 32;
         if ((str = (char*)malloc(alokovano * sizeof(char))) == NULL) return ERROR_INTER;
  
         //nacteme si cely retezec;
@@ -182,7 +184,33 @@ int getTokenReal(T_Token *token)
       switch(scanned){
 
         case '$':
+              pozice = 0;
+              alokovano = 32;
+
+              if ((str = (char*)malloc(alokovano * sizeof(char))) == NULL) return ERROR_INTER;             
+              do{
+                // v pripade potreby zvetsime pamet na retezec
+                if(pozice >= alokovano) {
+                  alokovano  = alokovano << 1;
+
+                  more_str = (char*) realloc (str, alokovano * sizeof(int));
+                  if(more_str == NULL){
+                      free(str);
+                      return ERROR_INTER;
+                  }
+                  else str = more_str;
+                }
+
+                str[pozice++] = scanned;//ulozime si znak   
+                scanned = fgetc(pSource_File);
+
+            }while((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || (scanned >= '0' && scanned <= '9') || scanned == '_');
+
+            //vratime znak navic co jsme nacetli
+            fseek(pSource_File, -1,SEEK_CUR);
             token->type = S_ID;
+            token->value = mystrdup(str);
+
             return OK;
 
         case '"':
@@ -316,11 +344,11 @@ int getTokenReal(T_Token *token)
     
         case '\t': //tabulator
         case '\v': //vertical space
-        // hazi to chybu 
-        //case ' ': //obycejna mezera 
+        case ' ': //obycejna mezera 
+          continue;
         
         case '\n':
-            row++;
+            ++row;
             continue;
 
 	      case '=':
@@ -358,14 +386,13 @@ int getTokenReal(T_Token *token)
 	        fprintf(stderr, "Lexikalni chyba nerovnani je !==.\n");
 	        return ERROR_LEX;
 
-        case EOF: 
-        printf("dostanu se do eof oblasti?");
-          token->type = EOF;
-          return OK;
+       
         default: return ERROR_LEX;
 		  }//konec switche
     }//konec else
   }//konec while
+
+  token->type = S_EOF;
 return OK;
 }
 
@@ -413,15 +440,18 @@ int getFunctionHeader(T_Token*  token, FUn what)
              }
            }
            else if(scanned == EOF){ token->type = S_EOF; rewind(pSource_File); return OK;}
+           //printf("%c",scanned);
     }while(true);    
   }
   else  return getToken(token);
-
   return ERROR_LEX;
 }
 
 int readNumber(T_Token *token)
 {
+  token->type = S_INT;
+  token->value = malloc(sizeof(int));
+  *(int*)token->value = 5;
   return OK;
 }
 

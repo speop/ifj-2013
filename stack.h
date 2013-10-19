@@ -32,6 +32,7 @@ bool emptySTVar(void *);
 bool emptySTFunc(void *);
 bool emptyToken(void *);
 
+void printStack(tStack *stack);
 //funkce pro dealokaci tokenu - nebylo ji kam umistit :D
 bool tokenFree(void *);
 

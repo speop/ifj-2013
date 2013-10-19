@@ -162,7 +162,17 @@ int deleteSt(tStack *stack, bool (*function)(void*)){
 	free(stack);
 	return OK;
 }
+void printStack(tStack *stack){
+	if (stack->top == NULL) return;
+	printf("Tisknu zasobnik\n===============\n");
+	tStackItem *pom = stack->top;
+	while (pom != NULL){
+		printf("prvek: %d\n", ((T_Token*)(pom)->data)->type);
+		pom = pom->prev;
+	}
 
+	printf("\n");
+}
 
 // funkce ktere lze pridat do GC ktery je pak zavola na uvolneni pameti, v techto funkcich pak volam delte kde druhy parametr je opet funkce na uvolneni pameti ktera je stejna jak v GC
 bool emptyST(void * data){ 	deleteSt((tStack*)data, &freeVarST); return true;}

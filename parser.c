@@ -34,13 +34,13 @@ static int prtable [POLE][POLE] = {
 /*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  8  , */ {	L,		L,		L,		H,		X,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
 /*  9  f */ {	X,		X,		EQ,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X},
-/*  10 id */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
+/*  10 id */{	H,		H,		X,		H,		H,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  11  i */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  12  d */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
 /*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
-/*  17  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		L,		L,		L,		L,		L,		L},
+/*  17  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		L,		L,		X,		X,		X,		X,		X,		X,		L,		L,		L,		L,		L,		L},
 /*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
 /*  19  > */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  20  <=*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
@@ -84,15 +84,15 @@ int program(){
 
  	switch (token.type){
  		// pravidllo 1. <program> → php <st-list>
+ 		case S_PHP:
  			
  			#if debug 
 				printf("byl znak php zpracuju hlavicky funkci\n");		
 			#endif
-
-			if ((result = getToken(&token)) != OK) return result;
+			
  			//zaciname php zajistime si hlavicky funkci
+			//if ((result = getToken(&token)) != OK) return result;
  			result = functionHeaders();
-			if ((result = getToken(&token)) != OK) return result;
 
 			#if debug 
 				printf("hlavicky zpracovane zadne se v programu nenachazi\n");		
@@ -100,6 +100,10 @@ int program(){
 
 			//rewindli jsme... zase se nam posle <?php tak to preskocime
 			if ((result = getToken(&token)) != OK) return result;
+			token.type = -1;
+			if ((result = getToken(&token)) != OK) return result;
+
+
  			result = st_list();
  			return result;
  			break;
@@ -128,6 +132,7 @@ int st_list(){
 			
 
 			// z duvodu semantiky zkontrolujeme jestli nechceme prirazovat do funkce
+			/*
 			pomToken = token;
 			if ((result = getToken(&token)) != OK) return result;
 
@@ -143,8 +148,9 @@ int st_list(){
 				else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
 
 
-			}
-
+			}*/
+			//if ((result = getToken(&token)) != OK) return result;
+			printf("%d",token.type);
 			result = expr();
 			if(result != OK ) return result;
 
@@ -569,44 +575,40 @@ int functionHeaders(){
 //precedenci analyza
 int expr(){
 
-	//((int)pomItem->)->data
-	//(T_Token*)(pomItem->data)->type
-
-	//(((int)((T_Token*)pomItem)->data)->type
-
-	int porovnavani = 0; // promena ktera mi zaruci ze budu porovnavat jen kdyz muzu, kazde pushnuti funkce  nebo = ji inkrementuje, kazde popnuti dekremenutuje,
-						 // avsak pokud je prazdny zasobnik  tak se vracim tak mi je jedno ze se to dekrementuje na 0
 	
-	tStackItem *pomItem;
-	int radek, sloupec;
+	#if debug 
+		printf("jsem v expr: \n\n");		
+	#endif
+
+	
+	tStackItem *pomItem, *pomItem2;
+	int radek, sloupec,result;
 	char *retezec;
 	bool ukoncovac;
 	T_Token *exprToken, exprTempToken;
 	
 
-	
 	//nahrajeme dolar mame prazdny zasobnik
 	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 	exprToken->type = S_DOLAR;
 	if((push(zasobnik, exprToken)) != OK ) return ERROR_INTER;
 
 	//jestli pporovnavat povolene jset, povime promene ctene
-	if(token.type == S_FUNC) porovnavani++; // pri function(...) nemuze byt jiz nikde porovnavani
-	
+	//if(token.type == S_FUNC) porovnavani++; // pri function(...) nemuze byt jiz nikde porovnavani
 	
 	//tabulka -radek  co je na zasobniku, sloupec prichozi token
 
 	do{	
-		//zkontrolujeme si co mame delat na zaklade precedenci tabulky	
+		//zkontrolujeme si co mame delat na zaklade precedenci tabulky
+		printStack(zasobnik);	
 		pomItem = top(zasobnik);
 		//jelikoz na vrcholu zasobniku muze byt neterrminal E, ktery je fyzicky reprzentovan jako token jehoz typ je E, ve skutecnosti bude stacit sebrat jen ten dalsi co je pod nim ale radeji to udelam obecne
 		while((((T_Token*)(pomItem)->data)->type) == S_E)	pomItem = pomItem->prev;
 
-
 		radek = (((T_Token*)(pomItem)->data)->type) - 20;
 		sloupec = (token.type) - 20;
 		
-		//pokud nahodou se objevil token ktery nema co v zasobniku delat nebo prijde na vstup, tak skocim mimo velikost pole coz je szyntakticka chyba
+		//pokud nahodou se objevil token ktery nema co v zasobniku delat 
 		if(radek< 0 || radek > (POLE - 1)  ){
 			fprintf(stderr,"Row %d, unexpected symbol\n",row );
 			return ERROR_SYN; 
@@ -621,17 +623,13 @@ int expr(){
 			sloupec = POLE - 1;
 		}
 		
-			
+		printf("Typ tokenu pro expr je: %d \n",token.type);
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
+			#if debug 
+				printf("Nahravam na stack: \n\n");		
+			#endif
 			
-			
-		 	//nahrajeme mensitko na stack
-			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
-			exprToken->value = NULL;
-			exprToken->type = L;
-			if((push(zasobnik, exprToken)) != OK ) {free(exprToken);return ERROR_INTER;}
-
 			//vytvareni si noveho tokenu je z duvodu ze pri returnu s chybou a naslednme uvolnovani pameti bychom mohli uvolnovat znova stejny token
 			//coz by hodilo segfault, nepomuze ani nastavit pointer pak na NULL, jelikoz v garbage collectoru by ten pointer NULL nebyl
 			if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
@@ -639,8 +637,9 @@ int expr(){
 			//pri puvodnim vytvoreni tokenu nebo vzdy pri zpracovani dat z neho se nahraje na ukazatel ukazujici na data NULL
 			//zkopirujeme si data
 			if(token.value != NULL){
-
 				switch(token.type){
+					case S_ID:
+					case S_FUNC: 
 					case S_STR:
 							 	retezec = mystrdup((char*)token.value);
 							 	exprToken->value = retezec;
@@ -657,12 +656,12 @@ int expr(){
 								break;
 
 				}
-
+				
 				if(exprToken->value == NULL){
 						free(exprToken);
 						return ERROR_INTER;
 				}
-
+			
 				free(token.value);
 				token.value =  NULL; 				
 			}
@@ -676,9 +675,13 @@ int expr(){
 					free(exprToken); 
 					return ERROR_INTER;
 			}
+
+			if ((result = getToken(&token)) != OK) return result;
+
 		}
 		// syntakticka chyba
 		else if (prtable[radek][sloupec] == X){
+			printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 			fprintf(stderr, "Row: %d, syntax error\n",row );
 			return ERROR_SYN;
 
@@ -686,16 +689,17 @@ int expr(){
 
 		//redukujeme
 		else if (prtable[radek][sloupec] == H){
+			#if debug 
+				printf("redukuju \n");		
+			#endif
 
-		   do{ // ve smycce abychom pri dolaru sjeli cely zasobnik, neocekavame zaden vstup
-		   	ukoncovac = false; // nastavi si ho dolar na true takze se pojede znova
 			if(token.type == S_DOLAR) ukoncovac = true; 
 
-			//redukujeme tak ze budeme postupne brat tokeny ze zasobniku a zezadu budeme porovnavat s pravidlem dokud nenarazime
-			// na mensitko, pokud bude porad se nam v nekter fazi stane ze uz nemuzeme  pokracovat a nemame mensitko je to syntax error
+			//redukujeme tak ze budeme postupne brat tokeny ze zasobniku a zezadu budeme porovnavat s pravidlem dokud je kam jit
 			pomItem = pop_top(zasobnik);
 			
 			//je tu treba hodit smycku ktera se postara ze se to vycisti pri dolaru
+			printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 			switch(((T_Token*)(pomItem)->data)->type){
 
 				//pravidla 10. E -> id, 11. E -> i //int, 12. E -> d //double, 13. E -> b //bool, 14. E -> s //string, 15. E -> n // null
@@ -707,16 +711,12 @@ int expr(){
 				case S_NULL:
 					//todo: pred uvolnenim tokenu ho nahrat do ASS
 
-					tokenFree (((T_Token*)(pomItem)->data));
-					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
-
-					if((((T_Token*)(pomItem)->data)->type) != L) {
-						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-						return ERROR_SYN;
-					}
 
 					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
-					((T_Token*)(pomItem)->data)->type= S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
+					((T_Token*)(pomItem)->data)->type= S_E; 
+					if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) return ERROR_INTER;
+					free(pomItem);
+
 					break;
 
 				//pravidla 3. E -> (E), 9. E -> f(E)
@@ -744,31 +744,21 @@ int expr(){
 
 					//todo: pred uvolnenim tokenu ho nahrat do ASS
 					tokenFree (((T_Token*)(pomItem)->data));
-					pomItem = pop_top(zasobnik); 
+					pomItem2 = top(zasobnik); 
 
 					// pravidlo 3. E -> (E)
-					if((((T_Token*)(pomItem)->data)->type)== L){
+
+					if(((T_Token*)(pomItem2)->data)->type != S_FUNC){
 						if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
 						((T_Token*)(pomItem)->data)->type = S_E;
 						if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free(exprToken);return ERROR_INTER;}
-
+						free(pomItem);
 						break;
 					}
-					//dale pokracuje pravidlo 9. E -> f(E)
-					else if((((T_Token*)(pomItem)->data)->type) != S_FUNC) {
-						tokenFree (((T_Token*)(pomItem)->data));
-						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-						return ERROR_SYN;
-					}
-
 					
-					tokenFree (((T_Token*)(pomItem)->data));
+					//dale pokracuje pravidlo 9. E -> f(E)
+					
 					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
-
-					if((((T_Token*)(pomItem)->data)->type) != L) {
-						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-						return ERROR_SYN;
-					}
 
 					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
 					((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
@@ -778,10 +768,10 @@ int expr(){
 				case S_E:
 					tokenFree (((T_Token*)(pomItem)->data));
 					pomItem = pop_top(zasobnik); 
-
+					printf("Bylo e na vstupu\n");
 					switch(((T_Token*)(pomItem)->data)->type){
 
-							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E, 16. E -> E <= E, 17. E -> E < E, 18. E -> E >= E, 19. E -> E > E, 20. E -> E !== E, 21. E -> E === E
+							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E, 16. E -> E <= E, 17. E -> E < E, 18. E -> E >= E, 19. E -> E > E, 20. E -> E !== E, 21. E -> E === E, 4. E=E
 							case S_PLUS:
 							case S_MUL:
 							case S_CONCATENATE:
@@ -793,32 +783,28 @@ int expr(){
 							case S_GRT:
 							case S_NEQ:
 							case S_EQ: 
-									break;									
-
-							//pravidlo 4. E ->  = E 
 							case S_IS:
+									
 									tokenFree (((T_Token*)(pomItem)->data));
-									pomItem = pop_top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
+									pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
 
-									if((((T_Token*)(pomItem)->data)->type) != S_DOLAR) {
-										fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-										return ERROR_SYN;
-									}
-
-									tokenFree (((T_Token*)(pomItem)->data));
-									if (zasobnik->top != NULL)	return ERROR_INTER;
-
+									if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
+									((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
+									break;
 							// stav zasobniku by mel byt $E
 							case S_DOLAR:
+								#if debug
+										printf("Vyprazdnili jsme zasobnik\n");
+								#endif
 								if(token.type == S_DOLAR){
 									//vratime si zpet co bylo v tokenu nez jsme ho prehrali dolarem
 									token.type = exprTempToken.type;
 									token.value = exprTempToken.value;
 									tokenFree (((T_Token*)(pomItem)->data));
+
 									return OK;
 								}
-								// stejne ani nic jeineho nez vyse nemuze nastat jinac s ebude shiftovat
-								//dle pravidel a kosntrukce muzu mit na stacku $= nebo $( pak se tam neco muze nahrat takze muzu s jistotou prohlasit ze se jedna o syntax error
+								
 								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 								return ERROR_SYN;
 
@@ -828,30 +814,21 @@ int expr(){
 								return ERROR_SYN;
 					}
 
-					tokenFree (((T_Token*)(pomItem)->data));
-					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
-
-					if((((T_Token*)(pomItem)->data)->type) != L) {
-							fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-							return ERROR_SYN;
-					}
-
-					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
-					((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
+					
 					break;
-
 
 			} 
 
 
-			pomItem = pop_top(zasobnik);	
-		  }while(ukoncovac);
+			//if (ukoncovac) pomItem = pop_top(zasobnik);	
+		 // }while(ukoncovac);
 
 
 		}
 
 		else return ERROR_INTER;
 
+		
 	}while(true);
 	return OK;
 }
