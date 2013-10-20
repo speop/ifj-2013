@@ -4,6 +4,7 @@
 #include "ial.h"
 #include "types.h"
 #include "scaner.h"
+#include "ast_tree.h"
 #include "stack.h"
 #define debug 1
 #define POLE 23
@@ -15,6 +16,7 @@ extern FILE* pSource_File; // z main.c
 
 T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
+Tleaf *ass, *exprTree;
 T_Token token;
 tStack *zasobnik;
 int konecBloku = 0;
@@ -41,7 +43,7 @@ static int prtable [POLE][POLE] = {
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  14  b */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
 /*  15  n */{	X,		X,		X,		X,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
-/*  17  $ */{	X,		X,		L,		X,		L,		X,		X,		X,		X,		L,		L,		X,		X,		X,		X,		X,		EQ,		L,		L,		L,		L,		L,		L},
+/*  17  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L},
 /*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
 /*  19  > */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  20  <=*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
@@ -120,10 +122,10 @@ int program(){
 
 int st_list(){
 
-	int result, ret;
+	int result ; //ret;
 	bool pom = false;
 	T_Token pomToken;
-	T_ST_VarsItem *promena;
+	//T_ST_VarsItem *promena;
 	T_ST_Funcs *func;
 
 	switch (token.type){
@@ -465,6 +467,8 @@ int functionHeaders(){
 	varSTInit(symboly);
 	funkce->name = mystrdup(token.value);
 	funkce->symbolTable = symboly;
+	free(token.value);
+	token.value = NULL;
 	
 
 
@@ -490,6 +494,8 @@ int functionHeaders(){
 		//vytvorime  novou promenou v tabulce symbolu
 		if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return INTERNAL_ERROR;
 		promena->name = mystrdup(token.value);
+		free(token.value);
+		token.value = NULL;
 
 		//pridame promenou do tabulky symbolu promenych u funkce
 		ret = addVarNodeToST(promena , symboly);
@@ -516,6 +522,7 @@ int functionHeaders(){
 
 	
 	}
+
 	return OK;
 }
 
@@ -529,12 +536,13 @@ int expr(){
 	#endif
 
 	
-	tStackItem *pomItem, *pomItem2;
-	int radek, sloupec,result;
+	tStackItem *pomItem, *pomItem2, *pomItem3;
+	int radek, sloupec,result, typ1,typ2;
 	char *retezec;
-	bool ukoncovac;
-	T_Token *exprToken, exprTempToken;
-	
+	bool projimadlo; //stejne to tu nikdo ty komentare necte ale je to promena ktera zname ze nastala nejaka chyba a je treba uvolnit. je to z duvodu kde tohle muzem byt 10x pod sebou
+	T_Token *exprToken, exprTempToken, *eToken, *pomToken;
+	Tleaf *vetev;
+	T_ST_VarsItem *promena;
 
 	//nahrajeme dolar mame prazdny zasobnik
 	if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
@@ -609,6 +617,7 @@ int expr(){
 				
 				if(exprToken->value == NULL){
 						free(exprToken);
+						printf("ze by tady?\n");
 						return ERROR_INTER;
 				}
 			
@@ -643,13 +652,13 @@ int expr(){
 				//printf("redukuju \n");		
 			#endif
 
-			if(token.type == S_DOLAR) ukoncovac = true; 
+			//if(token.type == S_DOLAR) ukoncovac = true; 
 
 			//redukujeme tak ze budeme postupne brat tokeny ze zasobniku a zezadu budeme porovnavat s pravidlem dokud je kam jit
 			pomItem = pop_top(zasobnik);
 			
 			//je tu treba hodit smycku ktera se postara ze se to vycisti pri dolaru
-			//printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
+			printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 			switch(((T_Token*)(pomItem)->data)->type){
 
 				//pravidla 10. E -> id, 11. E -> i //int, 12. E -> d //double, 13. E -> b //bool, 14. E -> s //string, 15. E -> n // null
@@ -659,22 +668,35 @@ int expr(){
 				case S_BOOL:
 				case S_STR: 
 				case S_NULL:
-					//todo: pred uvolnenim tokenu ho nahrat do ASS
+					//alokujeme novy token jehoz typ je E a v datech ma vetev 
+					eToken =  (T_Token*)malloc(sizeof(T_Token));
+					if (eToken == NULL ){
+						free(pomItem);
+						return ERROR_INTER;
+					}
 
-
-					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
-					((T_Token*)(pomItem)->data)->type= S_E; 
-					if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) return ERROR_INTER;
+					vetev = makeLeaf(pomItem->data , NULL, NULL);
+					if (vetev == NULL){
+						freeToken(pomItem->data);
+						free(eToken);
+						free(pomItem);
+						return ERROR_INTER;
+					}
+					eToken->type = S_E;
+					eToken->value = vetev;
 					free(pomItem);
 
+					if((push(zasobnik, eToken)) != OK ) return ERROR_INTER;
 					break;
 
 				//pravidla 3. E -> (E), 9. E -> f(E)
 				case S_RBRA:
 						
-					//todo: pred uvolnenim tokenu ho nahrat do ASS
+					//zrusime zavorku
 					tokenFree (((T_Token*)(pomItem)->data));
 					free(pomItem);
+					
+					//pomItem je E
 					pomItem = pop_top(zasobnik); 
 
 					if((((T_Token*)(pomItem)->data)->type) != S_E) {
@@ -684,72 +706,153 @@ int expr(){
 						return ERROR_SYN;
 					}
 
-					//todo: pred uvolnenim tokenu ho nahrat do ASS
-					tokenFree (((T_Token*)(pomItem)->data));
-					free(pomItem);
-					pomItem = pop_top(zasobnik); 
+					
+					pomItem2 = pop_top(zasobnik); 
 
-					if((((T_Token*)(pomItem)->data)->type) != S_LBRA){
-						tokenFree (((T_Token*)(pomItem)->data));
-						free(pomItem);
+					if((((T_Token*)(pomItem2)->data)->type) != S_LBRA){
+						tokenFree (((T_Token*)(pomItem2)->data));
+						free(pomItem2);
+						//uvolnime abstraktni strom
+						freeAss(pomItem->data);
+						free(pomItem); // uvolnime si E
 						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 						return ERROR_SYN;
 					}
 
+					//muzeme pomItem2 coz je zavorka uvolnit
+					tokenFree (((T_Token*)(pomItem2)->data));
+					free(pomItem2);
 
-					//todo: pred uvolnenim tokenu ho nahrat do ASS
-					//tokenFree (((T_Token*)(pomItem)->data));
-					pomItem2 = top(zasobnik); 
+					pomItem3 = top(zasobnik); 
 
-					// pravidlo 3. E -> (E)
 
-					if(((T_Token*)(pomItem2)->data)->type != S_FUNC){
-						if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
-						((T_Token*)(pomItem)->data)->type = S_E;
-						if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free(exprToken);return ERROR_INTER;}
+					// pravidlo 3. E -> (E) 
+					if(((T_Token*)(pomItem3)->data)->type != S_FUNC){
+						//v pomItem mame ulozene E.. takze nam staci jen pushnout zpatky pomItem na zasobnik						
+						if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free((T_Token*)(pomItem)->data);return ERROR_INTER;}
 						free(pomItem);
 						break;
 					}
 					
 					//dale pokracuje pravidlo 9. E -> f(E)
-					tokenFree (((T_Token*)(pomItem)->data));
-					free(pomItem);
-					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
+					pomItem2 = pop_top(zasobnik);
 
-					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
-					((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
-					break;
+					//semanticka akce kontrolujem jestli je funkce deklarovana
+					if(	findFunctionST(((T_Token*)(pomItem2)->data)->value, functionTable) == NULL ){
+						//volame nedefinovanou funkci vracime semantickou chybu
+						freeAss(pomItem->data);
+						printf("Row: %d, missing definition of \"%s\"",row,(char*)((T_Token*)(pomItem)->data)->value);
+						tokenFree((T_Token*)(pomItem2)->data);
+						free(pomItem);
+						free(pomItem2);
+						return SEM_DEF_ERROR;
+					}
+
+					eToken = (T_Token*)malloc(sizeof(T_Token));
+					if (eToken == NULL){
+						//vsechno treba uvolnit
+						freeAss(pomItem->data);
+						tokenFree((T_Token*)(pomItem2)->data);
+						free(pomItem);
+						free(pomItem2);
+						return ERROR_INTER;
+					}
+
+					vetev = makeTree(pomItem2->data,  ((T_Token*)(pomItem)->data)->value, NULL);
+					eToken->type = S_E;
+					eToken->value = vetev;
+					
+					free(pomItem->data);
+					free(pomItem);
+					free(pomItem2);
+					
+					if (vetev == NULL){
+						freeToken(pomItem2->data);
+						freeAss( ((T_Token*)(pomItem)->data)->value);
+						free(eToken);
+						return ERROR_INTER;
+					}
+
+					//nahrajem E zpet na zasobnik
+					if((push(zasobnik, eToken)) != OK ) {
+						tokenFree(eToken);
+						return ERROR_INTER;
+					}
+
 
 
 				case S_E:
-					tokenFree (((T_Token*)(pomItem)->data));
-					free(pomItem);
-					pomItem = pop_top(zasobnik); 
+					pomItem2 = pop_top(zasobnik); 					
+					pomItem3 = top(zasobnik);
+
+					//pomToken = (T_Token*)(pomItem)->data;
+					//pomVetev = (Tleaf*)(pomToken)->value;	
+					//typ1 = pomVetev->op1->type;
+					//typ1 = (Tleaf*)(pomToken->value)->op1->type;
+					typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;
+
+					//pomToken = (T_Token*)(pomItem3)->data;
+					//pomVetev = (Tleaf*)(pomToken)->value;	
+					typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
 					
-					switch(((T_Token*)(pomItem)->data)->type){
+					//okenFree (((T_Token*)(pomItem)->data));
+					//free(pomItem);
+					projimadlo = false;
+					
+					switch(((T_Token*)(pomItem2)->data)->type){
 
 							//pravidla: 1. E -> E+E, 2. E -> E*E, 5. E -> E.E, 6. E -> E/E, 7. E -> E-E, 8. E -> E,E, 16. E -> E <= E, 17. E -> E < E, 18. E -> E >= E, 19. E -> E > E, 20. E -> E !== E, 21. E -> E === E, 4. E=E
-							case S_PLUS:
+							//pouze zkontrolujeme semanticke akce jelikoz pri jinacim pravidle se returne, takze redukce se provadi mimo siwtch pro vsechnz stejne
 							case S_MUL:
-							case S_CONCATENATE:
-							case S_DIV:
+							case S_DIV:	
 							case S_MINUS:
+							case S_PLUS:
+								if((typ1 != S_INT && typ1 != S_DOUB) || (typ2 != S_INT && typ2 != S_DOUB)) projimadlo = true;
+								break;
+							
+							case S_CONCATENATE:
+								if(typ1 != S_STR || typ2 != S_STR) projimadlo = true;
+								break;
+							case S_EQ: 
+									if(typ2 != S_ID){ fprintf(stderr, "Row: %d, request variable for assigment\n", row);
+										tokenFree (((T_Token*)(pomItem)->data));
+										tokenFree (((T_Token*)(pomItem2)->data));
+										free(pomItem);
+										free(pomItem);
+										return SEM_OTHER_ERROR;
+									}
+									//pridame promenou do tabulky symbolu
+									else{
+
+										if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ){
+											tokenFree (((T_Token*)(pomItem)->data));
+											tokenFree (((T_Token*)(pomItem2)->data));
+											free(pomItem);
+											free(pomItem);
+											return ERROR_INTER;
+										} 
+									
+										promena->name = mystrdup(((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value);
+										//pridame promenou do tabulky symbolu promenych u funkce
+										if( addVarNodeToST(promena , actualST) == INTERNAL_ERROR ){
+											tokenFree (((T_Token*)(pomItem)->data));
+											tokenFree (((T_Token*)(pomItem2)->data));
+											free(pomItem);
+											free(pomItem);
+											free(promena);
+											return ERROR_INTER;
+										}
+									}
+									break;													
 							case S_COMMA:
 							case S_LEQ:
 							case S_LST:
 							case S_GEQ:
 							case S_GRT:
-							case S_NEQ:
-							case S_EQ: 
+							case S_NEQ:							
 							case S_IS:
 									
-									tokenFree (((T_Token*)(pomItem)->data));
-									free(pomItem);
-									pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
-
-									if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
-									((T_Token*)(pomItem)->data)->type = S_E; // nemusime nahravat na zasobnik pracovali jsme s tokenem ktery porad byl na zasobniku, a nahravame neterminal tak ani nemusime resit mensitko vetsitko rovna se
-									break;
+									
 							// stav zasobniku by mel byt $E
 							case S_DOLAR:
 								#if debug
@@ -765,29 +868,77 @@ int expr(){
 									return OK;
 								}
 								
-								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+								fprintf(stderr, "Row: %d, unexpected symbol in expression\n",row );
 								return ERROR_SYN;
 
 							default: 
 								tokenFree (((T_Token*)(pomItem)->data));
+								tokenFree (((T_Token*)(pomItem2)->data));
 								free(pomItem);
-								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+								free(pomItem);
+								fprintf(stderr, "Row: %d, unexpected symbol in expression\n",row );
 								return ERROR_SYN;
 					}
 
+					if(projimadlo){
+							tokenFree (((T_Token*)(pomItem)->data));
+							tokenFree (((T_Token*)(pomItem2)->data));
+							free(pomItem);
+							free(pomItem);
+							fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+							return SEM_TYPE_ERROR;
+					}
+
+					eToken = (T_Token*)malloc(sizeof(T_Token));
+					if (eToken == NULL){
+						//vsechno treba uvolnit
+						freeAss(pomItem->data);
+						tokenFree((T_Token*)(pomItem2)->data);
+						free(pomItem);
+						free(pomItem2);
+						return ERROR_INTER;
+					}
+
+					pomItem3 = pop_top(zasobnik);
+					//to co bylo v zasobniku nize je levy operand
+					vetev = makeTree(pomItem2->data, ((T_Token*)(pomItem3)->data)->value, ((T_Token*)(pomItem)->data)->value);
+
+					eToken->type = S_E;
+					eToken->value = vetev;
+					free(pomItem->data);
+					free(pomItem);
+					free(pomItem2);
+					free(pomItem3->data);
+					free(pomItem3);
+
+					if (vetev == NULL){
+						freeToken(pomItem2->data);
+						freeAss( ((T_Token*)(pomItem)->data)->value);
+						freeAss(((T_Token*)(pomItem3)->data)->value);
+						free(eToken);
+						return ERROR_INTER;
+					}
+
+					//nahrajem E zpet na zasobnik
+					if((push(zasobnik, eToken)) != OK ) {
+						tokenFree(eToken);
+						return ERROR_INTER;
+					}
+					break;
+
+				default:
+					fprintf(stderr, "Row: %d, mising symbol in expr\n",row );
+					return ERROR_SYN;
 					
 					break;
 
 			} 
 
 
-			//if (ukoncovac) pomItem = pop_top(zasobnik);	
-		 // }while(ukoncovac);
-
 
 		}
 		else if (prtable[radek][sloupec] == EQ){
-			printf("EQ\n");
+			
 			//zatim nevim jak toudelat lepe ale z podstaty veci je to treba pushnout na zasobnik
 			if(token.type == S_RBRA){
 				if((exprToken = (T_Token*)malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
@@ -801,8 +952,6 @@ int expr(){
 				}
 
 				if ((result = getToken(&token)) != OK) return result;
-				pomItem = top(zasobnik);
-				printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 
 			}
 			else pomItem = pop_top(zasobnik);
@@ -810,27 +959,23 @@ int expr(){
 			//printf("Token na zasobniku: %d \n", (((T_Token*)(pomItem)->data)->type));
 			switch (((T_Token*)(pomItem)->data)->type ){				
 				case S_E: 
-						pomItem = pop_top(zasobnik);
+						pomItem2 = pop_top(zasobnik);
 						if(pomItem == NULL) return ERROR_INTER;
-						if(((T_Token*)(pomItem)->data)->type!= S_DOLAR){
+
+						if(((T_Token*)(pomItem2)->data)->type!= S_DOLAR){
 							fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+							tokenFree(pomItem);
+							free(pomItem);
 							return ERROR_SYN;
 						}
-						tokenFree (((T_Token*)(pomItem)->data));
+						pomToken = (T_Token*)(pomItem)->data;
+						exprTree = (Tleaf*)(pomToken)->value;
 						free(pomItem);
+						free(pomToken);
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
 						return OK;
 
-				case S_LBRA:
-					break;
-						//printf("Pravidlo EQ zavorky\n");
-						//pomItem = pop_top(zasobnik);
-						//if(pomItem == NULL) return ERROR_INTER;
-						//if(((T_Token*)(pomItem)->data)->type!= S_LBRA){
-						//	fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-						//	return ERROR_SYN;
-						//}
 						
 			}
 		}

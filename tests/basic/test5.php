@@ -1,5 +1,4 @@
 <?php
 
-if(($a+$b) ===$b){}
 
-
+return $a+;

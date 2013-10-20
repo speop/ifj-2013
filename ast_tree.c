@@ -24,3 +24,7 @@ Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 
 	return makeLeaf(Operation, Lop, Rop);		//vrati ukazatel na list s operaci nebo NULL
 }
+
+bool freeAss( Tleaf* vetev){
+	return true;
+}
