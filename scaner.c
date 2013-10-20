@@ -356,6 +356,7 @@ int getTokenReal(T_Token *token)
 		
 		      scanned = fgetc(pSource_File);
       	  if(scanned == '='){
+                 scanned = fgetc(pSource_File);
                 if(scanned == '='){
 				          token->type = S_EQ;
 				          return OK;
@@ -374,6 +375,7 @@ int getTokenReal(T_Token *token)
 		
 		      scanned = fgetc(pSource_File);
 		      if(scanned == '='){
+             scanned = fgetc(pSource_File);
             if(scanned == '='){
 				        token->type = S_NEQ;
 				        return OK;
