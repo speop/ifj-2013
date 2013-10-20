@@ -1,7 +1,7 @@
 //xhudzi01, Hudziec Tomas
 #include "ast_tree.h"
 
-Tleaf* makeLeaf(T_Token E, Tleaf Lop, Tleaf Rop)
+Tleaf* makeTree(T_Token *E, Tleaf *Lop, Tleaf *Rop)
 {
 	Tleaf leaf;
 	if((leaf = (Tleaf)malloc(sizeof(struct leaf)) == NULL)) return NULL;
@@ -11,7 +11,7 @@ Tleaf* makeLeaf(T_Token E, Tleaf Lop, Tleaf Rop)
 	return *leaf;			//vrati ukazatel na vytvoreny list
 }
 
-Tleaf* makeTree(T_Token sign, T_Token op1, T_Token op2)
+Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 {
 	Tleaf Lop, Rop, Operation;		//pravy a levy operand, operace
 	//alokace mista v pameti
