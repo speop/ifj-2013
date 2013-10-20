@@ -674,20 +674,24 @@ int expr(){
 						
 					//todo: pred uvolnenim tokenu ho nahrat do ASS
 					tokenFree (((T_Token*)(pomItem)->data));
+					free(pomItem);
 					pomItem = pop_top(zasobnik); 
 
 					if((((T_Token*)(pomItem)->data)->type) != S_E) {
 						tokenFree (((T_Token*)(pomItem)->data));
+						free(pomItem);
 						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 						return ERROR_SYN;
 					}
 
 					//todo: pred uvolnenim tokenu ho nahrat do ASS
 					tokenFree (((T_Token*)(pomItem)->data));
+					free(pomItem);
 					pomItem = pop_top(zasobnik); 
 
 					if((((T_Token*)(pomItem)->data)->type) != S_LBRA){
 						tokenFree (((T_Token*)(pomItem)->data));
+						free(pomItem);
 						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 						return ERROR_SYN;
 					}
@@ -708,7 +712,8 @@ int expr(){
 					}
 					
 					//dale pokracuje pravidlo 9. E -> f(E)
-					
+					tokenFree (((T_Token*)(pomItem)->data));
+					free(pomItem);
 					pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
 
 					if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
@@ -718,6 +723,7 @@ int expr(){
 
 				case S_E:
 					tokenFree (((T_Token*)(pomItem)->data));
+					free(pomItem);
 					pomItem = pop_top(zasobnik); 
 					
 					switch(((T_Token*)(pomItem)->data)->type){
@@ -738,6 +744,7 @@ int expr(){
 							case S_IS:
 									
 									tokenFree (((T_Token*)(pomItem)->data));
+									free(pomItem);
 									pomItem = top(zasobnik); //usetrime si alokaci noveho tokenu tim ze zmenime typ toho stareho a dealokujeme mu data
 
 									if(((T_Token*)(pomItem)->data)->value != NULL){ free(((T_Token*)(pomItem)->data)->value); ((T_Token*)(pomItem)->data)->value= NULL;}
@@ -753,6 +760,7 @@ int expr(){
 									token.type = exprTempToken.type;
 									token.value = exprTempToken.value;
 									tokenFree (((T_Token*)(pomItem)->data));
+									free(pomItem);
 
 									return OK;
 								}
@@ -762,6 +770,7 @@ int expr(){
 
 							default: 
 								tokenFree (((T_Token*)(pomItem)->data));
+								free(pomItem);
 								fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 								return ERROR_SYN;
 					}
@@ -807,6 +816,8 @@ int expr(){
 							fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
 							return ERROR_SYN;
 						}
+						tokenFree (((T_Token*)(pomItem)->data));
+						free(pomItem);
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
 						return OK;

@@ -181,8 +181,7 @@ bool emptyToken(void * data) { 	deleteSt((tStack*)data, &tokenFree); return true
 
 //funkce pro dealokaci tokenu
 bool tokenFree(void *token){
-
-	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value );
-	free(token);
+	printf("volam free token\n");
+	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value ); 
 	return true;
 }

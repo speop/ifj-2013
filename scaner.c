@@ -173,7 +173,7 @@ int getTokenReal(T_Token *token)
         //ani konstanty to nejsou takze se skutecne jedna o pojmenovani funkce
         token->type = S_FUNC;
         token->value = mystrdup(str);
-
+        free(str);
         return OK;
         /*result = readWord(&token);
         return result;*/
@@ -210,6 +210,7 @@ int getTokenReal(T_Token *token)
             fseek(pSource_File, -1,SEEK_CUR);
             token->type = S_ID;
             token->value = mystrdup(str);
+            free(str);
 
             return OK;
 
