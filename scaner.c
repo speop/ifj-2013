@@ -60,7 +60,7 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
+  //printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
   return result;
 }
 

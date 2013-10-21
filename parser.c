@@ -33,7 +33,7 @@ static int prtable [POLE][POLE] = {
 /*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		L,		L,		L,		L,		L,		L},
 /*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		H,		X,		X,		X,		X,		X,		X},
+/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		X,		H,		X,		X,		X,		X,		X,		X},
 /*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
@@ -43,7 +43,7 @@ static int prtable [POLE][POLE] = {
 /*  11  i */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  12  d */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  14  b */{	X,		X,		X,		H,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
+/*  14  b */{	X,		X,		X,		H,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  15  n */{	X,		X,		X,		H,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
 /*  17  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L},
 /*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
@@ -586,7 +586,7 @@ int expr(){
 		
 		//printf("Typ tokenu pro expr je: %d \n",token.type);
 		//printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
-		printStack(zasobnik);	
+		//printStack(zasobnik);	
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 			#if debug 
