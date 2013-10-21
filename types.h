@@ -61,9 +61,9 @@ typedef enum {
 	S_ID = 30,
 	S_INT = 31,
 	S_DOUB = 32,
-	S_BOOL = 33,
-	S_NULL = 34,
-	S_STR = 35,	// retezec
+	S_STR = 33,	// retezec
+	S_BOOL = 34,
+	S_NULL = 35,	
 	S_DOLAR = 36,
 	S_LST = 37,  // <
 	S_GRT = 38, // >

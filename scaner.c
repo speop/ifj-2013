@@ -60,7 +60,7 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  //printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
+  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
   return result;
 }
 
@@ -166,8 +166,10 @@ int getTokenReal(T_Token *token)
               free(str);
               return ERROR_INTER;
             }
+
             *(int*)token->value = 1;
             return OK;
+            printf("tu uz se nedostanu\n");
         }
 
         //ani konstanty to nejsou takze se skutecne jedna o pojmenovani funkce
