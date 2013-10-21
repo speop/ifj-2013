@@ -1,6 +1,8 @@
 //xbucht18, Buchta David
 #include "ast_tree.h"
+#include <stdio.h>
 
+extern int por;
 
 /*
 Tleaf* makeTree(T_Token *E, Tleaf *Lop, Tleaf *Rop)
@@ -32,4 +34,16 @@ Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 
 bool freeAss( Tleaf* vetev){
 	return true;
+}
+
+void printAss(Tleaf* vetev )
+{	
+
+	if(vetev->op2 != NULL ) printAss( (T_Token*)(vetev->op1)->value );
+	printf("\t\t\tToken %d, typ = %d \n",++por, (T_Token*)(vetev->op1)->type );
+	if(vetev->op != NULL) printf("\t\t\tsign: %d\n", (T_Token*)(vetev->op)->type);
+	if(vetev->op2 != NULL) printf("\t\t\top2: %d\n", (T_Token*)(vetev->op2)->type);
+	if(vetev->op2 != NULL ) printAss( (T_Token*)(vetev->op2)->value );
+	return;
+
 }

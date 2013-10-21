@@ -167,8 +167,8 @@ ReturnCodesST addFuncNodeToST(T_ST_FuncsItem *newNode, T_ST_Funcs *table)
 		return ADDING_SUCCESSFUL;
 	}
 
-	comp = strcmp(newNode->name, table->data->name);
 
+	comp = strcmp(newNode->name, table->data->name);
 	 T_ST_Funcs *pointer;
 
 	// prvek se stejnym nazvem jiz v tabulce existuje

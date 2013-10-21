@@ -19,5 +19,6 @@ typedef struct Tleaf
 //Tleaf* makeTree(T_Token *, Tleaf*  , Tleaf* );
 Tleaf* makeLeaf(T_Token *, T_Token *, T_Token*);
 bool freeAss( Tleaf* );
+void printAss(Tleaf* );
 
 #endif

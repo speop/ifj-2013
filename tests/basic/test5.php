@@ -1,4 +1,6 @@
 <?php
+	
+	funkce2(6,9);
 
 
-return $a+;
+function funkce2($a){}
