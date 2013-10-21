@@ -1,6 +1,8 @@
-//xhudzi01, Hudziec Tomas
+//xbucht18, Buchta David
 #include "ast_tree.h"
 
+
+/*
 Tleaf* makeTree(T_Token *E, Tleaf *Lop, Tleaf *Rop)
 {
 	Tleaf leaf;
@@ -10,19 +12,22 @@ Tleaf* makeTree(T_Token *E, Tleaf *Lop, Tleaf *Rop)
 	leaf.Rchild = Rop;
 	return *leaf;			//vrati ukazatel na vytvoreny list
 }
-
+*/
 Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 {
-	Tleaf Lop, Rop, Operation;		//pravy a levy operand, operace
-	//alokace mista v pameti
-	if((Lop = (Tleaf)malloc(sizeof(struct leaf)) == NULL)) return NULL;
-	if((Rop = (Tleaf)malloc(sizeof(struct leaf)) == NULL)) return NULL;
-	if((Operation = (Tleaf)malloc(sizeof(struct leaf)) == NULL)) return NULL;
+	
+	Tleaf* newLeaf;
 
-	if((Lop = makeLeaf(op1, NULL, NULL) == NULL)) return NULL;
-	if((Rop = makeLeaf(op2, NULL, NULL) == NULL)) return NULL;
+	newLeaf = (Tleaf*) malloc(sizeof(Tleaf));
 
-	return makeLeaf(Operation, Lop, Rop);		//vrati ukazatel na list s operaci nebo NULL
+	if (newLeaf == NULL ) return NULL;
+
+	newLeaf->op1 = op1;
+	newLeaf->op2 = op2;
+	newLeaf->op = sign;
+
+	return newLeaf;
+
 }
 
 bool freeAss( Tleaf* vetev){

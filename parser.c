@@ -537,10 +537,10 @@ int expr(){
 
 	
 	tStackItem *pomItem, *pomItem2, *pomItem3;
-	int radek, sloupec,result, typ1,typ2;
+	int radek, sloupec,result, typ1,typ2,znamenko, ret;
 	char *retezec;
 	bool projimadlo; //stejne to tu nikdo ty komentare necte ale je to promena ktera zname ze nastala nejaka chyba a je treba uvolnit. je to z duvodu kde tohle muzem byt 10x pod sebou
-	T_Token *exprToken, exprTempToken, *eToken, *pomToken;
+	T_Token *exprToken, exprTempToken, *eToken, *pomToken, *eTokenPom;
 	Tleaf *vetev;
 	T_ST_VarsItem *promena;
 
@@ -677,7 +677,7 @@ int expr(){
 
 					vetev = makeLeaf(pomItem->data , NULL, NULL);
 					if (vetev == NULL){
-						freeToken(pomItem->data);
+						tokenFree(pomItem->data);
 						free(eToken);
 						free(pomItem);
 						return ERROR_INTER;
@@ -758,16 +758,16 @@ int expr(){
 						return ERROR_INTER;
 					}
 
-					vetev = makeTree(pomItem2->data,  ((T_Token*)(pomItem)->data)->value, NULL);
+					vetev = makeLeaf(pomItem2->data, pomItem->data, NULL);
 					eToken->type = S_E;
 					eToken->value = vetev;
 					
-					free(pomItem->data);
+				
 					free(pomItem);
 					free(pomItem2);
 					
 					if (vetev == NULL){
-						freeToken(pomItem2->data);
+						tokenFree(pomItem2->data);
 						freeAss( ((T_Token*)(pomItem)->data)->value);
 						free(eToken);
 						return ERROR_INTER;
@@ -785,16 +785,17 @@ int expr(){
 					pomItem2 = pop_top(zasobnik); 					
 					pomItem3 = top(zasobnik);
 
-					//pomToken = (T_Token*)(pomItem)->data;
-					//pomVetev = (Tleaf*)(pomToken)->value;	
-					//typ1 = pomVetev->op1->type;
-					//typ1 = (Tleaf*)(pomToken->value)->op1->type;
-					typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;
-
-					//pomToken = (T_Token*)(pomItem3)->data;
-					//pomVetev = (Tleaf*)(pomToken)->value;	
-					typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
 					
+					// v tokenech se muze nalezat i E z ktereho v principu nezkontrolujem typovou kompatibilitu, avsak tato kompatibilita se drive kontrolovala kdzy jsem poprve prevadel
+					// E -> E op E  takze mi staci kontrolovat operaci v minulem prevodu a na zaklade toho rozhodnout
+
+					//stack obsahuje E [ S_E | value], value ukazuje na leaf [op1 | op | op2], kde op1 nebo op2 ukazujou bud na E token [ S_E | value], nebo na nejaky konkretni typ napr int [ S_INT | value ]
+					typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;				
+					typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
+
+					//pokud by to byl jednoduchy E ma v typu kokretni typ, pokud se jedna o slozeny ma v typu E takze musi existovt i znamenko mezi tema dvema
+					znamenko = 1;
+					if(typ1== S_E || typ2 ==S_E) znamenko = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op->type;
 					//okenFree (((T_Token*)(pomItem)->data));
 					//free(pomItem);
 					projimadlo = false;
@@ -807,21 +808,132 @@ int expr(){
 							case S_DIV:	
 							case S_MINUS:
 							case S_PLUS:
-								if((typ1 != S_INT && typ1 != S_DOUB) || (typ2 != S_INT && typ2 != S_DOUB)) projimadlo = true;
+								switch(typ1){
+									case S_INT:
+									case S_DOUB: break;
+									case S_ID: 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value  );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
+									case S_E:
+										switch(znamenko){
+											case S_PLUS:
+											case S_MINUS:
+											case S_DIV:
+											case S_MUL: break;
+											default: 
+												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true;
+										}
+										break;
+									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = false;
+								}
+
+								switch(typ2){
+									case S_INT:
+									case S_DOUB: break;
+									case S_ID: 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
+									case S_E:
+										switch(znamenko){
+											case S_PLUS:
+											case S_MINUS:
+											case S_DIV:
+											case S_MUL: break;
+											default: 
+												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true;
+										}
+										break;
+									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = false;
+								}
 								break;
 							
 							case S_CONCATENATE:
-								if(typ1 != S_STR || typ2 != S_STR) projimadlo = true;
+								switch(typ1){
+									case S_STR: break;
+									case S_ID: 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem2)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
+									case S_E:
+										if(znamenko!= S_CONCATENATE){
+												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true;
+										}
+										break;
+									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = false;
+								}
+
+								switch(typ2){
+									case S_STR: break;
+									case S_ID: 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
+									case S_E:
+										if(znamenko!= S_CONCATENATE){
+												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true;
+										}
+										break;
+									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = false;
+								}
 								break;
-							case S_EQ: 
+
+
+							case S_IS: 
+									// prirazujeme neinicializovanou promenou
+									if(typ1 == S_ID){
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+											tokenFree (((T_Token*)(pomItem)->data));
+											tokenFree (((T_Token*)(pomItem2)->data));
+											free(pomItem);
+											free(pomItem);
+											return  SEM_UNDECLARED_PARAMETER;
+										} 
+									}
+									
+									//prirazujeme do neceho jineho nez je promena
 									if(typ2 != S_ID){ fprintf(stderr, "Row: %d, request variable for assigment\n", row);
 										tokenFree (((T_Token*)(pomItem)->data));
 										tokenFree (((T_Token*)(pomItem2)->data));
 										free(pomItem);
 										free(pomItem);
-										return SEM_OTHER_ERROR;
+										return ERROR_SYN;
 									}
-									//pridame promenou do tabulky symbolu
+									//vytvorime novou promenou
 									else{
 
 										if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ){
@@ -833,8 +945,8 @@ int expr(){
 										} 
 									
 										promena->name = mystrdup(((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value);
-										//pridame promenou do tabulky symbolu promenych u funkce
-										if( addVarNodeToST(promena , actualST) == INTERNAL_ERROR ){
+										//pridame promenou do aktualni tabulky symbolu
+										if( (ret = addVarNodeToST(promena , actualST)) == INTERNAL_ERROR ){
 											tokenFree (((T_Token*)(pomItem)->data));
 											tokenFree (((T_Token*)(pomItem2)->data));
 											free(pomItem);
@@ -842,6 +954,8 @@ int expr(){
 											free(promena);
 											return ERROR_INTER;
 										}
+										//jestli pomena existuje tak proste smazneme to co jsme vytvorili
+										else if(ret == ITEM_EXIST) free (promena);
 									}
 									break;													
 							case S_COMMA:
@@ -850,9 +964,25 @@ int expr(){
 							case S_GEQ:
 							case S_GRT:
 							case S_NEQ:							
-							case S_IS:
+							case S_EQ:
+									//zkontrolujem jsetli jsou inicializovane promene
+									if(typ1 == S_ID){
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value  );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+										} 
+									}
+
+									if(typ2 == S_ID){
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+										} 
+									}
 									
-									
+									break;
 							// stav zasobniku by mel byt $E
 							case S_DOLAR:
 								#if debug
@@ -884,8 +1014,7 @@ int expr(){
 							tokenFree (((T_Token*)(pomItem)->data));
 							tokenFree (((T_Token*)(pomItem2)->data));
 							free(pomItem);
-							free(pomItem);
-							fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+							free(pomItem2);
 							return SEM_TYPE_ERROR;
 					}
 
@@ -901,18 +1030,17 @@ int expr(){
 
 					pomItem3 = pop_top(zasobnik);
 					//to co bylo v zasobniku nize je levy operand
-					vetev = makeTree(pomItem2->data, ((T_Token*)(pomItem3)->data)->value, ((T_Token*)(pomItem)->data)->value);
+					vetev = makeLeaf(pomItem2->data, pomItem3->data, pomItem->data);
 
 					eToken->type = S_E;
 					eToken->value = vetev;
-					free(pomItem->data);
+
 					free(pomItem);
 					free(pomItem2);
-					free(pomItem3->data);
 					free(pomItem3);
 
 					if (vetev == NULL){
-						freeToken(pomItem2->data);
+						tokenFree(pomItem2->data);
 						freeAss( ((T_Token*)(pomItem)->data)->value);
 						freeAss(((T_Token*)(pomItem3)->data)->value);
 						free(eToken);
