@@ -185,3 +185,10 @@ bool tokenFree(void *token){
 	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value ); 
 	return true;
 }
+
+/*
+int cpyAndPush(T_Token token, tStack *stack){
+
+	T
+}
+*/

@@ -1,3 +1,5 @@
 <?php
-	$a = false;
-	while(false){}
+	$a = 5 +6*8;
+	$a = ($a === 5);
+	if($a === 5){}
+

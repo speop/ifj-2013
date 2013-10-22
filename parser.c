@@ -18,9 +18,9 @@ int por = 0;
 
 T_ST_Vars *symbolTable, *actualST;
 T_ST_Funcs *functionTable;
-Tleaf *ass, *exprTree;
-T_Token token;
-tStack *zasobnik;
+Tleaf *ass,  *pomVetev;
+T_Token token, *eTokenAlej, *exprTree;
+tStack *zasobnik,*alejStromu;
 int konecBloku = 0;
 
 //precedenci tabulka
@@ -68,6 +68,9 @@ int parser(){
 	//vytvorime zasobik 
 	zasobnik = SInit();
 	garbage_add(zasobnik, &emptyToken);
+
+	alejStromu = SInit();
+	garbage_add(alejStromu, &emptyToken);
 
 	prevToken = NULL;
 	token.value = NULL;
@@ -127,7 +130,7 @@ int st_list(){
 
 	int result ; //ret;
 	bool pom = false;
-	T_Token pomToken;
+	T_Token *pomToken;
 	//T_ST_VarsItem *promena;
 	T_ST_Funcs *func;
 
@@ -138,6 +141,12 @@ int st_list(){
 		case S_ID: 
 			
 			result = expr();
+
+			//nahraju strom do aleje
+			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			eTokenAlej->type = S_E;
+			eTokenAlej->value = exprTree;
+			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
 
 			#if debug 
 				printf("Zpracovany epxr\n");		
@@ -165,16 +174,37 @@ int st_list(){
 			konecBloku++;
 			if(token.type == IF) pom = true;
 
+			//zalohujeme si token
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = token.type;
+			pomToken->value = NULL;
+	
+			
+
+
  			if ((result = getToken(&token)) != OK) return result;
  			
 			result = expr();
 			if(result != OK ) return result;
-		
-			
+
+			//udelame vetev a pushneme ji na stack
+			if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
+			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			eTokenAlej->type = S_E;
+			eTokenAlej->value = pomVetev;
+			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
+
+
 			if(token.type != S_BLOCK_START ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
 			}
+
+			//nahrajem token do aleje
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_START;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
 			
 			if ((result = getToken(&token)) != OK) return result;
@@ -184,12 +214,19 @@ int st_list(){
 				result = st_list();
 				if(result != OK ) return result;
 			}
-			printf(" konec je: %d\n",token.type);
-			// mel byt konece
+			
+			// mel byt konec
 			if(token.type != S_BLOCK_END ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
+
+			//nahrajem token do aleje
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_END;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
 			konecBloku--;
 			
 			//v tokenu byl if pridavame podminku if extra
@@ -221,7 +258,12 @@ int st_list(){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be some identificator \n",row);
 				return ERROR_SYN;
 			}
-			pomToken = token;
+			
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = token.type;
+			pomToken->value = mystrdup(token.value);
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_LBRA){
@@ -239,13 +281,18 @@ int st_list(){
 				return ERROR_SYN;
 			}
 
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_START;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
 			if ((result = getToken(&token)) != OK) return result;
 			
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
 				
 				//zmenime tabulku symbolu na danou funkci
-				func = findFunctionST(pomToken.value , functionTable);
+				func = findFunctionST(pomToken->value , functionTable);
 				if(func == NULL ) return ERROR_INTER;
 				actualST = func->data->symbolTable;
 
@@ -260,6 +307,11 @@ int st_list(){
 			}
 			konecBloku--;
 
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_END;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
 			if ((result = getToken(&token)) != OK) return result;
 			result = st_list();
 			if(result != OK) return result;
@@ -272,6 +324,16 @@ int st_list(){
 			if ((result = getToken(&token)) != OK) return result;
 			result = expr();
 			if(result != OK ) return result;
+
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = RETURN;
+			pomToken->value = NULL;
+
+			if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
+			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			eTokenAlej->type = S_E;
+			eTokenAlej->value = pomVetev;
+			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
 
 			//nastavime zpet na hlavni tabulku symbolu.. tu me rekurze nemusi trapit 
 			actualST = symbolTable;
@@ -296,19 +358,46 @@ int st_list(){
 
 int if_extra(){
 	int result;
+	T_Token *pomToken;
+
 
 	switch(token.type){
 
 		// pravidlo 16. <if-extra> → else { <st-list> }
 		case ELSE: 
 			konecBloku++;
+
+			//hodime si else na ASS .. 
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = token.type;
+			pomToken->value = NULL;
+
+			if ((pomVetev =   makeLeaf(pomToken, NULL , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
+			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			eTokenAlej->type = S_E;
+			eTokenAlej->value = pomVetev;
+			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
+
+
+
+
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
 			}
 
+
+			//nahrajem token do aleje
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_START;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
+
 			if ((result = getToken(&token)) != OK) return result;
+
+
 
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
 			if(token.type != S_BLOCK_END ){
@@ -321,6 +410,14 @@ int if_extra(){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
+
+
+			//nahrajem token do aleje
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_END;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
 			konecBloku--;
 
 			if ((result = getToken(&token)) != OK) return result;
@@ -335,16 +432,35 @@ int if_extra(){
 			
 			konecBloku++;
 			
+			//zalohujeme si token
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = token.type;
+			pomToken->value = NULL;
+	
 			if ((result = getToken(&token)) != OK) return result;
 			
 			result = expr();
 			if(result != OK ) return result;
 			
+
+			//udelame vetev a pushneme ji na stack
+			if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
+			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			eTokenAlej->type = S_E;
+			eTokenAlej->value = pomVetev;
+			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
+
 			
 			if(token.type != S_BLOCK_START ){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\"\n",row);
 				return ERROR_SYN;
 			}
+
+			//nahrajem token do aleje
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_START;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
 			
 			if ((result = getToken(&token)) != OK) return result;
@@ -359,6 +475,12 @@ int if_extra(){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
+
+			//nahrajem token do aleje
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = S_BLOCK_END;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
 			
 			if ((result = getToken(&token)) != OK) return result;
@@ -518,7 +640,6 @@ int functionHeaders(){
 			return ERROR_SYN;
 		}
 
-		
 		//nacteme si dalsi id a smycku zopakujem
 		if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;
 
@@ -1163,10 +1284,11 @@ int expr(){
 							free(pomItem);
 							return ERROR_SYN;
 						}
-						pomToken = (T_Token*)(pomItem)->data;
-						exprTree = (Tleaf*)(pomToken)->value;
+						//pomToken = (T_Token*)(pomItem)->data;
+						//exprTree = (Tleaf*)(pomToken)->value;
+						exprTree = (T_Token*)(pomItem)->data;
 						free(pomItem);
-						free(pomToken);
+						//free(pomToken);
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
 						return OK;
