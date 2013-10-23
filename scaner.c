@@ -459,10 +459,105 @@ int readNumber(T_Token *token)
   token->value = malloc(sizeof(int));
   *(int*)token->value = 5;
   return OK;
+  decimal = 10;
+  exp = 0;
+  expM = 1;
+  n = firstNum;                                       //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
+  num = n - ASCII_ZERO;
+  //ZACATEK SMYCKY
+  n = //CTENI DALSIHO ZNAKU;
+  if (exp == 1) {
+    if (n == '+') {
+      expM = 1;
+    }
+    else if (n == '-') {
+      expM == -1;
+    }
+    else if (n >= '0' && n <= '9') {
+      exp *= 10;
+      exp += n - ASCII_ZERO;
+    }
+    else if (n != /*BILY ZNAK*/) {
+      return //CHYBA;
+    }
+    else {
+      exp *= expM;
+      //PRIDANI EXPONENTU
+    }
+  }
+  else {
+    if (n >= '0' && n <= '9') {
+      num *= 10;
+      num += n - ASCII_ZERO;
+    }
+    else if (n == '.') {
+      n = n / decimal;
+      num += n;
+      decimal *= 10;
+    }
+    else if (n == 'e' || n == 'E') {
+      exp = 1;
+    }
+    else {
+      return //CHYBA;
+    }
+  }
 }
 
 int readString(T_Token *token){
   return OK;
+  inString = 1;
+  //ZACATEK SMYCKY
+  scanned = //CTENI DALSIHO ZNAKU;
+  if (scanned == '"') {
+    inString = 0;
+    return T_STRING;
+  }
+  else if (scanned == '$') {
+    nextToken = T_CONCATENATE;
+    return T_STRING;
+  }
+  else if (scanned == '\\' ) {
+    scanned = //CTENI DLASIHO ZNAKU;
+    if (scanned == 'x') {
+      nextChar = 0;
+      for (i = 0; i < 2; i++) {
+        s = //CTENI DLASIHO ZNAKU;
+        if (s1 >= 'A' && s1 <= 'F') {
+          nextChar += s1 - ASCII_A_TO_HEX;
+        }
+        else if (s1 >= 'a' && s1 <= 'f') {
+          nextChar += s1 - ASCII_a_TO_HEX;
+        }
+      }
+
+      string //PRIDAT NEXTCHAR;
+
+    }
+    else if (scanned == '$') {
+      string //PRIDAT $;
+    }
+    else if (scanned == 'n') {
+      string //PRIDAT \n;
+    }
+    else if (scanned == 't') {
+      string //PRIDAT \t;
+    }
+    else if (scanned == '\\') {
+      string //PRIDAT \;
+    }
+    else if (scanned == '"') {
+      string //PRIDAT ";
+    }
+  }
+  else if (scanned == ' ') {
+    string //PRIDAT MEZERU;
+  }
+  else if (scanned > 31) {
+    string //PRIDAT scanned;
+  }
+  //SMYCKOVAT
+  return T_STRING;
 }
 
 
