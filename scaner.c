@@ -88,7 +88,7 @@ int getTokenReal(T_Token *token)
     if (scanned >= '0' && scanned <= '9'){
         
         result = OK;
-        result = readNumber(token);
+        result = readNumber(token, scanned);
         return result;
         //result = readNumber(&token);
         //return result;
@@ -453,111 +453,141 @@ int getFunctionHeader(T_Token*  token, FUn what)
   return ERROR_LEX;
 }
 
-int readNumber(T_Token *token)
+int readNumber(T_Token *token, char firstNum)
 {
   token->type = S_INT;
   token->value = malloc(sizeof(int));
-  *(int*)token->value = 5;
+  //*(int*)token->value = 5;
+  int decimal = 10;                                       //Pocitadlo desetinneho mista
+  int exp = 0;                                            //hodnota exponentu
+  int expS = 0;                                           //stav exponentu
+  int expM = 1;                                           //multiplikator exponentu (+-1)
+  int n = firstNum;                                       //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
+  double num = n - ASCII_ZERO;                            //ctene cislo (numericka hodnota)
+  n = fgetc(pSource_File)
+  do {
+    if (expS == 1) {                                      //Predchozi bylo e/E
+      if (n == '+' && expS != 2) {                        //cteme nepovinne znamenko a to poprve
+        expM = 1;
+        expS = 2;                                         //vickrat znamenko v exp. je chyba
+      }
+      else if (n == '-' && expS != 2) {
+        expM = -1;
+        expS = 2
+      }
+      else if (n >= '0' && n <= '9') {                    //hodnota exponentu
+        exp *= 10;
+        exp += n - ASCII_ZERO;
+      }
+      else {
+        exp *= expM;                                       //konecne pridani exponentu
+        num = num * pow(10.0, exp);
+      }
+    }
+    else {
+      if (n >= '0' && n <= '9') {
+        num *= 10;                                         //pridani cele casti cisla
+        num += n - ASCII_ZERO;
+      }
+      else if (n == '.') {
+        n = n / decimal;                                   //pridani desetinne casti cisla
+        num += n;
+        decimal *= 10;
+      }
+      else if (n == 'e' || n == 'E') {
+        expS = 1;                                          //a mame tu exponent
+      }
+      else {
+        return ERROR_LEX;                                  //a tady neco falesneho
+      }
+    }
+    n = fgetc(pSource_File);
+  }while(n >= '0' && n <= '9' || n == '+' && expS != 2 || n == '-' && expS != 2 || n == 'e' || n == 'E');
+
+  fseek(pSource_File, -1,SEEK_CUR);
+  *(int*)token->value = num;
   return OK;
-  decimal = 10;
-  exp = 0;
-  expM = 1;
-  n = firstNum;                                       //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
-  num = n - ASCII_ZERO;
-  //ZACATEK SMYCKY
-  n = //CTENI DALSIHO ZNAKU;
-  if (exp == 1) {
-    if (n == '+') {
-      expM = 1;
-    }
-    else if (n == '-') {
-      expM == -1;
-    }
-    else if (n >= '0' && n <= '9') {
-      exp *= 10;
-      exp += n - ASCII_ZERO;
-    }
-    else if (n != /*BILY ZNAK*/) {
-      return //CHYBA;
-    }
-    else {
-      exp *= expM;
-      //PRIDANI EXPONENTU
-    }
-  }
-  else {
-    if (n >= '0' && n <= '9') {
-      num *= 10;
-      num += n - ASCII_ZERO;
-    }
-    else if (n == '.') {
-      n = n / decimal;
-      num += n;
-      decimal *= 10;
-    }
-    else if (n == 'e' || n == 'E') {
-      exp = 1;
-    }
-    else {
-      return //CHYBA;
-    }
-  }
 }
 
 int readString(T_Token *token){
   return OK;
-  inString = 1;
-  //ZACATEK SMYCKY
-  scanned = //CTENI DALSIHO ZNAKU;
-  if (scanned == '"') {
-    inString = 0;
-    return T_STRING;
-  }
-  else if (scanned == '$') {
-    nextToken = T_CONCATENATE;
-    return T_STRING;
-  }
-  else if (scanned == '\\' ) {
-    scanned = //CTENI DLASIHO ZNAKU;
-    if (scanned == 'x') {
-      nextChar = 0;
-      for (i = 0; i < 2; i++) {
-        s = //CTENI DLASIHO ZNAKU;
-        if (s1 >= 'A' && s1 <= 'F') {
-          nextChar += s1 - ASCII_A_TO_HEX;
-        }
-        else if (s1 >= 'a' && s1 <= 'f') {
-          nextChar += s1 - ASCII_a_TO_HEX;
-        }
+  int inString = 1;
+  int pozice = 0;
+  int alokovano = 32;
+  char *string, *more_str;
+  char scanned = fgetc(pSource_File);
+
+  if ((string = (char*)malloc(alokovano * sizeof(char))) == NULL) return ERROR_INTER;
+
+  do {
+
+    if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
+      alokovano  = alokovano << 1;
+
+      more_str = (char*) realloc (string, alokovano * sizeof(int));
+      if(more_str == NULL){
+          free(str);
+          return ERROR_INTER;
       }
+      else string = more_str;
+    }
 
-      string //PRIDAT NEXTCHAR;
+    /*if (scanned == '"') {
+      inString = 0;
+      return T_STRING;
+    }*/
+    /*else if (scanned == '$') {
+      nextToken = T_CONCATENATE;
+      return T_STRING;
+    }*/
+    else if (scanned == '\\' ) {                                                 //special znak
+      scanned = fgetc(pSource_File);
+      if (scanned == 'x') {                                                      //hexa hodnota
+        nextChar = 0;
+        for (i = 0; i < 2; i++) {
+          s = fgetc(pSource_File);
+          if (s1 >= 'A' && s1 <= 'F') {
+            nextChar += s1 - ASCII_A_TO_HEX;
+          }
+          else if (s1 >= 'a' && s1 <= 'f') {
+            nextChar += s1 - ASCII_a_TO_HEX;
+          }
+        }
 
+        string[pozice++] = nextChar;
+
+      }
+      else if (scanned == '$') {                                                 //$
+        string[pozice++] = '$';
+      }
+      else if (scanned == 'n') {                                                  //\n
+        string[pozice++] = '\n';
+      }
+      else if (scanned == 't') {                                                  //\t
+        string[pozice++] = '\t';
+      }
+      else if (scanned == '\\') {                                                 //\\
+        string[pozice++] = '\\';
+      }
+      else if (scanned == '"') {                                                  //\"
+        string[pozice++] = '"';
+      }
     }
-    else if (scanned == '$') {
-      string //PRIDAT $;
+    else if (scanned == ' ') {
+      string[pozice++] = ' ';
     }
-    else if (scanned == 'n') {
-      string //PRIDAT \n;
+    else if (scanned > 31) {
+      string[pozice++] = scanned;
     }
-    else if (scanned == 't') {
-      string //PRIDAT \t;
-    }
-    else if (scanned == '\\') {
-      string //PRIDAT \;
-    }
-    else if (scanned == '"') {
-      string //PRIDAT ";
-    }
-  }
-  else if (scanned == ' ') {
-    string //PRIDAT MEZERU;
-  }
-  else if (scanned > 31) {
-    string //PRIDAT scanned;
-  }
-  //SMYCKOVAT
-  return T_STRING;
+  }while(scanned != '"' || scanned != EOF);
+
+  fseek(pSource_File, -1,SEEK_CUR);
+
+  token->type = S_STRING;
+  token->value = mystrdup(string);
+  free(string);
+
+  return OK;
 }
 
 
