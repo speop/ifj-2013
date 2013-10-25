@@ -30,7 +30,11 @@ typedef struct T_ST_FuncsItem // Hlavicka funkce
 
 }	T_ST_FuncsItem;
 
-typedef struct T_ST_Funcs // tabulka uyivatelsky definovancyh funkci funkci + vestavene funkce
+	
+	
+typedef struct T_ST_Funcs // tabulka
+	
+	 uyivatelsky definovancyh funkci funkci + vestavene funkce
 {
 	T_ST_FuncsItem *data;
 	struct T_ST_Funcs *left, *right, *parrent;

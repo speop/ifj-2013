@@ -4,17 +4,6 @@
 
 extern int por;
 
-/*
-Tleaf* makeTree(T_Token *E, Tleaf *Lop, Tleaf *Rop)
-{
-	Tleaf leaf;
-	if((leaf = (Tleaf)malloc(sizeof(struct leaf)) == NULL)) return NULL;
-	leaf.E = E;		//da token do listu
-	leaf.Lchild = Lop;		//pod sebou nebude mit nic, zadne sve potomky
-	leaf.Rchild = Rop;
-	return *leaf;			//vrati ukazatel na vytvoreny list
-}
-*/
 Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 {
 	
@@ -27,6 +16,8 @@ Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 	newLeaf->op1 = op1;
 	newLeaf->op2 = op2;
 	newLeaf->op = sign;
+	newLeaf->por = ++por;
+	
 
 	return newLeaf;
 
@@ -36,14 +27,16 @@ bool freeAss( Tleaf* vetev){
 	return true;
 }
 
-void printAss(Tleaf* vetev )
+void printAss(Tleaf* vetev, int uroven )
 {	
+	printf("\turoven %d: \n",uroven++ );
+	if(vetev->op2 != NULL ) printAss( (T_Token*)(vetev->op2)->value ,uroven);
+	//dostali jsme se dospod v pravo
 
-	if(vetev->op2 != NULL ) printAss( (T_Token*)(vetev->op1)->value );
-	printf("\t\t\tToken %d, typ = %d \n",++por, (T_Token*)(vetev->op1)->type );
+	printf("\t\tToken %d, op1: %d \n",vetev->por, (T_Token*)(vetev->op1)->type );
 	if(vetev->op != NULL) printf("\t\t\tsign: %d\n", (T_Token*)(vetev->op)->type);
 	if(vetev->op2 != NULL) printf("\t\t\top2: %d\n", (T_Token*)(vetev->op2)->type);
-	if(vetev->op2 != NULL ) printAss( (T_Token*)(vetev->op2)->value );
+	if((T_Token*)(vetev->op1)->type  == S_E ) printAss( (T_Token*)(vetev->op1)->value ,uroven );
 	return;
 
 }

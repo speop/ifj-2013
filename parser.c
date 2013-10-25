@@ -37,7 +37,7 @@ static int prtable [POLE][POLE] = {
 /*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  8  , */ {	L,		L,		L,		H,		X,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
+/*  8  , */ {	L,		L,		L,		H,		X,		L,		L,		L,		H,		L,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
 /*  9  f */ {	X,		X,		L,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X,		X},
 /*  10 id */{	H,		H,		X,		H,		H,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  11  i */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
@@ -159,6 +159,8 @@ int st_list(){
 			} 
 
 			if ((result = getToken(&token)) != OK) return result;
+
+			//printASS((Tleaf*)((T_Token*)(exprTree->value)->value));
 			//konec bloku je jen ve while a if a elseif, nemuye byt v hlavnim programu ale stlist je stejny jako v tam tech jako v tehle takze si to jen otestujeme
 			result = st_list();
 			return result;
@@ -707,7 +709,7 @@ int expr(){
 		
 		//printf("Typ tokenu pro expr je: %d \n",token.type);
 		//printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
-		//printStack(zasobnik);	
+		printStack(zasobnik);	
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 			#if debug 
@@ -1214,10 +1216,10 @@ int expr(){
 					}
 
 					pomItem3 = pop_top(zasobnik);
-					//to co bylo v zasobniku nize je levy operand
-					vetev = makeLeaf(pomItem2->data, pomItem3->data, pomItem->data);
+					//to co bylo v zasobniku nize je pravy operand
+					vetev = makeLeaf(pomItem2->data, pomItem2->data, pomItem->data);
 					
-					por = 0;
+					//por = 0;
 					
 
 					eToken->type = S_E;
@@ -1284,9 +1286,11 @@ int expr(){
 							free(pomItem);
 							return ERROR_SYN;
 						}
-						//pomToken = (T_Token*)(pomItem)->data;
+						pomToken = (T_Token*)(pomItem)->data;
+						printAss((Tleaf*)(pomToken)->value,0);
 						//exprTree = (Tleaf*)(pomToken)->value;
 						exprTree = (T_Token*)(pomItem)->data;
+
 						free(pomItem);
 						//free(pomToken);
 						token.type = exprTempToken.type;
