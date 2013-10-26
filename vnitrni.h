@@ -24,7 +24,7 @@ typedef struct {
  	int ret;
  } tExpr;
 
-
+int generateCode();
 tExpr exprGC(Tleaf *, Smery);
 int funGC(Tleaf *);
 int generate(int, T_Token* , T_Token* , T_Token*);
@@ -37,6 +37,9 @@ int generateTempVar(T_Token *);
 	S_FUNC - jedna se o volani funkce operand1 obsahuje token s funkci, vysledek kam se ulozi return, pokud funkce nedela return tak se vraci NULL
 	STORE_PARAM - muze se nachazet jen po predchozi instrukci, znamena uloz hodnotu operandu1 do vysledku
 	CALL - vem si int adresu z operandu 1 tam zacina funkce
+	
+	WHILE, IF, ELSEIF - operand1 na vyhodnoceni podminky
+	jinak operace co se nachazi v expru : S_PLUS, S_MUL, S_DIV, S_MINUS, vsechny porovnavaci operace
 	
 */
 

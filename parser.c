@@ -6,6 +6,7 @@
 #include "scaner.h"
 #include "ast_tree.h"
 #include "stack.h"
+#include "vnitrni.h"
 #define debug 1
 #define POLE 23
 
@@ -83,6 +84,13 @@ int parser(){
 	
 
 	result = program();	
+	if(result!= OK) return result;
+
+	printf("\n\n\nVolam generator\n");
+	result = generateCode();
+	if(result!= OK) return result;
+
+	printf("\n\n\nChtel bych volat interpet :)\n");
 	return result;
 
 }
@@ -104,10 +112,7 @@ int program(){
 			//if ((result = getToken(&token)) != OK) return result;
  			result = functionHeaders();
 
-			#if debug 
-				printf("hlavicky zpracovane zadne se v programu nenachazi\n");		
-			#endif
-
+			
 			//rewindli jsme... zase se nam posle <?php tak to preskocime
 			if ((result = getToken(&token)) != OK) return result;
 			token.type = -1;
@@ -131,6 +136,7 @@ int st_list(){
 	int result ; //ret;
 	bool pom = false;
 	T_Token *pomToken;
+	char* funcName;
 	//T_ST_VarsItem *promena;
 	T_ST_Funcs *func;
 
@@ -141,11 +147,13 @@ int st_list(){
 		case S_ID: 
 			
 			result = expr();
+			if(result != OK ) return result;
 
 			//nahraju strom do aleje
 			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
 			eTokenAlej->type = S_E;
-			eTokenAlej->value = exprTree;
+			eTokenAlej->value = exprTree->value;
+			//printf("typ v aleji: %d\n",((Tleaf*)(eTokenAlej->value))->op->type );
 			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
 
 			#if debug 
@@ -212,7 +220,8 @@ int st_list(){
 			if ((result = getToken(&token)) != OK) return result;
 
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
-			if(token.type != S_BLOCK_END ){ printf("BLOK IF: %d\n",token.type);
+
+			if(token.type != S_BLOCK_END ){ 
 				result = st_list();
 				if(result != OK ) return result;
 			}
@@ -241,11 +250,11 @@ int st_list(){
 					if(result != OK ) return result;
 				}
 				// jednalo se tak vratime token abychom ho priste znova dostali
-				else putToken(&token);
+				//else putToken(&token);
 				
 			} 
 
-			if ((result = getToken(&token)) != OK) return result;
+			//if ((result = getToken(&token)) != OK) return result;
 			result = st_list();
 			if(result != OK) return result;
 
@@ -262,8 +271,10 @@ int st_list(){
 			}
 			
 			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
-			pomToken->type = token.type;
+			pomToken->type = FUNCTION;
 			pomToken->value = mystrdup(token.value);
+			funcName = pomToken->value;
+			token.value = NULL;
 			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
 
@@ -273,10 +284,14 @@ int st_list(){
 				return ERROR_SYN;
 			}
 
-			if ((result = getToken(&token)) != OK) return result;
-			result = functionList();
-			if(result != OK ) return result;
+			do {
+				if ((result = getToken(&token)) != OK) return result; 
+				if(token.value != NULL) free(token.value);
+				token.value = NULL;
+			}
+			while(token.type != S_RBRA);
 
+			
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START){
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"{\" \n",row);
@@ -291,23 +306,33 @@ int st_list(){
 			if ((result = getToken(&token)) != OK) return result;
 			
 			// otestujeme jestli se nejedna o pravidlo 3. <st-list> → ε
+			
 			if(token.type != S_BLOCK_END ){
-				
+				//printf("zmena tabulky \n");
 				//zmenime tabulku symbolu na danou funkci
-				func = findFunctionST(pomToken->value , functionTable);
+				func = findFunctionST(funcName , functionTable);
 				if(func == NULL ) return ERROR_INTER;
+
 				actualST = func->data->symbolTable;
 
 				result = st_list();
-				if(result != OK ) return result;
+				if(result != OK ) return result; 
 				//if ((result = getToken(&token)) != OK) return result;
 			}
+			
 
 			if(token.type != S_BLOCK_END ){ 
-				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
+				fprintf(stderr, "Row: %d,fg unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
 			}
 			konecBloku--;
+			//hodime si info pro sebe ze konci blok funkce
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			pomToken->type = INTER_RETURN;
+			pomToken->value = NULL;
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+
+			actualST = symbolTable;
 
 			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
 			pomToken->type = S_BLOCK_END;
@@ -324,23 +349,30 @@ int st_list(){
 		// pravidlo 7. <st-list> → return <expr> <st-list>
 		case RETURN:
 			if ((result = getToken(&token)) != OK) return result;
-			result = expr();
-			if(result != OK ) return result;
+			if(token.type != S_SEM){
+				result = expr();
 
-			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
-			pomToken->type = RETURN;
-			pomToken->value = NULL;
+				if(result != OK ) return result;
 
-			if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
-			if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
-			eTokenAlej->type = S_E;
-			eTokenAlej->value = pomVetev;
-			if (push(alejStromu,eTokenAlej) != OK) return ERROR_INTER;
-
-			//nastavime zpet na hlavni tabulku symbolu.. tu me rekurze nemusi trapit 
-			actualST = symbolTable;
+				if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+				pomToken->type = RETURN;
+				pomToken->value = exprTree;
+				//printf("v returnu expr: %d\n",((Tleaf*)(exprTree->value))->op->type );
+				if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
+				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+				eTokenAlej->type = S_E;
+				eTokenAlej->value = pomVetev;
+				if (push(alejStromu,eTokenAlej) != OK) { tokenFree(eTokenAlej); return ERROR_INTER;}
+			}
+			else{
+				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+				eTokenAlej->type = RETURN;
+				eTokenAlej->value = NULL;
+				if (push(alejStromu,eTokenAlej) != OK) { free(eTokenAlej); return ERROR_INTER;}
+			}
 
 			if ((result = getToken(&token)) != OK) return result;
+			
 			result = st_list();
 			if(result != OK) return result;
 
@@ -407,7 +439,7 @@ int if_extra(){
 				if(result != OK ) return result;
 				//if ((result = getToken(&token)) != OK) return result;
 			}
-
+			
 			if(token.type != S_BLOCK_END ){ 
 				fprintf(stderr, "Row: %d, unexpected symbol it should be \"}\"\n",row);
 				return ERROR_SYN;
@@ -423,13 +455,14 @@ int if_extra(){
 			konecBloku--;
 
 			if ((result = getToken(&token)) != OK) return result;
+			
 			result = st_list();
 			if(result != OK) return result;
 
 			return OK;
 			break;
 
-		// pravidlo 17. <if-extra> → elseif { <st-list> } <if-extra> <st-lsit>
+		// pravidlo 17. <if-extra> → elseif (expr) { <st-list> } <if-extra> <st-lsit>
 		case ELSEIF:
 			
 			konecBloku++;
@@ -517,7 +550,9 @@ int functionList(){
 		
 		// pravidlo 19. <functionList> → id <functionList>
 		case S_ID:
-			
+		
+			free(token.value);
+			token.value = NULL;
 			if ((result = getToken(&token)) != OK) return result;
 			result = functionList();
 			if(result != OK ) return result;
@@ -710,11 +745,11 @@ int expr(){
 		//printf("Typ tokenu pro expr je: %d \n",token.type);
 		//printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
 		//printStack(zasobnik);
-		if(token.value == NULL ) printf(" Je to null\n");	
+	
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 			#if debug 
-				printf("Nahravam na stack: \n\n");		
+				//printf("Nahravam na stack: \n\n");		
 			#endif
 			
 			//vytvareni si noveho tokenu je z duvodu ze pri returnu s chybou a naslednme uvolnovani pameti bychom mohli uvolnovat znova stejny token
@@ -745,8 +780,8 @@ int expr(){
 
 				}
 				
-				if(exprToken->value == NULL){
-						free(exprToken);
+				if(exprToken->value == NULL){ 
+						free(exprToken); 
 						return ERROR_INTER;
 				}
 			
@@ -827,68 +862,66 @@ int expr(){
 					tokenFree (((T_Token*)(pomItem)->data));
 					free(pomItem);
 					
-					//pomItem je E
+					//pomItem je E, nebo zavorka
 					pomItem = pop_top(zasobnik); 
 
-					if((((T_Token*)(pomItem)->data)->type) != S_E) {
-						tokenFree (((T_Token*)(pomItem)->data));
-						free(pomItem);
-						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-						return ERROR_SYN;
-					}
+					//je to E
+					if((((T_Token*)(pomItem)->data)->type) == S_E) {
+											
+						pomItem2 = pop_top(zasobnik); 
 
-					
-					pomItem2 = pop_top(zasobnik); 
+						if((((T_Token*)(pomItem2)->data)->type) != S_LBRA){
+							tokenFree (((T_Token*)(pomItem2)->data));
+							free(pomItem2);
+							//uvolnime abstraktni strom
+							freeAss(pomItem->data);
+							free(pomItem); // uvolnime si E
+							fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
+							return ERROR_SYN;
+						}
 
-					if((((T_Token*)(pomItem2)->data)->type) != S_LBRA){
+						//muzeme pomItem2 coz je zavorka uvolnit
 						tokenFree (((T_Token*)(pomItem2)->data));
 						free(pomItem2);
-						//uvolnime abstraktni strom
-						freeAss(pomItem->data);
-						free(pomItem); // uvolnime si E
-						fprintf(stderr, "Row: %d, unexpected symbol in expresion\n",row );
-						return ERROR_SYN;
-					}
 
-					//muzeme pomItem2 coz je zavorka uvolnit
-					tokenFree (((T_Token*)(pomItem2)->data));
-					free(pomItem2);
+					
+						//zkontrolujeme jestli e neni nedefinovana promena
 
-					pomItem3 = top(zasobnik); 
-					//zkontrolujeme jestli e neni nedefinovana promena
-
-					if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type == S_ID){
-						if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){ 
+						if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type == S_ID){
+							if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){ 
 											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
 											tokenFree (((T_Token*)(pomItem)->data));
-											tokenFree (((T_Token*)(pomItem3)->data));
 											free(pomItem);
-											free(pomItem2);
+											free(pomItem2); 
 											return  SEM_UNDECLARED_PARAMETER;
-										} 
-
-					}
-
-					if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2 != NULL){
-						if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2->type == S_ID){
-							if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2->value, actualST)) == NULL){ 
-											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2)->value );
-											tokenFree (((T_Token*)(pomItem)->data));
-											tokenFree (((T_Token*)(pomItem3)->data));
-											free(pomItem);
-											free(pomItem2);
-											return  SEM_UNDECLARED_PARAMETER;
-										} 
+							} 
 
 						}
 
+						if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2 != NULL){
+							if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2->type == S_ID){
+								if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2->value, actualST)) == NULL){ 
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2)->value );
+											tokenFree (((T_Token*)(pomItem)->data));
+											free(pomItem);
+											free(pomItem2); 
+											return  SEM_UNDECLARED_PARAMETER;
+								} 
+
+							}
+
+						}	
 					}
 					
-					
+					pomItem3 = top(zasobnik); 
 					// pravidlo 3. E -> (E) 
 					if(((T_Token*)(pomItem3)->data)->type != S_FUNC){
-						//v pomItem mame ulozene E.. takze nam staci jen pushnout zpatky pomItem na zasobnik
+						//v pomItem mame ulozene E.. takze nam staci jen pushnout zpatky pomItem na zasobnik prazdna zavorka je proste error
+						if((((T_Token*)(pomItem)->data)->type) != S_E) {fprintf(stderr, "Row: %d, expecting some expression\n",row );
+								return ERROR_SYN;}
 						if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free((T_Token*)(pomItem)->data);return ERROR_INTER;}
+						
+						//jinac tam jsou () takze je ignorujem
 						free(pomItem);
 						break;
 					}
@@ -900,7 +933,7 @@ int expr(){
 					//semanticka akce kontrolujem jestli je funkce deklarovana
 					if((funkce = findFunctionST(((T_Token*)(pomItem2)->data)->value, functionTable)) == NULL ){
 						//volame nedefinovanou funkci vracime semantickou chybu
-						freeAss(pomItem->data);
+						if((((T_Token*)(pomItem)->data)->type) == S_E) freeAss(pomItem->data);
 						fprintf(stderr,"Row: %d, missing definition of \"%s\"\n",row,(char*)((T_Token*)(pomItem2)->data)->value);
 						tokenFree((T_Token*)(pomItem2)->data);
 						free(pomItem);
@@ -911,7 +944,7 @@ int expr(){
 					//funkce ma malo parametru
 					//printf("Params def: %d, params call: %d \n", funkce->data->paramCount,params);
 					if(funkce->data->paramCount > params ){
-						freeAss(pomItem->data);
+						if((((T_Token*)(pomItem)->data)->type) == S_E) freeAss(pomItem->data);
 						fprintf(stderr,"Row: %d, too a few parameters in funciton  \"%s\"\n",row,(char*)((T_Token*)(pomItem2)->data)->value);
 						tokenFree((T_Token*)(pomItem2)->data);
 						free(pomItem);
@@ -923,14 +956,17 @@ int expr(){
 					eToken = (T_Token*)malloc(sizeof(T_Token));
 					if (eToken == NULL){
 						//vsechno treba uvolnit
-						freeAss(pomItem->data);
+						if((((T_Token*)(pomItem)->data)->type) == S_E) freeAss(pomItem->data);
 						tokenFree((T_Token*)(pomItem2)->data);
 						free(pomItem);
 						free(pomItem2);
 						return ERROR_INTER;
 					}
 
-					vetev = makeLeaf(pomItem2->data, pomItem->data, NULL);
+					
+					if((((T_Token*)(pomItem)->data)->type) == S_E) vetev = makeLeaf(pomItem2->data, pomItem->data, NULL);
+					else vetev = makeLeaf(pomItem2->data, NULL, NULL);
+					
 					eToken->type = S_E;
 					eToken->value = vetev;
 					
@@ -966,9 +1002,12 @@ int expr(){
 					//printf("tisknu strom: \n");	
 					//printAss(((T_Token*)(pomItem)->data)->value );
 					//printAss(((T_Token*)(pomItem3)->data)->value );
-					typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;			
-					typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
+				
+					if( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1 != NULL ) typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;	
+					else typ1 = NOT_EXIST;
 
+					if( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1 != NULL ) typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
+					else typ2 = NOT_EXIST;
 					//pokud by to byl jednoduchy E ma v typu kokretni typ, pokud se jedna o slozeny ma v typu E takze musi existovt i znamenko mezi tema dvema
 					znamenko1 = 0;
 					znamenko2 =0 ;
@@ -1011,16 +1050,17 @@ int expr(){
 											case S_FUNC:
 											case S_MUL: break;
 											default: 
-												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												fprintf(stderr, "Row: %d, 1 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 										}
 										break;
-									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+									default: 	fprintf(stderr, "Row: %d, 2 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = false;
 								}
 								if (projimadlo) break;
+								
 								switch(typ2){
 									case S_INT:
 									case S_FUNC:
@@ -1035,20 +1075,20 @@ int expr(){
 										break;
 									case S_E:
 										switch(znamenko2){
-											case S_PLUS:
+											case S_PLUS: printf("jmame \n");
 											case S_MINUS:
 											case S_DIV:
 											case S_FUNC:
 											case S_MUL: break;
 											default: 
-												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												fprintf(stderr, "Row: %d, 3 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 										}
 										break;
-									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+									default: 	fprintf(stderr, "Row: %d, 4 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
-												projimadlo = false;
+												projimadlo = true;
 								}
 								break;
 							
@@ -1065,12 +1105,12 @@ int expr(){
 										break;
 									case S_E:
 										if(znamenko1!= S_CONCATENATE && znamenko1 != S_FUNC){
-												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												fprintf(stderr, "Row: %d, 5 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 										}
 										break;
-									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+									default: 	fprintf(stderr, "Row: %d, 6 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 								}
@@ -1087,12 +1127,12 @@ int expr(){
 										break;
 									case S_E:
 										if(znamenko2!= S_CONCATENATE && znamenko2 != S_FUNC){
-												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+												fprintf(stderr, "Row: %d, 7 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 										}
 										break;
-									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
+									default: 	fprintf(stderr, "Row: %d, 8 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 								}
@@ -1165,7 +1205,7 @@ int expr(){
 
 									if(typ2 == S_ID){
 										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
-											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1)->value );
 											ret= SEM_UNDECLARED_PARAMETER;
 											projimadlo = true;
 										} 
@@ -1219,7 +1259,7 @@ int expr(){
 
 					pomItem3 = pop_top(zasobnik);
 					//to co bylo v zasobniku nize je pravy operand
-					vetev = makeLeaf(pomItem2->data, pomItem2->data, pomItem->data);
+					vetev = makeLeaf(pomItem2->data, pomItem3->data, pomItem->data);
 					
 					//por = 0;
 					
@@ -1289,14 +1329,22 @@ int expr(){
 							return ERROR_SYN;
 						}
 						pomToken = (T_Token*)(pomItem)->data;
-						printAss((Tleaf*)(pomToken)->value,0);
-						//exprTree = (Tleaf*)(pomToken)->value;
 						exprTree = (T_Token*)(pomItem)->data;
+						//pomToken = ((Tleaf*) (pomToken->value))->op;
+						//printf("pom token: %d\n", pomToken->type);
+						//exprTree = (Tleaf*)(pomToken)->value;
+						
+						//((Tleaf*)(T_Token*)(pomItem)->data)->value;
+
+						//printf("EPXR: %d \n",((T_Token*)(pomItem->data)->type);
+						//printf("tiskn epxr\n");
+						//printf("EPXR: %d \n",((Tleaf*)(exprTree->value))->op->type);
 
 						free(pomItem);
 						//free(pomToken);
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
+						printf("expr end\n");
 						return OK;
 
 						

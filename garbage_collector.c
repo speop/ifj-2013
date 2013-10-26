@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-#define debug 1
+#define debug 0
 #define POCET_POKUSU 3 // kolikrat ma zkouset garbage collector odstranit prvek nez vyhlasi chybu
 
 extern TGarbageList trash; //z main.c

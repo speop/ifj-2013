@@ -60,7 +60,7 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
+  //printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
   return result;
 }
 
@@ -407,9 +407,7 @@ int getFunctionHeader(T_Token*  token, FUn what)
 { 
   // hledame klicove slovo slovo function
   char scanned;
- #if debug 
-      printf("posilam hlavicky \n");    
-  #endif
+
   if(what ==NEXT_READ){
     do{
         scanned = fgetc(pSource_File);
@@ -597,6 +595,7 @@ int readString(T_Token *token){
 char* mystrdup(const char* s)
 {
     char* p = malloc(strlen(s)+1);
+    if(p==NULL) fprintf(stderr, "Cannot alocate memory\n");
     if (p) strcpy(p, s);
     return p;
 }

@@ -10,6 +10,8 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
+#define debug 1
+
 //#include "cilovy_kod.h"
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -28,8 +30,10 @@ int generateCode(){
 	
 	actualST = symbolTable;
 	T_ST_Funcs *funkce;
+	T_Token eToken;
 
 	LastVar.type =  S_ID;
+	LastVar.value = NULL;
 	tStackItem* item;
 	tExpr ret;
 	int result;
@@ -39,7 +43,7 @@ int generateCode(){
 	garbage_add(pomStack, &emptyToken);
 
 	paska = (TAC*) malloc(size * sizeof(TAC));
-	if(paska != NULL) return ERROR_INTER;
+	if(paska == NULL) return ERROR_INTER;
 	
 	
 
@@ -47,45 +51,84 @@ int generateCode(){
 	item = pop_back(alejStromu);
 
 	while (item != NULL){
-	
+		
+		//printf("typ Hlavni: %d\n", ((T_Token*)(item)->data)->type);
 		switch(((T_Token*)(item)->data)->type){
 
 			case S_E:  	
-
+				if(((Tleaf*)((T_Token*)(item)->data)->value)->op == NULL){
+					item = pop_back(alejStromu);
+					continue;
+				}
+				//printf("typ2 : %d\n", ((Tleaf*)((T_Token*)(item)->data)->value)->op->type);
 				switch (((Tleaf*)((T_Token*)(item)->data)->value)->op->type){
 
-
-
+					
+					// bude treba to if a while asi zmenit
 					case WHILE:
-					case IF:	
-						if ((result = generate(((Tleaf*)((T_Token*)(item)->data)->value)->op->type, ((Tleaf*)((T_Token*)(item)->data)->value)->op1, NULL,NULL)) != OK ) return result;  
-						
+					case IF:
+					case ELSEIF:
+					case RETURN:
+							if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
+							else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+							if (ret.ret != OK ) return ret.ret;
+
+					
+							if ((result = generate(((Tleaf*)((T_Token*)(item)->data)->value)->op->type, &LastVar, NULL,NULL)) != OK ) return result;						
+							break;
+
+					case 6787:
+							//v returnu je jen promena
+							if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
+							else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+							generate(RETURN,&LastVar,NULL,NULL);
+							if (ret.ret != OK ) return ret.ret;
+							break;
+					case ELSE:
+						generate(ELSE,NULL,NULL,NULL);
+						break;
 					default:
-						ret = exprGC(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value, RIGHT);
+
+						ret = exprGC(((T_Token*)(item)->data)->value, RIGHT);
 						if (ret.ret != OK ) return ret.ret;
 						break;
 
 			 	}
+			 	break;
 			 case FUNCTION:		
 						//nastavime si tabulku symbolu na funkci 
-						funkce = findFunctionST(((Tleaf*)((T_Token*)(item)->data)->value)->op->value, functionTable);
+						funkce = findFunctionST(((T_Token*)(item)->data)->value, functionTable);
 						actualST = 	funkce->data->symbolTable;
 						if ((result = generate(FUNCTION, item->data, NULL,NULL)) != OK ) return result; 
 						break;
 			case RETURN:
+					//je to ten return kde nejsou parametry takze jen  vygenerujeme ze byl return					
+					if ((result = generate(RETURN, NULL, NULL,NULL)) != OK ) return result; 
+					break;
 
+			case INTER_RETURN:
 					actualST = symbolTable;
-					if ((result = generate(FUNCTION, NULL, NULL,NULL)) != OK ) return result; 
 					break;
 
 			 //BLOCK_END, BLOCK_START
 			 default:
-			 		if ((result = generate(((Tleaf*)((T_Token*)(item)->data)->value)->op->type, NULL, NULL,NULL)) != OK ) return result;  
+			 		if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;  
 		}
 
 		item = pop_back(alejStromu);
 	}
 
+
+	if((result = addJump())!= OK) return result;
+	#if debug
+	for (int x= 0; x<index; x++)
+	{
+		printf("Na pasce [%d] se naleza operace: %d",x,paska[x].operator );
+		if(paska[x].operator == CALL) printf(", adresa volani je: %d",paska[x].operand1.type );
+		//if(paska[x].operator == IF) printf(", blah %d",paska[x].operand1.type );
+		printf("\n");
+	}
+	#endif
 	return OK;
 }
  
@@ -99,112 +142,128 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 
 	ret.rightVar = NULL;
 	ret.leftVar = NULL;
-
+	//printf("typ: %d\n",tree->op->type );
+	//if(smer == RIGHT) printf("smer RIGHT\n");
+	//else printf("smer LEFT\n");
 	// je tam volani funkce zpracujeme si ji jinac nez ostatni
-	if(tree->op->type ==  S_FUNC){
-		if((generateTempVar(&tempVar)) == OK) {ret.ret= ERROR_INTER; return ret;}
-		if ((generate(S_FUNC, tree->op, NULL, &tempVar))  != OK ) {ret.ret= ERROR_INTER; return ret;}
-		//zpracujem parametru funkce
-		if ((result  = funGC(tree->op1->value)) != OK ) {ret.ret= ERROR_INTER; return ret;}
 
-		//vygenerujeme volani funkce
-		if((generate(CALL, NULL, NULL, NULL)) != OK ) {ret.ret= ERROR_INTER; return ret;}
+		if(tree->op->type ==  S_FUNC){ 
+			if((generateTempVar(&tempVar)) != OK) {ret.ret= ERROR_INTER; return ret;}
+			if ((generate(S_FUNC, tree->op, NULL, &tempVar))  != OK ) {ret.ret= ERROR_INTER; return ret;}
+			//zpracujem parametru funkce pokud nejake ma, pokud ne jen vygenerujeme call
+			if(tree->op1 != NULL ) 	if ((result  = funGC(tree->op1->value)) != OK ) {ret.ret= ERROR_INTER; return ret;}
 
-		//vse v poradku
-		ret.ret = OK;
-		return ret;
-	}
+			//vygenerujeme volani funkce
+			if((generate(CALL, NULL, NULL, NULL)) != OK ) {ret.ret= ERROR_INTER; return ret;}
 
-	//prochazime strom do prava 
-	//((Tleaf*)((T_Token*)(item)->data)->value)->op->type
-	if(((Tleaf*)(tree->op2->value))->op1->type == S_E){
-		ret = exprGC(tree->op2->value, RIGHT);
-		if(ret.ret != OK)  return ret;
-	}
-
-	//v pravo uz nesjou podstromy jdemem do leva
-	if(((Tleaf*)(tree->op1->value))->op1->type == S_E){
-		ret = exprGC(tree->op1->value, LEFT);
-		if(ret.ret != OK)  return ret;
-	}
-
-	//dosli jsme na dno
-	else{
-
-		if(tree->op->type ==  S_IS){  		
-			if((generate(S_IS, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1))  != OK ){ ret.ret = ERROR_INTER; return ret; }
+			//vse v poradku
+			ret.ret = OK;
+			return ret;
 		}
+
+		//prochazime strom do prava z duvodu returnu musime testovat i na
+		//((Tleaf*)((T_Token*)(item)->data)->value)->op->type 
+		if(((Tleaf*)(tree->op2->value))->op1->type == S_E){
+			ret = exprGC(tree->op2->value, RIGHT);
+			if(ret.ret != OK)  return ret;
+
+		}
+
+		//v pravo uz nesjou podstromy jdemem do leva
+		else if(((Tleaf*)(tree->op1->value))->op1->type == S_E){
+			ret = exprGC(tree->op1->value, LEFT);
+			if(ret.ret != OK)  return ret; 
+		}
+
+		//dosli jsme na dno
 		else{
-			if((generateTempVar(&tempVar)) == OK) { ret.ret = ERROR_INTER; return ret; }
-			if((generate(tree->op->type, ((Tleaf*)(tree->op1->value))->op1, ((Tleaf*)(tree->op2->value))->op1, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
+	
 
-			if(smer == LEFT){
-				if((ret.leftVar = (T_Token*)malloc(sizeof(T_Token))) == NULL ) { ret.ret = ERROR_INTER; return ret; }
-				ret.leftVar->type = S_ID;
-				if ((ret.leftVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
+			if(tree->op->type ==  S_IS){  		
+				if((generate(S_IS, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1))  != OK ){ ret.ret = ERROR_INTER; return ret; }
 			}
+			else{
+				if((generateTempVar(&tempVar)) != OK) { ret.ret = ERROR_INTER; return ret; }
+				if((generate(tree->op->type, ((Tleaf*)(tree->op1->value))->op1, ((Tleaf*)(tree->op2->value))->op1, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
 
+				if(smer == LEFT){
+					if((ret.leftVar = (T_Token*)malloc(sizeof(T_Token))) == NULL ) { ret.ret = ERROR_INTER; return ret; }
+					ret.leftVar->type = S_ID;
+					if ((ret.leftVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
+				}
+
+				else {
+					if((ret.rightVar = (T_Token*)malloc(sizeof(T_Token))) == NULL) { ret.ret = ERROR_INTER; return ret; }
+					ret.rightVar->type = S_ID;
+					if ((ret.rightVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
+				}
+			}
+		
+			ret.ret = OK;
+			return ret;
+		}
+
+		//printf("prvek za dnem : %d\n",tree->op->type );
+		free(LastVar.value);
+		if(tree->op->type ==  S_IS){
+			
+			//vysledek nam muze probublat jen zprava
+			if(ret.rightVar != NULL) { 
+				if((generate(tree->op->type, ret.rightVar, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; } 
+
+			}
 			else {
-				if((ret.rightVar = (T_Token*)malloc(sizeof(T_Token))) == NULL) { ret.ret = ERROR_INTER; return ret; }
-				ret.rightVar->type = S_ID;
-				if ((ret.rightVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
+				if((generate(tree->op->type, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; }
 			}
+			LastVar.value = mystrdup(((Tleaf*)(tree->op1->value))->op1->value);
+		} 
+	
+		else {
+
+			if((generateTempVar(&tempVar)) != OK) { ret.ret = ERROR_INTER; return ret; }
+	
+			//mame operaci se dvema pomocnyma promenyma
+			if(ret.rightVar != NULL && ret.leftVar != NULL){		
+		
+				if((generate(tree->op->type, ret.leftVar, ret.rightVar, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
+				free(ret.rightVar->value);
+				free(ret.leftVar->value);
+			}
+			//jen jedna pomocna promena
+
+			else if (ret.rightVar != NULL ){
+				if((generate(tree->op->type, ((Tleaf*)(tree->op1->value))->op1, ret.rightVar, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
+				free(ret.rightVar->value);
+			}
+			else if (ret.leftVar != NULL){
+				if((generate(tree->op->type, ret.leftVar, ((Tleaf*)(tree->op2->value))->op1, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
+				free(ret.leftVar->value);
+			}
+
+
+			
+
+			if (smer == LEFT ) { 
+				if (!(ret.leftVar = (T_Token*)malloc(sizeof(T_Token)))) {fprintf(stderr, "Could not allcocate memory.\n"); ret.ret = ERROR_INTER; return ret;}
+				ret.leftVar->value = mystrdup(tempVar.value);	
+				ret.rightVar = NULL;	
+			}
+
+			else  { 
+				if (!(ret.rightVar = (T_Token*)malloc(sizeof(T_Token)))) {fprintf(stderr, "Could not allcocate memory.\n"); ret.ret = ERROR_INTER; return ret;}
+				ret.rightVar->value = mystrdup(tempVar.value); 
+				ret.leftVar = NULL;			
+			}
+
+			if(LastVar.value) free(LastVar.value);
+			LastVar.value = mystrdup(tempVar.value);
+		
 		}
 
 		ret.ret = OK;
 		return ret;
-	}
 
-	free(LastVar.value);
-	if(tree->op->type ==  S_IS){
 
-		//vysledek nam muze probublat jen zprava
-		if(ret.rightVar != NULL) { if((generate(tree->op->type, ret.rightVar, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; } }
-		else {
-			if((generate(tree->op->type, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; }
-		}
-		LastVar.value = mystrdup(((Tleaf*)(tree->op1->value))->op1->value);
-	} 
-	
-	else {
-
-		if((generateTempVar(&tempVar)) == OK) { ret.ret = ERROR_INTER; return ret; }
-	
-		//mame operaci se dvema pomocnyma promenyma
-		if(ret.rightVar != NULL && ret.leftVar != NULL){		
-		
-			if((generate(tree->op->type, ret.leftVar, ret.rightVar, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
-		}
-		//jen jedna pomocna promena
-
-		else if (ret.rightVar != NULL ){
-			if((generate(tree->op->type, ((Tleaf*)(tree->op1->value))->op1, ret.rightVar, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
-		}
-		else if (ret.leftVar != NULL){
-			if((generate(tree->op->type, ret.leftVar, ((Tleaf*)(tree->op2->value))->op1, &tempVar))  != OK ) { ret.ret = ERROR_INTER; return ret; }
-		}
-
-		free(ret.rightVar->value);
-		free(ret.leftVar->value);
-
-		if (smer == LEFT ) {
-			ret.leftVar->value = mystrdup(tempVar.value);
-			free(ret.rightVar);		
-			ret.rightVar = NULL;	
-		}
-
-		else  {
-			ret.rightVar->value = mystrdup(tempVar.value);
-			free(ret.leftVar);
-			ret.leftVar = NULL;			
-		}
-
-		LastVar.value = mystrdup(tempVar.value);
-
-	}
-
-	ret.ret = OK;
-	return ret;
 
 }
 
@@ -217,16 +276,16 @@ int funGC(Tleaf *tree){
 	
 	//podivame se co je vpravem operandu
 	//operator neco obsahuje bud mat. operaci nebo carku nebo volani dalsi funkce
-	if((tree->op) != NULL){
+	if((tree->op) != NULL){ 
 
-	if((generateTempVar(&tempVar)) == OK ) return ERROR_INTER;
+	if((generateTempVar(&tempVar)) != OK ) return ERROR_INTER;
 
 		//okontrolujem funkci a podle toho se zaridime		
 		if((tree->op->type)== S_FUNC){
 
 			if((generate(S_FUNC, tree->op, NULL, &tempVar)) != OK ) return ERROR_INTER;
 			//rekurzivne vytvarime kod pro volani funkce
-			if ((result  = funGC(tree->op->value)) != OK ) return result;
+			if(tree->op1 != NULL ) if ((result  = funGC(tree->op->value)) != OK ) return result;
 			if((generate(CALL, NULL, NULL, NULL)) != OK ) return ERROR_INTER;
  		}
 
@@ -349,7 +408,7 @@ int generateTempVar(T_Token *tok){
 	}
 	if((name=malloc(sizeof(char)*lenght))==NULL)
 		return ERROR_INTER;
-	if(sprintf(name,"=temp%d",temp_var)==-1)
+	if(sprintf(name,"temp%d",temp_var)==-1)
 		return ERROR_INTER;
 	temp_var++;
 	tok->value = name;

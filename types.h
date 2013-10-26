@@ -102,7 +102,8 @@ typedef enum {
   	NOT_EXIST = 60,
   	CALL = 61,
   	STORE_PARAM = 62,
-  	
+  	INTER_RETURN = 63,
+
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
 	L_INTER_ERROR = 72

@@ -1,5 +1,15 @@
 <?php
-	$b= "dd";	
-	$a = 8*8+5*5;
-	
 
+function jmeno($a){ 
+	
+	if($a){}
+	elseif($a){}
+	else{}
+	
+	
+	return;
+}
+
+function cecil($a){}
+
+ 

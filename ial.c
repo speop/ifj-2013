@@ -80,9 +80,8 @@ T_ST_Vars* findVarST( char *var, T_ST_Vars *table)
 	if(table->data == NULL) return NULL;
 
 	//aktualni koren obsahuje promenou s danym nazvem
-	printf("%s %s\n",var, table->data->name );
-	if(!(comp = strcmp(var,table->data->name))){ printf("%s\n",table->data->name ); return table;}
-	printf("\t\t comp: %d\n",comp );
+	if(!(comp = strcmp(var,table->data->name))){  return table;}
+
 	//promena se nachazi v prave casti stromu
 	if(comp > 0){
 		if (table->right == NULL) return NULL;
@@ -100,10 +99,10 @@ T_ST_Vars* findVarST( char *var, T_ST_Vars *table)
 //odstrani danou promenou z ST vraci true v pripade uspechu
 bool removeVarST (char* var, T_ST_Vars *table)
 {
-	printf("volal jsem fci\n");
+	
 	T_ST_Vars *node = findVarST(var, table);
 	T_ST_Vars *tempNode;
-	if (node == NULL)	printf("nenasel jsem uzel\n");
+	
 	bool right = false;
 
 	if (node == NULL) return false;
@@ -216,12 +215,11 @@ ReturnCodesST addFuncNodeToST(T_ST_FuncsItem *newNode, T_ST_Funcs *table)
 T_ST_Funcs* findFunctionST( char *funcName, T_ST_Funcs *table)
 {
 	int comp;
-
 	//strom je prazdny
 	if(table->data == NULL) return NULL;
-
+	
 	//aktualni koren obsahuje promenou s danym nazvem
-	if(!(comp = strcmp(funcName,table->data->name))) return table;
+	if(!(comp = strcmp(funcName,table->data->name)))  return table;
 
 	//promena se nachazi v prave casti stromu
 	if(comp > 0){
