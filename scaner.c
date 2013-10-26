@@ -458,7 +458,7 @@ int readNumber(T_Token *token, char firstNum)
   token->type = S_INT;
   token->value = malloc(sizeof(int));
   
-  //*(int*)token->value = 5;
+  *(int*)token->value = 5; /*
   int decimal = 10;                                       //Pocitadlo desetinneho mista
   int exp = 0;                                            //hodnota exponentu
   int expS = 0;                                           //stav exponentu
@@ -507,7 +507,7 @@ int readNumber(T_Token *token, char firstNum)
 
   fseek(pSource_File, -1,SEEK_CUR);
 //  printf("\n\n\t\tnahraju cislo\n\n");
-  *(int*)token->value = num;
+  *(int*)token->value = num; */
   return OK;
 }
 
