@@ -22,7 +22,7 @@ void putToken( T_Token *token);
 int next(int newst);   // prechod do noveho stavu
 
 int getToken(T_Token *token); /* hlavni fce lexikalniho an. */
-int readNumber(T_Token * token); 
+int readNumber(T_Token * token, char); 
 int readString(T_Token *token);
 
 int getFunctionHeader(T_Token* , FUn);

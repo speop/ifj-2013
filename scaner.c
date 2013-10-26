@@ -60,7 +60,7 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  //printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
+  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n",token->type,result);
   return result;
 }
 
@@ -457,6 +457,7 @@ int readNumber(T_Token *token, char firstNum)
 {
   token->type = S_INT;
   token->value = malloc(sizeof(int));
+  
   //*(int*)token->value = 5;
   int decimal = 10;                                       //Pocitadlo desetinneho mista
   int exp = 0;                                            //hodnota exponentu
@@ -464,7 +465,7 @@ int readNumber(T_Token *token, char firstNum)
   int expM = 1;                                           //multiplikator exponentu (+-1)
   int n = firstNum;                                       //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
   double num = n - ASCII_ZERO;                            //ctene cislo (numericka hodnota)
-  n = fgetc(pSource_File)
+  n = fgetc(pSource_File);
   do {
     if (expS == 1) {                                      //Predchozi bylo e/E
       if (n == '+' && expS != 2) {                        //cteme nepovinne znamenko a to poprve
@@ -473,7 +474,7 @@ int readNumber(T_Token *token, char firstNum)
       }
       else if (n == '-' && expS != 2) {
         expM = -1;
-        expS = 2
+        expS = 2;
       }
       else if (n >= '0' && n <= '9') {                    //hodnota exponentu
         exp *= 10;
@@ -502,9 +503,10 @@ int readNumber(T_Token *token, char firstNum)
       }
     }
     n = fgetc(pSource_File);
-  }while(n >= '0' && n <= '9' || n == '+' && expS != 2 || n == '-' && expS != 2 || n == 'e' || n == 'E');
+  }while((n >= '0' && n <= '9') || (n == '+' && expS != 2) || (n == '-' && expS != 2) || (n == 'e' || n == 'E'));
 
   fseek(pSource_File, -1,SEEK_CUR);
+//  printf("\n\n\t\tnahraju cislo\n\n");
   *(int*)token->value = num;
   return OK;
 }
@@ -514,7 +516,8 @@ int readString(T_Token *token){
   int inString = 1;
   int pozice = 0;
   int alokovano = 32;
-  char *string, *more_str;
+  int nextChar,i;
+  char *string, *more_str,s,s1;
   char scanned = fgetc(pSource_File);
 
   if ((string = (char*)malloc(alokovano * sizeof(char))) == NULL) return ERROR_INTER;
@@ -526,7 +529,7 @@ int readString(T_Token *token){
 
       more_str = (char*) realloc (string, alokovano * sizeof(int));
       if(more_str == NULL){
-          free(str);
+          free(string);
           return ERROR_INTER;
       }
       else string = more_str;
@@ -566,7 +569,7 @@ int readString(T_Token *token){
       else if (scanned == 't') {                                                  //\t
         string[pozice++] = '\t';
       }
-      else if (scanned == '\\') {                                                 //\\
+      else if (scanned == '\\') {                                                 // "\"
         string[pozice++] = '\\';
       }
       else if (scanned == '"') {                                                  //\"
@@ -583,7 +586,7 @@ int readString(T_Token *token){
 
   fseek(pSource_File, -1,SEEK_CUR);
 
-  token->type = S_STRING;
+  token->type = S_STR;
   token->value = mystrdup(string);
   free(string);
 

@@ -18,8 +18,8 @@ scaner.o: scaner.c scaner.h types.h
 ast_tree.o: ast_tree.c ast_tree.h types.h
 	$(CC) $(CFLAGS) -c ast_tree.c -o ast_tree.o
 
-#list.o: list.c list.h global.h parser.h
-#	$(CC) $(CFLAGS) -c list.c -o list.o
+vnitrni.o: vnitrni.c vnitrni.h ial.h types.h parser.h garbage_collector.h ast_tree.h stack.h scaner.h
+	$(CC) $(CFLAGS) -c vnitrni.c -o vnitrni.o
 
 #expr.o: expr.c expr.h parser.h list.h ial.h scanner.h
 #	$(CC) $(CFLAGS) -c expr.c -o expr.o
@@ -38,9 +38,9 @@ main.o:  main.c parser.h
 	#global.h parser.h global.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-main: main.o garbage_collector.o ial.o parser.o stack.o scaner.o ast_tree.o
+main: main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o 
 #parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o
-	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o scaner.o ast_tree.o -o main -lm
+	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o -o main -lm
 	#
 	#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o -o main -lm
 

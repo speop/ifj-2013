@@ -709,11 +709,12 @@ int expr(){
 		
 		//printf("Typ tokenu pro expr je: %d \n",token.type);
 		//printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
-		printStack(zasobnik);	
+		//printStack(zasobnik);
+		if(token.value == NULL ) printf(" Je to null\n");	
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
 			#if debug 
-				//printf("Nahravam na stack: \n\n");		
+				printf("Nahravam na stack: \n\n");		
 			#endif
 			
 			//vytvareni si noveho tokenu je z duvodu ze pri returnu s chybou a naslednme uvolnovani pameti bychom mohli uvolnovat znova stejny token
@@ -763,7 +764,8 @@ int expr(){
 					return ERROR_INTER;
 			}
 
-			if ((result = getToken(&token)) != OK) return result;
+			if ((result = getToken(&token)) != OK) return result; 
+
 
 		}
 		// syntakticka chyba
