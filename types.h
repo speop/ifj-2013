@@ -100,6 +100,7 @@ typedef enum {
 	S_EXP = 55,
   	    	
   	NOT_EXIST = 60,
+  	CALL = 61,
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,
 	L_INTER_ERROR = 72
