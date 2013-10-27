@@ -34,12 +34,18 @@ int generateTempVar(T_Token *);
 // seznam instrukci
 /*
 
+	nepracujete s ukazateli na tokeny ale se statickymi token tak jejich existenci nemuzete testova na NULL, ale pokud neexistuje tak token.type = NOT_EXIST 
+
 	S_FUNC - jedna se o volani funkce operand1 obsahuje token s funkci, vysledek kam se ulozi return, pokud funkce nedela return tak se vraci NULL
 	STORE_PARAM - muze se nachazet jen po predchozi instrukci, znamena uloz hodnotu operandu1 do vysledku
 	CALL - vem si int adresu z operandu 1 tam zacina funkce
+	JMP_NOT - operand1 - promena ktera se prevede na bool a pokud neni true tak se provede skok na adresu ktera je vysledek.type
+	JMP - operand1.type obsahuje skok kam skocit
 	
-	WHILE, IF, ELSEIF - operand1 na vyhodnoceni podminky
-	jinak operace co se nachazi v expru : S_PLUS, S_MUL, S_DIV, S_MINUS, vsechny porovnavaci operace
+	FUNCTION - jedna se o definici funkce, posle se v operandu1 nazev funkce, na toto misto pak vlezete callem, takze vam je to mozna k tomu aby ste si udelali seznam funkci a jejich miste na pasce
+	RETURN - bud bez parametru, nebo je op1 kde je ulozeny vysledek vypoctu pro vraceni
+
+	
 	
 */
 

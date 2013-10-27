@@ -34,13 +34,28 @@ int generateCode(){
 
 	LastVar.type =  S_ID;
 	LastVar.value = NULL;
-	tStackItem* item;
+	tStackItem* item,*itemPom, *adresaSkoku, *pSkok; 
+	tStack *skoky;
+	tStack *whileSkoky;
+	tStack *pocetSkoku;
 	tExpr ret;
-	int result;
+	int result,*addr,pom,pom2;
 
 	pomStack = SInit();
 	if (pomStack == NULL) return ERROR_INTER;
 	garbage_add(pomStack, &emptyToken);
+
+	skoky = SInit();
+	if (skoky == NULL) return ERROR_INTER;
+	garbage_add(skoky, &destroyST);
+
+	pocetSkoku = SInit();
+	if (pocetSkoku == NULL) return ERROR_INTER;
+	garbage_add(pocetSkoku, &destroyST);
+
+	whileSkoky = SInit();
+	if (pocetSkoku == NULL) return ERROR_INTER;
+	garbage_add(pocetSkoku, &destroyST);
 
 	paska = (TAC*) malloc(size * sizeof(TAC));
 	if(paska == NULL) return ERROR_INTER;
@@ -52,7 +67,7 @@ int generateCode(){
 
 	while (item != NULL){
 		
-		//printf("typ Hlavni: %d\n", ((T_Token*)(item)->data)->type);
+		//printf("\ttyp Hlavni: %d\n", ((T_Token*)(item)->data)->type);
 		switch(((T_Token*)(item)->data)->type){
 
 			case S_E:  	
@@ -60,36 +75,64 @@ int generateCode(){
 					item = pop_back(alejStromu);
 					continue;
 				}
-				//printf("typ2 : %d\n", ((Tleaf*)((T_Token*)(item)->data)->value)->op->type);
+				//printf("\ttyp2 : %d\n", ((Tleaf*)((T_Token*)(item)->data)->value)->op->type);
 				switch (((Tleaf*)((T_Token*)(item)->data)->value)->op->type){
 
 					
 					// bude treba to if a while asi zmenit
-					case WHILE:
-					case IF:
+					case WHILE: 
+						//pushneme si na stack adresu kde se zacina pocitat podminka je to index
+						
+						addr = (int*) malloc(sizeof(int));
+						*addr = index;
+						push(whileSkoky,addr);
+
+						if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
+						else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+
+						addr = (int*)malloc(sizeof(int));
+						*addr = index;
+						push(whileSkoky,addr);
+
+						if ((result = generate(JMP_NOT,&LastVar, NULL,NULL)) != OK ) return result;
+						
+						break;
+	
+					case IF: //udelame se ni stacku novou hodnotu kterou budeme pricitat abych vedel kolik jumpu pouzit
+						addr = (int*)malloc(sizeof(int));
+						*addr = 0; // na konci to prictem
+						push(pocetSkoku,addr);
+					
 					case ELSEIF:
+						
+						if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
+						else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+						
+						addr = (int*)malloc(sizeof(int));
+						*addr = index;
+						push(skoky,addr);
+						
+						if ((result = generate(JMP_NOT,&LastVar, NULL,NULL)) != OK ) return result;
+					
+					case ELSE:
+
+						
+						break;
+
+					
+
 					case RETURN:
 							if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
 							else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
 							if (ret.ret != OK ) return ret.ret;
 
-					
+							
 							if ((result = generate(((Tleaf*)((T_Token*)(item)->data)->value)->op->type, &LastVar, NULL,NULL)) != OK ) return result;						
 							break;
 
-					case 6787:
-							//v returnu je jen promena
-							if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
-							else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
-							generate(RETURN,&LastVar,NULL,NULL);
-							if (ret.ret != OK ) return ret.ret;
-							break;
-					case ELSE:
-						generate(ELSE,NULL,NULL,NULL);
-						break;
 					default:
 
-						ret = exprGC(((T_Token*)(item)->data)->value, RIGHT);
+						ret = exprGC(((T_Token*)(item)->data)->value, RIGHT); 
 						if (ret.ret != OK ) return ret.ret;
 						break;
 
@@ -111,24 +154,182 @@ int generateCode(){
 					break;
 
 			 //BLOCK_END, BLOCK_START
-			 default:
-			 		if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;  
+			case S_BLOCK_END:
+
+				//konec programu 
+				if ((itemPom = bottom(alejStromu)) == NULL) break;
+				
+				
+				if(((T_Token*)(itemPom)->data)->type == S_E){
+					if(((Tleaf*)((T_Token*)(itemPom)->data)->value) == NULL) return ERROR_INTER;
+					
+					switch (((Tleaf*)((T_Token*)(itemPom)->data)->value)->op->type){
+						
+						//doplnime not skoku a udelame JMP na konec
+						case ELSE:
+						case ELSEIF:
+							itemPom = top(pocetSkoku);
+							addr = (int*)(itemPom)->data;	
+							*addr = *addr + 1;
+
+							if ((adresaSkoku = pop_top(skoky)) == NULL){
+								fprintf(stderr, "ERROR binding jump adress\n" );
+								return ERROR_INTER;
+							}
+							//mam skok kam se skace kdyz je nesplnena podminka
+							pom = *((int*)(adresaSkoku)->data);
+							paska[pom].vysledek.type = index +1;
+							
+							//skok za konec IF - ELSEIF -ELSE bloku
+							generate(JMP, NULL, NULL, NULL);
+							addr = (int*)malloc(sizeof(int));
+							*addr = index-1;
+							push(skoky,addr);
+							
+							
+
+							break;
+
+						default:	
+							//pokud mame nekam priradit skok
+
+							//pokud byl jenom if tak by to pokazilo vsehny skoky, avsak to muzeme prekontrolovat jelikoz na vrcholu je JMP_NOT
+							if ((adresaSkoku = top(skoky)) != NULL){ 
+							pom2 = *((int*)(adresaSkoku)->data);
+							if(paska[pom2].operator == JMP_NOT) { 
+									paska[pom2].vysledek.type = index; 
+								
+								adresaSkoku = pop_top(skoky);
+									//pSkok = pop_top(pocetSkoku);
+								
+								free(adresaSkoku->data);
+									//free(pSkok->data);
+									//free(pSkok);
+								free(adresaSkoku);
+								}
+							}
+
+							pSkok = pop_top(pocetSkoku);
+							if (pSkok != NULL){
+								pom = *((int*)(pSkok)->data);
+								
+								while(pom> 0) // musime dat 1 jelikoz jeden nam vytvori samotny if
+								{	
+									if ((adresaSkoku = pop_top(skoky)) != NULL){
+										
+										pom2 = *((int*)(adresaSkoku)->data);
+										paska[pom2].operand1.type = index;
+										free(adresaSkoku->data);
+										free(adresaSkoku);
+									}
+									
+									else {
+										fprintf(stderr, "ERROR binding jump adress\n");
+										return ERROR_INTER;
+									}
+									pom--;
+								}
+							}
+							
+					}
+				}
+
+				else{
+					if ((adresaSkoku = top(skoky)) != NULL){ 
+							pom2 = *((int*)(adresaSkoku)->data);
+							if(paska[pom2].operator == JMP_NOT) { 
+									paska[pom2].vysledek.type = index; 
+								
+								adresaSkoku = pop_top(skoky);
+									//pSkok = pop_top(pocetSkoku);
+									
+								free(adresaSkoku->data);
+									//free(pSkok->data);
+									//free(pSkok);
+								free(adresaSkoku);
+								}
+							}
+
+					pSkok = pop_top(pocetSkoku);
+					if (pSkok != NULL){
+						pom = *((int*)(pSkok)->data);
+								
+						while(pom> 0) // musime dat 1 jelikoz jeden nam vytvori samotny if
+						{	
+							if ((adresaSkoku = pop_top(skoky)) != NULL){
+										
+								pom2 = *((int*)(adresaSkoku)->data);
+								paska[pom2].operand1.type = index;
+								free(adresaSkoku->data);
+								free(adresaSkoku);
+							}
+									
+							else {
+								fprintf(stderr, "ERROR binding jump adress\n");
+								return ERROR_INTER;
+							}
+							pom--;
+						}
+					}
+				}
+				break;
+			//jenda se o ukonceni whilu zpravime adresy
+			case WHILE_BLOCK_END: 
+			
+
+					if ((adresaSkoku = pop_top(whileSkoky)) == NULL){
+						fprintf(stderr, "ERROR binding jump adress\n" );
+						return ERROR_INTER;
+					}
+				
+					//mam skok kam se skace kdyz je nesplnena podminka
+					pom = *((int*)(adresaSkoku)->data);
+					paska[pom].vysledek.type = index +1;
+					free(adresaSkoku->data);
+					free(adresaSkoku);
+
+					//skok na podminku
+					if ((adresaSkoku = pop_top(whileSkoky)) == NULL){
+						fprintf(stderr, "ERROR binding condition adress\n" );
+						return ERROR_INTER;
+					}
+					pom = *((int*)(adresaSkoku)->data);
+					generate(JMP, NULL, NULL, NULL);
+					
+					paska[index-1].operand1.type = pom;
+					free(adresaSkoku->data);
+					free(adresaSkoku); 
+					break;
+
+
+
+			 //default:
+			 		//if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;  
 		}
-
+		free(item);
+		//printf("tu se dostanu\n");
 		item = pop_back(alejStromu);
+		//if(item != NULL) printf("\t\tnovy item %d\n",((T_Token*)(item)->data)->type );
+		//else printf("item bylo NULL\n");
 	}
-
+	
+	//priradime konec pasky
+	generate(THE_END, NULL, NULL, NULL);
 
 	if((result = addJump())!= OK) return result;
 	#if debug
 	for (int x= 0; x<index; x++)
 	{
 		printf("Na pasce [%d] se naleza operace: %d",x,paska[x].operator );
-		if(paska[x].operator == CALL) printf(", adresa volani je: %d",paska[x].operand1.type );
+		if(paska[x].operator == CALL)  printf(", adresa volani/skoku je: %d",paska[x].operand1.type );
+		if ( paska[x].operator == JMP)  printf(", adresa skoku je: %d",paska[x].operand1.type );
+		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d",paska[x].vysledek.type );
 		//if(paska[x].operator == IF) printf(", blah %d",paska[x].operand1.type );
 		printf("\n");
 	}
 	#endif
+
+	garbage_delete_by_pointer(alejStromu, FREE_DATA);
 	return OK;
 }
  
@@ -178,9 +379,13 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 		//dosli jsme na dno
 		else{
 	
-
 			if(tree->op->type ==  S_IS){  		
 				if((generate(S_IS, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1))  != OK ){ ret.ret = ERROR_INTER; return ret; }
+
+				if(LastVar.value) free(LastVar.value);
+				LastVar.value = mystrdup(((Tleaf*)(tree->op1->value))->op1->value);
+				ret.ret = OK;
+				return ret;
 			}
 			else{
 				if((generateTempVar(&tempVar)) != OK) { ret.ret = ERROR_INTER; return ret; }
@@ -197,14 +402,17 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 					ret.rightVar->type = S_ID;
 					if ((ret.rightVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
 				}
+
+				if(LastVar.value) free(LastVar.value);
+				LastVar.value = mystrdup(tempVar.value);
+				ret.ret = OK;
+				return ret;
 			}
-		
-			ret.ret = OK;
-			return ret;
+			
 		}
 
 		//printf("prvek za dnem : %d\n",tree->op->type );
-		free(LastVar.value);
+		if(LastVar.value) free(LastVar.value);
 		if(tree->op->type ==  S_IS){
 			
 			//vysledek nam muze probublat jen zprava

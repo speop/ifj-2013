@@ -173,10 +173,39 @@ void printStack(tStack *stack){
 	printf("\n");
 }
 
+void printStackInt(tStack *stack){
+	if (stack->top == NULL) return;
+	printf("Tisknu zasobnik int\n===============\n");
+	tStackItem *pom = stack->top;
+	while (pom != NULL){
+		printf("prvek: %d\n", *((int*)(pom)->data));
+		pom = pom->prev;
+	}
+
+	printf("======end======\n");
+}
+
+
 // funkce ktere lze pridat do GC ktery je pak zavola na uvolneni pameti, v techto funkcich pak volam delte kde druhy parametr je opet funkce na uvolneni pameti ktera je stejna jak v GC
-bool emptyST(void * data){ 	deleteSt((tStack*)data, &freeVarST); return true;}
+bool emptySTVar(void * data){ 	deleteSt((tStack*)data, &freeVarST); return true;}
 bool emptySTFunc(void * data) { 	deleteSt((tStack*)data, &freeFuncST); return true;}
 bool emptyToken(void * data) { 	deleteSt((tStack*)data, &tokenFree); return true;}
+
+
+bool destroyST(void * data) {
+ 	tStackItem *temp;
+
+	// nekonecna smycka cyklime tak dlouho dokud nam pop neposle NULL coz znamena prazdy zasobnik
+	while(true){
+
+		temp = pop_top((tStack*)data);
+		if(temp == NULL) break;
+		free(temp->data);
+		free(temp);
+	}
+
+	return OK;
+ }
 
 
 //funkce pro dealokaci tokenu

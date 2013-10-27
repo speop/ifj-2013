@@ -31,8 +31,10 @@ int deleteSt(tStack *stack, bool (*function)(void*)); //odstrani zasobnik, pokud
 bool emptySTVar(void *);
 bool emptySTFunc(void *);
 bool emptyToken(void *);
+bool destroyST(void *);
 
 void printStack(tStack *stack);
+void printStackInt(tStack *stack);
 //funkce pro dealokaci tokenu - nebylo ji kam umistit :D
 bool tokenFree(void *);
 

@@ -103,6 +103,10 @@ typedef enum {
   	CALL = 61,
   	STORE_PARAM = 62,
   	INTER_RETURN = 63,
+  	JMP = 64,
+  	JMP_NOT = 65,
+  	THE_END = 66,
+  	WHILE_BLOCK_END = 67,
 
 	L_PARSE_ERROR = 70,
 	L_FATAL_ERROR = 71,

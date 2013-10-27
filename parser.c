@@ -7,7 +7,7 @@
 #include "ast_tree.h"
 #include "stack.h"
 #include "vnitrni.h"
-#define debug 1
+#define debug 0
 #define POLE 23
 
 extern TGarbageList trash; //z main.c
@@ -86,11 +86,11 @@ int parser(){
 	result = program();	
 	if(result!= OK) return result;
 
-	printf("\n\n\nVolam generator\n");
+	printf("\nVolam generator\n");
 	result = generateCode();
 	if(result!= OK) return result;
 
-	printf("\n\n\nChtel bych volat interpet :)\n");
+	printf("\nChtel bych volat interpet :)\n");
 	return result;
 
 }
@@ -234,7 +234,9 @@ int st_list(){
 
 			//nahrajem token do aleje
 			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
-			pomToken->type = S_BLOCK_END;
+			// kvuli generatoru ciloveho kodu
+			if(pom) pomToken->type = S_BLOCK_END;
+			else pomToken->type = WHILE_BLOCK_END;
 			pomToken->value = NULL;
 			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
@@ -253,8 +255,9 @@ int st_list(){
 				//else putToken(&token);
 				
 			} 
+			//hack kvuli while.. nevim proc ale jinak to neprojde
+			else { if ((result = getToken(&token)) != OK) return result;}
 
-			//if ((result = getToken(&token)) != OK) return result;
 			result = st_list();
 			if(result != OK) return result;
 
@@ -382,7 +385,8 @@ int st_list(){
 		case S_EOF: return OK;
 		default: 
 			if(token.type == S_BLOCK_END && konecBloku) return OK;
-			else return  ERROR_SYN; 
+			else {fprintf(stderr, "Row: %d, unexpected symbol\n", row); 
+				return  ERROR_SYN; }
 	}
 
 	return ERROR_SYN; 
@@ -1344,7 +1348,10 @@ int expr(){
 						//free(pomToken);
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
-						printf("expr end\n");
+
+						#if debug
+							printf("expr end\n");
+						#endif
 						return OK;
 
 						
