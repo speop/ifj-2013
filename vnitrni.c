@@ -154,7 +154,7 @@ int generateCode(){
 						//ale typ tokenu, je cislo ktere je stejne jako u predchoziho.. takze tam bude vlastne cislo kde zacina funkce tak to muzeme rozlisit
 						free(item);
 						item = bottom(alejStromu);	
-						printf("padne to na store param?\n");
+						
 						while(item != NULL && ((T_Token*)(item)->data)->type == STORE_PARAM ){
 							
 							item = pop_back(alejStromu);
@@ -163,7 +163,7 @@ int generateCode(){
 							iToken->value = ((T_Token*)(item)->data)->value;
 							push(params, iToken);							
 						}
-						printf("preslo to pres store\n");
+						
 						//nastavime si to na NULL aby to pozdeji pri pokusu o uvolneni nehodilo segfault
 						item = NULL;
 											
@@ -535,10 +535,10 @@ int funGC(Tleaf *tree){
 			if((generate(STORE_PARAM, &LastVar, NULL, NULL)) != OK ) return ERROR_INTER;
 		}
 	}
-
-	//v levem operadnu je nejaky eToken ktery je  cislo, promena atd.. z principu funkce generovani ASSu jsou ostatni veci prazdne
-	if((generate(STORE_PARAM, tree->op1, NULL, NULL)) != OK ) return ERROR_INTER;
-
+	else{
+		//v levem operadnu je nejaky eToken ktery je  cislo, promena atd.. z principu funkce generovani ASSu jsou ostatni veci prazdne
+		if((generate(STORE_PARAM, tree->op1, NULL, NULL)) != OK ) return ERROR_INTER;
+	}
 	return result;
 
 }
@@ -610,9 +610,8 @@ int addJump(){
 			item = top(pomStack);
 			while(strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) item = item->prev;
 			fun = ((T_Token*)(item->data))->type;
-			
 			paramItem = top(params);
-			printf("dostaneme se az k whilu\n");
+			
 			//najdeme si prvni vyskyt
 			while(paramItem!=NULL && ((T_Token*)(paramItem->data))->type != fun ) paramItem = paramItem->prev;
 			//nastavime si jmena promene
@@ -620,7 +619,7 @@ int addJump(){
 			while(true){
 				i++;
 				
-				if(paska[i].operator == CALL) {
+				if(paska[i].operator == CALL) { 
 					paska[i].operand1.type = fun;
 					fun = 0;
 					break;
@@ -640,15 +639,6 @@ int addJump(){
 		}
 		
 		
-		
-		//nastavime adresu kam skocit
-		if(paska[i].operator == CALL){
-			paska[i].operand1.type = fun;
-			
-			fun = 0;
-
-		}
-
 	}
 
 	return OK;
