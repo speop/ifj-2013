@@ -154,7 +154,7 @@ int generateCode(){
 						//ale typ tokenu, je cislo ktere je stejne jako u predchoziho.. takze tam bude vlastne cislo kde zacina funkce tak to muzeme rozlisit
 						free(item);
 						item = bottom(alejStromu);	
-						
+						printf("padne to na store param?\n");
 						while(item != NULL && ((T_Token*)(item)->data)->type == STORE_PARAM ){
 							
 							item = pop_back(alejStromu);
@@ -163,7 +163,7 @@ int generateCode(){
 							iToken->value = ((T_Token*)(item)->data)->value;
 							push(params, iToken);							
 						}
-						
+						printf("preslo to pres store\n");
 						//nastavime si to na NULL aby to pozdeji pri pokusu o uvolneni nehodilo segfault
 						item = NULL;
 											
@@ -612,10 +612,11 @@ int addJump(){
 			fun = ((T_Token*)(item->data))->type;
 			
 			paramItem = top(params);
-			
+			printf("dostaneme se az k whilu\n");
 			//najdeme si prvni vyskyt
-			while(((T_Token*)(item->data))->type == fun ) item = item->prev;
+			while(paramItem!=NULL && ((T_Token*)(paramItem->data))->type != fun ) paramItem = paramItem->prev;
 			//nastavime si jmena promene
+			
 			while(true){
 				i++;
 				
@@ -629,7 +630,9 @@ int addJump(){
 				//jsou tam navic parametry
 				else if(((T_Token*)(item->data))->type != fun) continue;
 				else if (paska[i].operator == STORE_PARAM){
+					if(paramItem ==NULL || ((T_Token*)(paramItem->data))->type != fun ) continue; 
 					(paska[index]).vysledek.value = mystrdup(((T_Token*)(item->data))->value);
+					paramItem = paramItem->prev;
 				}
 				
 			

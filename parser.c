@@ -756,9 +756,9 @@ int expr(){
 			sloupec = POLE - 1;
 		}
 		
-		//printf("Typ tokenu pro expr je: %d \n",token.type);
-		//printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
-		//printStack(zasobnik);
+		printf("Typ tokenu pro expr je: %d \n",token.type);
+		printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
+		printStack(zasobnik);
 	
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
@@ -1030,10 +1030,10 @@ int expr(){
 					if(typ1== S_E)  znamenko1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op->type;
 					if(typ2 ==S_E)  znamenko2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op->type;
 					
-					printf("typ1: %d\n",typ1);
-					printf("typ2: %d\n",typ2);
+					//printf("typ1: %d\n",typ1);
+					//printf("typ2: %d\n",typ2);
 					//okenFree (((T_Token*)(pomItem)->data));
-					free(pomItem);
+					//free(pomItem);
 					projimadlo = false;
 					
 					switch(((T_Token*)(pomItem2)->data)->type){
@@ -1276,29 +1276,34 @@ int expr(){
 					//to co bylo v zasobniku nize je pravy operand
 					vetev = makeLeaf(pomItem2->data, pomItem3->data, pomItem->data);
 					
-					//por = 0;
-					
-
-					eToken->type = S_E;
-					eToken->value = vetev;
-
-					free(pomItem);
-					free(pomItem2);
-					free(pomItem3);
-
 					if (vetev == NULL){
 						tokenFree(pomItem2->data);
 						freeAss( ((T_Token*)(pomItem)->data)->value);
 						freeAss(((T_Token*)(pomItem3)->data)->value);
-						free(eToken);
+						free(eToken); printf("cistim etoken?\n");
 						return ERROR_INTER;
 					}
+					
+					//por = 0;
+					
 
+					
+					free(pomItem);
+					free(pomItem2);
+					free(pomItem3);
+
+					
+					
+					eToken->type = S_E;
+					eToken->value = vetev;
+					//printf("etok %d\n",eToken->type);
 					//nahrajem E zpet na zasobnik
 					if((push(zasobnik, eToken)) != OK ) {
 						tokenFree(eToken);
 						return ERROR_INTER;
 					}
+					printf("stack po redukci carka\n");
+					printStack(zasobnik);
 					break;
 
 				default:
