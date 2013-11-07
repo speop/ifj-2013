@@ -512,6 +512,7 @@ int readNumber(T_Token *token, char firstNum)
         if (!firstTime) {
           return ERROR_LEX;                                  //a tady neco falesneho
         }
+        fseek(pSource_File, -1, SEEK_CUR);
       }
     }
 
