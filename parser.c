@@ -289,11 +289,21 @@ int st_list(){
 
 			do {
 				if ((result = getToken(&token)) != OK) return result; 
-				if(token.value != NULL) free(token.value);
-				token.value = NULL;
+				
+				//ulozime si jmeno parametru
+				if(token.type == S_ID){
+				
+					if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+						pomToken->type = STORE_PARAM;
+						pomToken->value = mystrdup(token.value);
+						funcName = pomToken->value;
+						token.value = NULL;
+						if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+				}
+				
 			}
 			while(token.type != S_RBRA);
-
+			printf("Zde mam typ tokenu %d\n",token.type);
 			
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START){
@@ -850,6 +860,7 @@ int expr(){
 						tokenFree(pomItem->data);
 						free(eToken);
 						free(pomItem);
+						fprintf(stderr,"Inter error, token should have some value\n");
 						return ERROR_INTER;
 					}
 					eToken->type = S_E;
@@ -1019,10 +1030,10 @@ int expr(){
 					if(typ1== S_E)  znamenko1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op->type;
 					if(typ2 ==S_E)  znamenko2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op->type;
 					
-					//printf("typ1: %d\n",typ1);
-					//printf("typ2: %d\n",typ2);
+					printf("typ1: %d\n",typ1);
+					printf("typ2: %d\n",typ2);
 					//okenFree (((T_Token*)(pomItem)->data));
-					//free(pomItem);
+					free(pomItem);
 					projimadlo = false;
 					
 					switch(((T_Token*)(pomItem2)->data)->type){

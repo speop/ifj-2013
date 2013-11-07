@@ -19,6 +19,7 @@ T_ST_Vars *symbolTable;
 T_ST_Funcs *functionTable;
 T_ST_Vars *actualST;
 tStack *pomStack;
+tStack *params;
 T_Token LastVar;
 
 int size = 64;
@@ -30,7 +31,7 @@ int generateCode(){
 	
 	actualST = symbolTable;
 	T_ST_Funcs *funkce;
-	T_Token eToken;
+	T_Token eToken, *iToken;
 
 	LastVar.type =  S_ID;
 	LastVar.value = NULL;
@@ -56,6 +57,10 @@ int generateCode(){
 	whileSkoky = SInit();
 	if (pocetSkoku == NULL) return ERROR_INTER;
 	garbage_add(pocetSkoku, &destroyST);
+	
+	params = SInit();
+	if (params == NULL) return ERROR_INTER;
+	//garbage_add(pocetSkoku, &emptyToken);
 
 	paska = (TAC*) malloc(size * sizeof(TAC));
 	if(paska == NULL) return ERROR_INTER;
@@ -143,6 +148,25 @@ int generateCode(){
 						funkce = findFunctionST(((T_Token*)(item)->data)->value, functionTable);
 						actualST = 	funkce->data->symbolTable;
 						if ((result = generate(FUNCTION, item->data, NULL,NULL)) != OK ) return result; 
+						
+						
+						//abychom vedeli poradi promenych  udela se takova prasarna... mame dalsi stack v nemz jsou sice tokeny avsak, hodnota tokenu je vzdy retezec,
+						//ale typ tokenu, je cislo ktere je stejne jako u predchoziho.. takze tam bude vlastne cislo kde zacina funkce tak to muzeme rozlisit
+						free(item);
+						item = bottom(alejStromu);	
+						
+						while(item != NULL && ((T_Token*)(item)->data)->type == STORE_PARAM ){
+							
+							item = pop_back(alejStromu);
+							if ((iToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
+							iToken->type = index -1;
+							iToken->value = ((T_Token*)(item)->data)->value;
+							push(params, iToken);							
+						}
+						
+						//nastavime si to na NULL aby to pozdeji pri pokusu o uvolneni nehodilo segfault
+						item = NULL;
+											
 						break;
 			case RETURN:
 					//je to ten return kde nejsou parametry takze jen  vygenerujeme ze byl return					
@@ -306,7 +330,7 @@ int generateCode(){
 			 //default:
 			 		//if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;  
 		}
-		free(item);
+		if(item != NULL) free(item);
 		//printf("tu se dostanu\n");
 		item = pop_back(alejStromu);
 		//if(item != NULL) printf("\t\tnovy item %d\n",((T_Token*)(item)->data)->type );
@@ -575,7 +599,7 @@ int generate(int operator, T_Token* tok1, T_Token* tok2, T_Token* vysTok){
 int addJump(){
 
 	int i, fun;
-	tStackItem *item;
+	tStackItem *item, *paramItem;
 
 
 	for ( i = 0, fun = 0; i<index; i++){
@@ -586,11 +610,38 @@ int addJump(){
 			item = top(pomStack);
 			while(strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) item = item->prev;
 			fun = ((T_Token*)(item->data))->type;
+			
+			paramItem = top(params);
+			
+			//najdeme si prvni vyskyt
+			while(((T_Token*)(item->data))->type == fun ) item = item->prev;
+			//nastavime si jmena promene
+			while(true){
+				i++;
+				
+				if(paska[i].operator == CALL) {
+					paska[i].operand1.type = fun;
+					fun = 0;
+					break;
+				}
+				
+				//ulozime si jmena promenych kam to ulozit
+				//jsou tam navic parametry
+				else if(((T_Token*)(item->data))->type != fun) continue;
+				else if (paska[i].operator == STORE_PARAM){
+					(paska[index]).vysledek.value = mystrdup(((T_Token*)(item->data))->value);
+				}
+				
+			
+			}
 		}
-
+		
+		
+		
 		//nastavime adresu kam skocit
 		if(paska[i].operator == CALL){
 			paska[i].operand1.type = fun;
+			
 			fun = 0;
 
 		}

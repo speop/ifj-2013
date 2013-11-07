@@ -60,7 +60,7 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-//  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
+  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
   return result;
 }
 
@@ -295,7 +295,7 @@ int getTokenReal(T_Token *token)
 
         case '<':
             scanned = fgetc(pSource_File);
-            
+           
             //jedna se o startujici terminal <?php
             if (scanned == '?'){
               //zkontrolujeme jestli se pred startujicim terminalem nenachazi zadne znaky
@@ -304,7 +304,7 @@ int getTokenReal(T_Token *token)
                   fprintf(stderr, "Unexpected symbols at the begining of file.\n");
                   return ERROR_SYN;
                }
-
+				
 
                fseek(pSource_File, 2,SEEK_SET);
               // scanned = fgetc(pSource_File); printf("znak: %c\n",scanned);
@@ -315,8 +315,8 @@ int getTokenReal(T_Token *token)
                if (fgetc(pSource_File) != 'h') return ERROR_LEX;
                if (fgetc(pSource_File) != 'p') return ERROR_LEX;
                scanned = fgetc(pSource_File);
-               
-               if(scanned!= '\n' && scanned != '\t' && scanned != '\v' && scanned !=' ') return ERROR_SYN;
+                
+               if(scanned!= '\n' && scanned != '\t' && scanned != '\v' && scanned !=' ' && scanned !='\r') {fprintf(stderr, "Code not start with \"<?php\"\n"); return ERROR_SYN; }
                if(scanned == '\n') row++;
 
                token->type = S_PHP;
