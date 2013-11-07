@@ -457,6 +457,7 @@ int readNumber(T_Token *token, char firstNum)
   token->value = malloc(sizeof(int));
   
 //  *(int*)token->value = 5; 
+  int firstTime = 1;
   int isDecimal = 0;
   int decimal = 10;                                       //Pocitadlo desetinneho mista
   int exp = 0;                                            //hodnota exponentu
@@ -508,9 +509,13 @@ int readNumber(T_Token *token, char firstNum)
         }
       }
       else {
-        return ERROR_LEX;                                  //a tady neco falesneho
+        if (!firstTime) {
+          return ERROR_LEX;                                  //a tady neco falesneho
+        }
       }
     }
+
+    firstTime = 0;
 
     n = fgetc(pSource_File);
 
