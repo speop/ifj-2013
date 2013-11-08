@@ -236,7 +236,7 @@ int getTokenReal(T_Token *token)
               //komentar do konce radku
               if(scanned == '/'){
                 do{ scanned = fgetc(pSource_File);}
-                while(scanned != '\n' || scanned != EOF);
+                while(scanned != '\n' && scanned != '\r' && scanned != EOF);
 
                 break;
               }
@@ -253,7 +253,7 @@ int getTokenReal(T_Token *token)
                             if(scanned == '/') break; // konec komentare ukoncime nekonecnou smycku
                         }
                 }
-                while(true);
+                while(scanned!=EOF);
                 break;
               }
 
@@ -413,6 +413,32 @@ int getFunctionHeader(T_Token*  token, FUn what)
   if(what ==NEXT_READ){
     do{
         scanned = fgetc(pSource_File);
+		
+		if(scanned = '/'){
+		
+		 scanned = fgetc(pSource_File);
+
+              //komentar do konce radku
+              if(scanned == '/'){
+                do{ scanned = fgetc(pSource_File);}
+                while(scanned != '\n' && scanned != '\r' && scanned != EOF);
+              }
+
+              //blokovy komentar
+              else if (scanned == '*'){
+                  do{
+                        scanned = fgetc(pSource_File);
+                        //mozny konec komentare
+                        if (scanned == '*'){
+                            
+                            scanned = fgetc(pSource_File);
+                            if(scanned == '/') break; // konec komentare ukoncime nekonecnou smycku
+                        }
+                }
+                while(scanned!=EOF);
+              }
+		}
+		
         if(scanned == 'f'){
            
            scanned = fgetc(pSource_File);
