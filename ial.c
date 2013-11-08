@@ -3,6 +3,15 @@
 #include "ial.h"
 #define FREE_VAR_NAME 0
 #define FREE_FUNC_NAME 1
+
+char* mystrdup1(const char* s)
+{
+    char* p = malloc(strlen(s)+1);
+    if(p==NULL) fprintf(stderr, "Cannot alocate memory\n");
+    if (p) strcpy(p, s);
+    return p;
+}
+
 //funkce inicalizuje vsechny pointery korene na NULL
 void varSTInit (T_ST_Vars *pointer)
  {
@@ -362,4 +371,38 @@ void freeFuncSTpom(T_ST_Funcs* tree, int smer){
 	free(tree->data);
 	free(tree);
 	return;
+}
+
+T_ST_Vars* copyTable(T_ST_Vars* hd)
+{
+	T_ST_Vars* sb;
+		
+    if (hd != NULL)
+    {
+		sb = (T_ST_Vars*)malloc(sizeof(T_ST_Vars));
+		varSTInit(sb);
+		if(copyTableFill(hd,sb) != OK) return NULL;
+    }
+	
+	return sb;
+
+}
+
+int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
+{
+	T_ST_VarsItem* item;
+	int ret;
+	
+    if (hd != NULL)
+    {
+		if (( item = (T_ST_VarsItem *)malloc (sizeof(T_ST_VarsItem)))  == NULL) return INTERNAL_ERROR;
+		item->name = mystrdup1(hd->data->name);	
+		ret = addVarNodeToST(item ,sb);
+		if(ret != OK) return ret;
+		
+        copyTableFill(hd->left,sb);
+        copyTableFill(hd->right,sb);
+    }
+	
+	return OK;
 }
