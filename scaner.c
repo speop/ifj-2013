@@ -9,7 +9,7 @@
 #include "types.h"
 //#include "string.h"
 
-#define debug 1
+#define debug 0
 
 FILE *pSource_File; //vstupni soubor
 //static int state; //soucasny stav automatu
@@ -60,7 +60,9 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
+	#if debug 
+		printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
+	#endif
   return result;
 }
 

@@ -7,7 +7,7 @@
 #include "ast_tree.h"
 #include "stack.h"
 #include "vnitrni.h"
-#define debug 0
+#define debug 0 //  0 - vypnuto, 1 - lehka verze, > 1 vypisuje se i stack a proovnavaci tokeny
 #define POLE 23
 
 extern TGarbageList trash; //z main.c
@@ -312,7 +312,7 @@ int st_list(){
 			}
 
 			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
-			pomToken->type = S_BLOCK_START;
+			pomToken->type = FUNCTION_BLOCK_START;
 			pomToken->value = NULL;
 			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
@@ -348,7 +348,7 @@ int st_list(){
 			actualST = symbolTable;
 
 			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
-			pomToken->type = S_BLOCK_END;
+			pomToken->type = FUNCTION_BLOCK_END;
 			pomToken->value = NULL;
 			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
 
@@ -756,13 +756,14 @@ int expr(){
 			sloupec = POLE - 1;
 		}
 		
-		printf("Typ tokenu pro expr je: %d \n",token.type);
-		printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
-		printStack(zasobnik);
-	
+		#if debug > 1
+			printf("Typ tokenu pro expr je: %d \n",token.type);
+			printf("Typ tokenu pro porovnavani je: %d \n",((T_Token*)(pomItem)->data)->type);
+			printStack(zasobnik);
+		#endif
 		// nacitame na zasobnik
 		if(prtable[radek][sloupec] == L){
-			#if debug 
+			#if debug >1
 				//printf("Nahravam na stack: \n\n");		
 			#endif
 			
@@ -1280,7 +1281,7 @@ int expr(){
 						tokenFree(pomItem2->data);
 						freeAss( ((T_Token*)(pomItem)->data)->value);
 						freeAss(((T_Token*)(pomItem3)->data)->value);
-						free(eToken); printf("cistim etoken?\n");
+						free(eToken);
 						return ERROR_INTER;
 					}
 					
@@ -1302,8 +1303,7 @@ int expr(){
 						tokenFree(eToken);
 						return ERROR_INTER;
 					}
-					printf("stack po redukci carka\n");
-					printStack(zasobnik);
+					
 					break;
 
 				default:
