@@ -161,7 +161,10 @@ int generateCode(){
 							if ((iToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 							iToken->type = index -1;
 							iToken->value = ((T_Token*)(item)->data)->value;
-							push(params, iToken);							
+							
+							if(iToken->value != NULL) push(params, iToken);
+							else free(iToken);
+														
 						}
 						
 						//nastavime si to na NULL aby to pozdeji pri pokusu o uvolneni nehodilo segfault
@@ -327,8 +330,10 @@ int generateCode(){
 
 
 
-			 //default:
-			 		//if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;  
+			case FUNCTION_BLOCK_START:
+			case FUNCTION_BLOCK_END:
+			 		if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;
+					break;
 		}
 		if(item != NULL) free(item);
 		//printf("tu se dostanu\n");
@@ -348,6 +353,10 @@ int generateCode(){
 		if(paska[x].operator == CALL)  printf(", adresa volani/skoku je: %d",paska[x].operand1.type );
 		if ( paska[x].operator == JMP)  printf(", adresa skoku je: %d",paska[x].operand1.type );
 		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d",paska[x].vysledek.type );
+		if ( paska[x].operator == STORE_PARAM){
+			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
+			else printf(", promena pro ulozeni parametru je: %s",(char*)(paska[x].vysledek.value) );
+		}
 		//if(paska[x].operator == IF) printf(", blah %d",paska[x].operand1.type );
 		printf("\n");
 	}
@@ -535,10 +544,10 @@ int funGC(Tleaf *tree){
 			if((generate(STORE_PARAM, &LastVar, NULL, NULL)) != OK ) return ERROR_INTER;
 		}
 	}
-
-	//v levem operadnu je nejaky eToken ktery je  cislo, promena atd.. z principu funkce generovani ASSu jsou ostatni veci prazdne
-	if((generate(STORE_PARAM, tree->op1, NULL, NULL)) != OK ) return ERROR_INTER;
-
+	else{
+		//v levem operadnu je nejaky eToken ktery je  cislo, promena atd.. z principu funkce generovani ASSu jsou ostatni veci prazdne
+		if((generate(STORE_PARAM, tree->op1, NULL, NULL)) != OK ) return ERROR_INTER;
+	}
 	return result;
 
 }
@@ -610,16 +619,16 @@ int addJump(){
 			item = top(pomStack);
 			while(strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) item = item->prev;
 			fun = ((T_Token*)(item->data))->type;
-			
 			paramItem = top(params);
 			
 			//najdeme si prvni vyskyt
-			while(((T_Token*)(item->data))->type == fun ) item = item->prev;
+			while(paramItem!=NULL && ((T_Token*)(paramItem->data))->type != fun ) paramItem = paramItem->prev;
 			//nastavime si jmena promene
+			
 			while(true){
 				i++;
 				
-				if(paska[i].operator == CALL) {
+				if(paska[i].operator == CALL) { 
 					paska[i].operand1.type = fun;
 					fun = 0;
 					break;
@@ -629,7 +638,11 @@ int addJump(){
 				//jsou tam navic parametry
 				else if(((T_Token*)(item->data))->type != fun) continue;
 				else if (paska[i].operator == STORE_PARAM){
-					(paska[index]).vysledek.value = mystrdup(((T_Token*)(item->data))->value);
+					if(paramItem ==NULL || ((T_Token*)(paramItem->data))->type != fun ) continue; 
+					
+					(paska[i]).vysledek.value = mystrdup(((T_Token*)(paramItem->data))->value);
+					(paska[i]).vysledek.type =S_ID;
+					paramItem = paramItem->prev;
 				}
 				
 			
@@ -637,15 +650,6 @@ int addJump(){
 		}
 		
 		
-		
-		//nastavime adresu kam skocit
-		if(paska[i].operator == CALL){
-			paska[i].operand1.type = fun;
-			
-			fun = 0;
-
-		}
-
 	}
 
 	return OK;

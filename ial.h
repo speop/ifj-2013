@@ -66,6 +66,7 @@ bool freeFuncST(void *);
 void freeFuncSTpom(T_ST_Funcs* , int );
 
 
-
+int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb);
+T_ST_Vars* copyTable(T_ST_Vars* hd);
 
 #endif

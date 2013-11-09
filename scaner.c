@@ -9,7 +9,7 @@
 #include "types.h"
 //#include "string.h"
 
-#define debug 1
+#define debug 0
 
 FILE *pSource_File; //vstupni soubor
 //static int state; //soucasny stav automatu
@@ -60,7 +60,9 @@ int getToken(T_Token *token){
    
   int result = getTokenReal(token);
 
-  printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
+	#if debug 
+		printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n\tnavratova hodnota: %d\n================================================\n",token->type,result);
+	#endif
   return result;
 }
 
@@ -234,7 +236,7 @@ int getTokenReal(T_Token *token)
               //komentar do konce radku
               if(scanned == '/'){
                 do{ scanned = fgetc(pSource_File);}
-                while(scanned != '\n' || scanned != EOF);
+                while(scanned != '\n' && scanned != '\r' && scanned != EOF);
 
                 break;
               }
@@ -251,7 +253,7 @@ int getTokenReal(T_Token *token)
                             if(scanned == '/') break; // konec komentare ukoncime nekonecnou smycku
                         }
                 }
-                while(true);
+                while(scanned!=EOF);
                 break;
               }
 
@@ -411,6 +413,32 @@ int getFunctionHeader(T_Token*  token, FUn what)
   if(what ==NEXT_READ){
     do{
         scanned = fgetc(pSource_File);
+		
+		if(scanned = '/'){
+		
+		 scanned = fgetc(pSource_File);
+
+              //komentar do konce radku
+              if(scanned == '/'){
+                do{ scanned = fgetc(pSource_File);}
+                while(scanned != '\n' && scanned != '\r' && scanned != EOF);
+              }
+
+              //blokovy komentar
+              else if (scanned == '*'){
+                  do{
+                        scanned = fgetc(pSource_File);
+                        //mozny konec komentare
+                        if (scanned == '*'){
+                            
+                            scanned = fgetc(pSource_File);
+                            if(scanned == '/') break; // konec komentare ukoncime nekonecnou smycku
+                        }
+                }
+                while(scanned!=EOF);
+              }
+		}
+		
         if(scanned == 'f'){
            
            scanned = fgetc(pSource_File);
@@ -457,6 +485,7 @@ int readNumber(T_Token *token, char firstNum)
   token->value = malloc(sizeof(int));
   
 //  *(int*)token->value = 5; 
+  int firstTime = 1;
   int isDecimal = 0;
   int decimal = 10;                                       //Pocitadlo desetinneho mista
   int exp = 0;                                            //hodnota exponentu
@@ -508,9 +537,14 @@ int readNumber(T_Token *token, char firstNum)
         }
       }
       else {
-        return ERROR_LEX;                                  //a tady neco falesneho
+        if (!firstTime) {
+          return ERROR_LEX;                                  //a tady neco falesneho
+        }
+        fseek(pSource_File, -1, SEEK_CUR);
       }
     }
+
+    firstTime = 0;
 
     n = fgetc(pSource_File);
 
