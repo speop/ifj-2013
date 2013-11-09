@@ -7,7 +7,8 @@
 #include "ast_tree.h"
 #include "stack.h"
 #include "vnitrni.h"
-#define debug 0 //  0 - vypnuto, 1 - lehka verze, > 1 vypisuje se i stack a proovnavaci tokeny
+#include "built_in.h"
+#define debug 0 //  0 - vypnuto, 1 - lehka verze, > 1 vypisuje se i stack a porovnavaci tokeny
 #define POLE 23
 
 extern TGarbageList trash; //z main.c
@@ -65,6 +66,9 @@ int parser(){
 	functionTable = (T_ST_Funcs*)malloc(sizeof(T_ST_Funcs));
 	functionSTInit(functionTable);
 	garbage_add(functionTable,&freeFuncST);
+	
+	//zaregistrujem built_in funkce
+	if ((registerBuiltIn(functionTable)) != OK) { fprintf(stderr, "ERROR at registering built in functions\n"); return ERROR_INTER;}
 
 	//vytvorime zasobik 
 	zasobnik = SInit();
@@ -620,13 +624,15 @@ int functionHeaders(){
 	{
 			
 	paramCount = 0;
+	
 
 	//pockame az nam  scanner posle tokken FUNCTION popripad pokud neni (uz) zadna definice funkce dostaname EOF a to se vratime 
 	do{
 		if ((result = getFunctionHeader(&token, NEXT_READ)) != OK) return result;
-		if(token.type == S_EOF) return OK;			
+		if(token.type == S_EOF) return OK;
+		
 	}while(token.type != FUNCTION);
-
+	
 	
 	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;	
 	// ocekavame jmeno funkce
@@ -636,6 +642,10 @@ int functionHeaders(){
 	if (( funkce = (T_ST_FuncsItem *)malloc (sizeof(T_ST_FuncsItem)))  == NULL) return INTERNAL_ERROR;
 	funkce->name = mystrdup(token.value);	
 	ret = addFuncNodeToST(funkce ,functionTable);
+	
+	#if debug
+		printf("Registruji funkci: %s\n",(char*)(funkce->name));
+	#endif
 	
 
 	if(ret == ITEM_EXIST) return SEM_DEF_ERROR;

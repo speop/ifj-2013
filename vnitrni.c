@@ -615,10 +615,14 @@ int addJump(){
 	
 		// najdeme si na stacku adresu funkce
 		if(paska[i].operator == S_FUNC){
-
+			
 			item = top(pomStack);
-			while(strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) item = item->prev;
-			fun = ((T_Token*)(item->data))->type;
+			while(item != NULL && strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) item = item->prev; 
+			
+			
+			if(item == NULL) fun = -1;
+			else fun = ((T_Token*)(item->data))->type;
+			
 			paramItem = top(params);
 			
 			//najdeme si prvni vyskyt
@@ -630,13 +634,13 @@ int addJump(){
 				
 				if(paska[i].operator == CALL) { 
 					paska[i].operand1.type = fun;
-					fun = 0;
+					fun = 0; printf("dostanu se pres while\n");
 					break;
 				}
 				
 				//ulozime si jmena promenych kam to ulozit
 				//jsou tam navic parametry
-				else if(((T_Token*)(item->data))->type != fun) continue;
+				else if(item == NULL || (((T_Token*)(item->data))->type != fun)) continue; //imho dost zbytecny radek ale nechci to ted mazat jelikoz nemam cas hledat co to ovlivni
 				else if (paska[i].operator == STORE_PARAM){
 					if(paramItem ==NULL || ((T_Token*)(paramItem->data))->type != fun ) continue; 
 					
@@ -647,11 +651,12 @@ int addJump(){
 				
 			
 			}
+			
 		}
 		
 		
 	}
-
+	
 	return OK;
 
 }

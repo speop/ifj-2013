@@ -414,7 +414,7 @@ int getFunctionHeader(T_Token*  token, FUn what)
     do{
         scanned = fgetc(pSource_File);
 		
-		if(scanned = '/'){
+		if(scanned == '/'){
 		
 		 scanned = fgetc(pSource_File);
 
@@ -432,11 +432,12 @@ int getFunctionHeader(T_Token*  token, FUn what)
                         if (scanned == '*'){
                             
                             scanned = fgetc(pSource_File);
-                            if(scanned == '/') break; // konec komentare ukoncime nekonecnou smycku
+                            if(scanned == '/' || scanned == EOF) break; // konec komentare ukoncime nekonecnou smycku
                         }
                 }
                 while(scanned!=EOF);
               }
+		  scanned = fgetc(pSource_File);
 		}
 		
         if(scanned == 'f'){
@@ -472,7 +473,7 @@ int getFunctionHeader(T_Token*  token, FUn what)
              }
            }
            else if(scanned == EOF){ token->type = S_EOF; rewind(pSource_File); row = 1; return OK;}
-           //printf("%c",scanned);
+           //printf("scan: %c\n",scanned);
     }while(true);    
   }
   else  return getToken(token);
