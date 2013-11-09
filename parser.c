@@ -33,9 +33,9 @@ static int prtable [POLE][POLE] = {
 				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  		<		>		<=		>=		===		!==*/
 /*  0  + */	{	H,		L,		L,		H,		X,		H,		L,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		X,		X,		L,		L,		L,		L,		L,		L},
+/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
 /*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		X,		H,		X,		X,		X,		X,		X,		X},
+/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		H,		X,		X,		X,		X,		X,		X},
 /*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
@@ -46,7 +46,7 @@ static int prtable [POLE][POLE] = {
 /*  12  d */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  14  b */{	X,		X,		X,		H,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  15  n */{	X,		X,		X,		H,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H},
+/*  15  n */{	X,		X,		X,		H,		X,		X,		X,		X,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  17  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L},
 /*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
 /*  19  > */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
@@ -649,7 +649,7 @@ int functionHeaders(){
 	#endif
 	
 
-	if(ret == ITEM_EXIST) { fprintf(stderr,"Row: %d, redefiniton of function\"%s\"\n",row,funkce->name); free(funkce->name); free(funkce); return SEM_DEF_ERROR;}
+	if(ret == ITEM_EXIST) { fprintf(stderr,"Row: %d, redefiniton of function \"%s\"\n",row,funkce->name); free(funkce->name); free(funkce); return SEM_DEF_ERROR;}
 	else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
 
 	if ((symboly = (T_ST_Vars*) malloc(sizeof(T_ST_Vars)))== NULL ) {free(funkce->name); free(funkce);return INTERNAL_ERROR;}
@@ -794,6 +794,7 @@ int expr(){
 							 	break;
 
 					case S_BOOL:
+					case S_NULL:
 					case S_INT:
 								exprToken->value = malloc(sizeof(int));
 								*(int*)exprToken->value = *(int*)token.value;

@@ -159,6 +159,12 @@ int getTokenReal(T_Token *token)
 
         if((strcmp (str,"null")) ==  0) {
             token->type = S_NULL;
+			if( (token->value = malloc(sizeof (int))) == NULL){
+              free(str);
+              return ERROR_INTER;
+            }
+
+            *(int*)token->value = 0;
             return OK;
         }
 
@@ -237,6 +243,7 @@ int getTokenReal(T_Token *token)
               if(scanned == '/'){
                 do{ scanned = fgetc(pSource_File);}
                 while(scanned != '\n' && scanned != '\r' && scanned != EOF);
+				row++;
 
                 break;
               }
@@ -245,7 +252,8 @@ int getTokenReal(T_Token *token)
               else if (scanned == '*'){
                   do{
                         scanned = fgetc(pSource_File);
-                        
+                        if(scanned == '\n') row++;
+						
                         //mozny konec komentare
                         if (scanned == '*'){
                             
@@ -422,12 +430,14 @@ int getFunctionHeader(T_Token*  token, FUn what)
               if(scanned == '/'){
                 do{ scanned = fgetc(pSource_File);}
                 while(scanned != '\n' && scanned != '\r' && scanned != EOF);
+				row++;
               }
 
               //blokovy komentar
               else if (scanned == '*'){
-                  do{
+                  do{ 	
                         scanned = fgetc(pSource_File);
+						if(scanned == '\n') row++;
                         //mozny konec komentare
                         if (scanned == '*'){
                             
@@ -473,6 +483,8 @@ int getFunctionHeader(T_Token*  token, FUn what)
              }
            }
            else if(scanned == EOF){ token->type = S_EOF; rewind(pSource_File); row = 1; return OK;}
+		   
+		   if(scanned == '\n') row++;
            //printf("scan: %c\n",scanned);
     }while(true);    
   }
