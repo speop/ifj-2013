@@ -634,7 +634,7 @@ int addJump(){
 				
 				if(paska[i].operator == CALL) { 
 					paska[i].operand1.type = fun;
-					fun = 0; printf("dostanu se pres while\n");
+					fun = 0; 
 					break;
 				}
 				

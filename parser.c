@@ -115,6 +115,7 @@ int program(){
  			//zaciname php zajistime si hlavicky funkci
 			//if ((result = getToken(&token)) != OK) return result;
  			result = functionHeaders();
+			if(result != OK) return result;
 
 			
 			//rewindli jsme... zase se nam posle <?php tak to preskocime
@@ -307,7 +308,7 @@ int st_list(){
 				
 			}
 			while(token.type != S_RBRA);
-			printf("Zde mam typ tokenu %d\n",token.type);
+			//printf("Zde mam typ tokenu %d\n",token.type);
 			
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_BLOCK_START){
@@ -648,10 +649,10 @@ int functionHeaders(){
 	#endif
 	
 
-	if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
+	if(ret == ITEM_EXIST) { fprintf(stderr,"Row: %d, redefiniton of function\"%s\"\n",row,funkce->name); free(funkce->name); free(funkce); return SEM_DEF_ERROR;}
 	else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
 
-	if ((symboly = (T_ST_Vars*) malloc(sizeof(T_ST_Vars)))== NULL ) return INTERNAL_ERROR;
+	if ((symboly = (T_ST_Vars*) malloc(sizeof(T_ST_Vars)))== NULL ) {free(funkce->name); free(funkce);return INTERNAL_ERROR;}
 	varSTInit(symboly);
 	funkce->symbolTable = symboly;
 	free(token.value);
@@ -955,7 +956,10 @@ int expr(){
 					
 					//dale pokracuje pravidlo 9. E -> f(E)
 					pomItem2 = pop_top(zasobnik);
-					params++;
+					
+					//jenom jeden atribut					
+					if ( ((T_Token*)(pomItem)->data)->value!= NULL && ((Tleaf*)(((T_Token*)(pomItem)->data)->value))->op == NULL) params++;
+					
 					//semanticka akce kontrolujem jestli je funkce deklarovana
 					if((funkce = findFunctionST(((T_Token*)(pomItem2)->data)->value, functionTable)) == NULL ){
 						//volame nedefinovanou funkci vracime semantickou chybu
@@ -977,6 +981,7 @@ int expr(){
 						free(pomItem2);
 						return SEM_MISSING_PARAMETER;
 					}
+					
 					params = 0;
 
 					eToken = (T_Token*)malloc(sizeof(T_Token));
