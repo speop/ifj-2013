@@ -71,7 +71,7 @@ int main()
 					
 					op1_typ = aux->data.type;
                     if(op1_typ == S_INT ) op1 = *((int)aux->data->value);
-					else if (op1_typ == S_DOUB) op1 = *((int)aux->data->value);
+					else if (op1_typ == S_DOUB) op1 = *((double)aux->data->value);
 					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
                   
                 }
@@ -80,7 +80,7 @@ int main()
 					
 					op1_typ = Instr->operand1->type;
                     if(op1_typ == S_INT ) op1 = *((int)aux->data->value);
-					else if (op1_typ == S_DOUB) op1 = *((int)aux->data->value);
+					else if (op1_typ == S_DOUB) op1 = *((double)aux->data->value);
 					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
                     
                 }
@@ -90,7 +90,7 @@ int main()
 					
 					op2_typ = aux->data.type;
                     if(op2_typ == S_INT ) op2 = *((int)aux->data->value);
-					else if (op2_typ == S_DOUB) op2 = *((int)aux->data->value);
+					else if (op2_typ == S_DOUB) op2 = *((double)aux->data->value);
 					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
                   
                 }
@@ -99,7 +99,7 @@ int main()
 					
 					op2_typ = Instr->operand1->type;
                     if(op2_typ == S_INT ) op2 = *((int)aux->data->value);
-					else if (op2_typ == S_DOUB) op2 = *((int)aux->data->value);
+					else if (op2_typ == S_DOUB) op2 = *((double)aux->data->value);
 					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
                     
                 }
