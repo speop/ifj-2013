@@ -25,6 +25,7 @@ void varSTInit (T_ST_Vars *pointer)
 ReturnCodesST addVarNodeToST(T_ST_VarsItem *newNode, T_ST_Vars *table)
 {
 	int comp;
+	newNode->value = NULL;
 
 	// prvni vlozeni do tabulky
 	if(table->data ==  NULL){
