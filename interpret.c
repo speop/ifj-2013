@@ -68,32 +68,58 @@ int main()
             case S_PLUS:
                 if(Instr->operand1.type == S_ID) { //je to promenna
                     aux = findVarST(Instr->operand1->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-                    if(aux->data.type != S_INT || aux->data.type != S_DOUB) return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
-                    op1 = (double)aux->data->value;                //data operandu
-                    op1_typ = aux->data.type;         //datovy typ operandu
+					
+					op1_typ = aux->data.type;
+                    if(op1_typ == S_INT ) op1 = *((int)aux->data->value);
+					else if (op1_typ == S_DOUB) op1 = *((int)aux->data->value);
+					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
+                  
                 }
                 else {      //operand1 neni promenna
                     //operand1 je realna hodota, i kdyz je to int, budu s tim pracovat jako s double
-                    op1 = (double)Instr->operand1->value;
-                    op1_typ = Instr->operand1->type;
+					
+					op1_typ = Instr->operand1->type;
+                    if(op1_typ == S_INT ) op1 = *((int)aux->data->value);
+					else if (op1_typ == S_DOUB) op1 = *((int)aux->data->value);
+					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
+                    
                 }
+				
                 if(Instr->operand2.type == S_ID) { //je to promenna
-                    aux = findVarST(Instr->operand2->value, symbolTable);    //vyhledam v tabulce symbolu a ulozim si odkaz
-                    if(aux->data.type != S_INT || aux->data.type != S_DOUB) return SEM_TYPE_ERROR;
-                    op2 = (double)aux->data->value;                //data operandu
-                    op2_typ = aux->data.type;         //datovy typ operandu
+                    aux = findVarST(Instr->operand2->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					
+					op2_typ = aux->data.type;
+                    if(op2_typ == S_INT ) op2 = *((int)aux->data->value);
+					else if (op2_typ == S_DOUB) op2 = *((int)aux->data->value);
+					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
+                  
                 }
-                else {      //operand2 neni promenna
-                    //operand2 je realna hodota, i kdyz je to int, budu s tim pracovat jako s double
-                    op2 = (double)Instr->operand2->value;
-                    op2_typ = Instr->operand2->type;
+                else {      //operand1 neni promenna
+                    //operand1 je realna hodota, i kdyz je to int, budu s tim pracovat jako s double
+					
+					op2_typ = Instr->operand1->type;
+                    if(op2_typ == S_INT ) op2 = *((int)aux->data->value);
+					else if (op2_typ == S_DOUB) op2 = *((int)aux->data->value);
+					else return SEM_TYPE_ERROR;  //kdyz promenna pro scitani neni int ani double
+                    
                 }
-                //semanticka kontrola typovosti
-                if(op1_typ == S_DOUB || op2_typ == S_DOUB) Instr->vysledek.type = S_DOUB;
-                else Instr->vysledek.type = S_INT;
+				
+				res = findVarST(Instr->vysledek->value, symbolTable);
+				if (res->data->value != NULL) free(res->data->value);
+				
+                //vypocet
+                if(op1_typ == S_DOUB || op2_typ == S_DOUB) {
+					res->data->value = (double*)malloc(sizeof(double);
+					*(res->data->value) = op1 + op2;
+					res->data->type = S_DOUB;
+					
+				}
+                else {
+					res->data->value = (int*)malloc(sizeof(int);
+					*(res->data->value) = op1 + op2;
+					res->data->type = S_INT;
+				}
 
-                res = findVarST(Instr->vysledek->value, symbolTable);
-                arithmetic(op1, op2, res, Instr->operator, Instr->vysledek.type);
                 break;
             case S_MINUS:
                             minus(FindVar(Instr->operand1), FindVar(Instr->operand2), FindVar(Instr->vysledek));
