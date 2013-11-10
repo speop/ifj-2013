@@ -72,15 +72,10 @@ int main()
                     op1 = (double)aux->data->value;                //data operandu
                     op1_typ = aux->data.type;         //datovy typ operandu
                 }
-                else {      //op1 neni promenna
-                    if(Instr->operand1.type == S_INT) {     //operand1 je celociselna hodota
-                        op1 = (int)Instr->operand1->value;
-                        op1_typ = S_INT;
-                    }
-                    if(Instr->operand1.type == S_DOUB) {     //operand1 je realna hodota
-                        op1 = (double)Instr->operand1->value;
-                        op1_typ = S_DOUB;
-                    }
+                else {      //operand1 neni promenna
+                    //operand1 je realna hodota, i kdyz je to int, budu s tim pracovat jako s double
+                    op1 = (double)Instr->operand1->value;
+                    op1_typ = Instr->operand1->type;
                 }
                 if(Instr->operand2.type == S_ID) { //je to promenna
                     aux = findVarST(Instr->operand2->value, symbolTable);    //vyhledam v tabulce symbolu a ulozim si odkaz
@@ -88,28 +83,15 @@ int main()
                     op2 = (double)aux->data->value;                //data operandu
                     op2_typ = aux->data.type;         //datovy typ operandu
                 }
-                else {      //op2 neni promenna
-                    if(Instr->operand2.type == S_INT) {     //operand2 je celociselna hodota
-                        op2 = (int)Instr->operand2->value;
-                        op2_typ = S_INT;
-                    }
-                    if(Instr->operand2.type == S_DOUB) {     //operand2 je realna hodota
-                        op2 = (double)Instr->operand2->value;
-                        op2_typ = S_DOUB;
-                    }
+                else {      //operand2 neni promenna
+                    //operand2 je realna hodota, i kdyz je to int, budu s tim pracovat jako s double
+                    op2 = (double)Instr->operand2->value;
+                    op2_typ = Instr->operand2->type;
                 }
                 //semanticka kontrola typovosti
-                switch(op1_typ){
-                  case S_INT: 
-                    if(op2_typ == S_DOUB) Instr->vysledek.type = S_DOUB;
-                    else if(op2_typ == S_INT) Instr->vysledek.type = S_INT;
-                    else return SEM_TYPE_ERROR;                        
-                    break;
-                  case S_DOUB: 
-                    if(op2_typ == S_INT || op2_typ == S_DOUB) Instr->vysledek.type = S_DOUB;
-                    else return SEM_TYPE_ERROR;
-                    break;
-                }
+                if(op1_typ == S_DOUB || op2_typ == S_DOUB) Instr->vysledek.type = S_DOUB;
+                else Instr->vysledek.type = S_INT;
+
                 res = findVarST(Instr->vysledek->value, symbolTable);
                 arithmetic(op1, op2, res, Instr->operator, Instr->vysledek.type);
                 break;
