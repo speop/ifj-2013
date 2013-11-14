@@ -18,8 +18,8 @@ int main()
 {
     TAC Instr;          //Instrukce
     int i = 0;          //index/pozice na pasce
-    double op1, op2;      //tohle se bude posilat do arithmetic()
-    int op1_typ, op2_typ;   //typy operandu
+    void op1*, op2*;      //tohle se bude posilat do arithmetic()
+    int op1_typ, op2_typ,len;   //typy operandu
     T_ST_Vars *aux, *res;        //pomocny uzel a uzel pro vysledek
     //místo čísel používat enumy!!!!
     //kontrolovat jenom typovost proměnných!!
@@ -37,87 +37,91 @@ int main()
 
             case S_PLUS:
 			case S_MINUS:
+			case S_MUL:
+            case S_DIV:
                 if(Instr->operand1.type == S_ID) { //operand1 je to promenna
                     aux = findVarST(Instr->operand1->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op1_typ = aux->data.type;
-                    if(op1_typ == S_INT ) op1 = *((int)aux->data->value);
-					else if (op1_typ == S_DOUB) op1 = *((double)aux->data->value);
-					else return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+                    if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op1 = aux->data->value;
                 }
                 else {     //operand1 neni promenna
 					op1_typ = Instr->operand1->type;
-                    if(op1_typ == S_INT ) op1 = *((int)aux->data->value);
-					else if (op1_typ == S_DOUB) op1 = *((double)aux->data->value);
-					else return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+                    if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op1 = Instr->operand1->value;
                 }
 				
                 if(Instr->operand2.type == S_ID) { //operand2 je to promenna
                     aux = findVarST(Instr->operand2->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op2_typ = aux->data.type;
-                    if(op2_typ == S_INT ) op2 = *((int)aux->data->value);
-					else if (op2_typ == S_DOUB) op2 = *((double)aux->data->value);
-					else return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+                    if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op2 = aux->data->value;
                 }
                 else {      //operand2 neni promenna
-					op2_typ = Instr->operand1->type;
-                    if(op2_typ == S_INT ) op2 = *((int)aux->data->value);
-					else if (op2_typ == S_DOUB) op2 = *((double)aux->data->value);
-					else return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					op2_typ = Instr->operand2->type;
+                    if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op2 = Instr->operand1->value;
                 }
 				
 				res = findVarST(Instr->vysledek->value, symbolTable);
 				if (res->data->value != NULL) free(res->data->value);
 				
                 //vypocet
-                if(op1_typ == S_DOUB || op2_typ == S_DOUB) {
+                if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operaror == S_MUL || Instr->operaror == S_DIV) {
 					res->data->value = (double*)malloc(sizeof(double));
-					if(Instr->operaror == S_PLUS) *(res->data->value) = op1 + op2;
-					else *(res->data->value) = op1 - op2;
+					
+					if(Instr->operaror == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2))
+					else if (Instr->operaror == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2))
+					else if(Instr->operaror == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2))
+					else *(res->data->value) =  *((double*)(res->data)->value) = *((double*)(op1)) - *((double*)(op2))
+					
 					res->data->type = S_DOUB;
 				}
                 else {
 					res->data->value = (int*)malloc(sizeof(int));
-					if(Instr->operaror == S_PLUS) *(res->data->value) = op1 + op2;
-					else *(res->data->value) = op1 - op2;
+					if(Instr->operaror == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2))
+					else *(res->data->value) = *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2))
 					res->data->type = S_INT;
 				}
 
                 break;
-                 
-            case S_MUL:
-            case S_DIV:
-                 if(Instr->operand1.type == S_ID) { //operand1 je to promenna
+                
+			case S_CONCATENATE:
+			
+				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
                     aux = findVarST(Instr->operand1->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op1_typ = aux->data.type;
-                    if(op1_typ != S_INT || op1_typ != S_DOUB ) return SEM_TYPE_ERROR; 
-					else op1 = *((double)aux->data->value);
-					
+                    if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op1 = aux->data->value;
                 }
-                else {      //operand1 neni promenna                    
-					op1 = *((double)aux->data->value);					
+                else {     //operand1 neni promenna
+					op1_typ = Instr->operand1->type;
+                    if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op1 = Instr->operand1->value;
                 }
 				
-                if(Instr->operand1.type == S_ID) { //operand2 je to promenna
-                    aux = findVarST(Instr->operand1->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+                if(Instr->operand2.type == S_ID) { //operand2 je to promenna
+                    aux = findVarST(Instr->operand2->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op2_typ = aux->data.type;
-                    if(op2_typ != S_INT || op2_typ != S_DOUB ) return SEM_TYPE_ERROR; 
-					else op2 = *((double)aux->data->value);
-					
+                    if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op2 = aux->data->value;
                 }
-                else {      //operand2 neni promenna                    
-					op2 = *((double)aux->data->value);					
+                else {      //operand2 neni promenna
+					op2_typ = Instr->operand2->type;
+                   if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					else op2 = Instr->operand1->value;
                 }
 				
 				res = findVarST(Instr->vysledek->value, symbolTable);
 				if (res->data->value != NULL) free(res->data->value);
 				
-                //vypocet
-               	res->data->value = (double*)malloc(sizeof(double));
-				if(Instr->operaror == S_MUL) *(res->data->value) = op1 * op2;
-				else *(res->data->value) = op1 / op2;
-				res->data->type = S_DOUB;
+				len = strlen((char*)op1) + strlen((char*)op2) +1; // vysledna delka retezce
+				res->data->value = (char*)malloc(sizeof(char)*len);
 				
-                break;
+				strcpy ((char*)(res->data)->value,(char*)op1);
+				strcpy ((char*)(res->data)->value,(char*)op2);				
+			
+				break;
 				
             case S_IS:	
 			
