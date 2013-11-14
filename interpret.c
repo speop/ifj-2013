@@ -6,9 +6,10 @@
 #include "types.h"
 #include "vnitrni.h"
 #include "parser.h"
+#include <stdbool.h>
 
-#define true 1
-#define false 0
+//#define true 1
+//#define false 0
 
 extern TAC *paska;                  //z vnitrni.c
 extern T_ST_Vars *symbolTable;      //obe tabulky z parser.c
@@ -34,7 +35,7 @@ int main()
             case  RETURN:
                             //zahodí aktuální tabulku proměnných
                             //návrat na místo, kde jsem byl volanej  
-
+					break;
             case S_PLUS:
 			case S_MINUS:
 			case S_MUL:
