@@ -119,16 +119,51 @@ int main()
 				res->data->value = (char*)malloc(sizeof(char)*len);
 				
 				strcpy ((char*)(res->data)->value,(char*)op1);
-				strcpy ((char*)(res->data)->value,(char*)op2);				
+				strcat ((char*)(res->data)->value,(char*)op2);
+				res->data->type = S_STR;
 			
 				break;
 				
-            case S_IS:	
-			
 				
-                
-                            assigment(FindVar(Instr->operand1), FindVar(Instr->vysledek));
-                                break;                                
+            case S_IS:	
+					if(Instr->operand1.type == S_ID) { //operand1 je to promenna
+						aux = findVarST(Instr->operand1->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+						op1_typ = aux->data.type;
+						op1 = aux->data->value;
+					}
+					else {     //operand1 neni promenna
+						op1_typ = Instr->operand1->type;
+						op1 = Instr->operand1->value;
+					}
+					
+					res = findVarST(Instr->vysledek->value, symbolTable);
+					if (res->data->value != NULL) free(res->data->value);
+					
+					//ulozeni hodnoty
+					switch(op1_typ){
+						case S_STR:
+							 	res->data->value = mystrdup((char*)op1);
+							 	res->data->type = S_STR;
+							 	break;
+
+						case S_BOOL:
+						case S_NULL:
+						case S_INT:
+								res->data->value = malloc(sizeof(int));
+								*((int*)(res->data)->value) = *(int*)op1;
+								res->data->type = S_INT;
+								break;
+
+						case S_DOUB:
+								res->data->value = malloc(sizeof(double));
+								*((double*)(res->data)->value) = *(double*)op1;
+								res->data->type = S_DOUB;
+								break
+
+					}
+				
+                break; 
+				
             case S_FUNC:       
                             &FindVar(Instr.vysledek) = funkce v FindVar(Instr.operand1) case S_LST:
                             někamtypu bool=less(FindVar(Instr->operand1), FindVar(Instr->operand2));
