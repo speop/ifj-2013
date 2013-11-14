@@ -353,6 +353,10 @@ int generateCode(){
 		if(paska[x].operator == CALL)  printf(", adresa volani/skoku je: %d",paska[x].operand1.type );
 		if ( paska[x].operator == JMP)  printf(", adresa skoku je: %d",paska[x].operand1.type );
 		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d",paska[x].vysledek.type );
+		if ( paska[x].operator == S_EQ || paska[x].operator == S_NEQ || paska[x].operator == S_GEQ || paska[x].operator == S_LEQ || paska[x].operator == S_GRT || paska[x].operator == S_LST) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
+		if ( paska[x].operator == S_PLUS || paska[x].operator == S_MUL || paska[x].operator == S_DIV || paska[x].operator == S_MINUS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
+		if ( paska[x].operator == S_IS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
+
 		if ( paska[x].operator == STORE_PARAM){
 			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
 			else printf(", promena pro ulozeni parametru je: %s",(char*)(paska[x].vysledek.value) );
@@ -412,7 +416,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 		//dosli jsme na dno
 		else{
 	
-			if(tree->op->type ==  S_IS){  		
+			if(tree->op->type ==  S_IS){ printf("is nastavim zde 2\n"); 		
 				if((generate(S_IS, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1))  != OK ){ ret.ret = ERROR_INTER; return ret; }
 
 				if(LastVar.value) free(LastVar.value);
@@ -446,7 +450,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 
 		//printf("prvek za dnem : %d\n",tree->op->type );
 		if(LastVar.value) free(LastVar.value);
-		if(tree->op->type ==  S_IS){
+		if(tree->op->type ==  S_IS){printf("is nastavim zde\n");
 			
 			//vysledek nam muze probublat jen zprava
 			if(ret.rightVar != NULL) { 
@@ -486,14 +490,16 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 
 			if (smer == LEFT ) { 
 				if (!(ret.leftVar = (T_Token*)malloc(sizeof(T_Token)))) {fprintf(stderr, "Could not allcocate memory.\n"); ret.ret = ERROR_INTER; return ret;}
-				ret.leftVar->value = mystrdup(tempVar.value);	
+				ret.leftVar->value = mystrdup(tempVar.value);
+				ret.leftVar->type = S_ID;
 				ret.rightVar = NULL;	
 			}
 
 			else  { 
 				if (!(ret.rightVar = (T_Token*)malloc(sizeof(T_Token)))) {fprintf(stderr, "Could not allcocate memory.\n"); ret.ret = ERROR_INTER; return ret;}
 				ret.rightVar->value = mystrdup(tempVar.value); 
-				ret.leftVar = NULL;			
+				ret.leftVar = NULL;
+				ret.rightVar->type = S_ID;
 			}
 
 			if(LastVar.value) free(LastVar.value);

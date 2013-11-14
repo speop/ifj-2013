@@ -1107,7 +1107,7 @@ int expr(){
 										break;
 									case S_E:
 										switch(znamenko2){
-											case S_PLUS: printf("jmame \n");
+											case S_PLUS: 
 											case S_MINUS:
 											case S_DIV:
 											case S_FUNC:
