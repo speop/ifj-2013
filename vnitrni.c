@@ -401,16 +401,20 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 
 		//prochazime strom do prava z duvodu returnu musime testovat i na
 		//((Tleaf*)((T_Token*)(item)->data)->value)->op->type 
-		if(((Tleaf*)(tree->op2->value))->op1->type == S_E){
-			ret = exprGC(tree->op2->value, RIGHT);
-			if(ret.ret != OK)  return ret;
+		
+		if ( ((Tleaf*)(tree->op2->value))->op1->type == S_E || ((Tleaf*)(tree->op1->value))->op1->type == S_E)
+		{
+			if(((Tleaf*)(tree->op2->value))->op1->type == S_E){
+				ret = exprGC(tree->op2->value, RIGHT);
+				if(ret.ret != OK)  return ret;
 
-		}
+			}
 
-		//v pravo uz nesjou podstromy jdemem do leva
-		else if(((Tleaf*)(tree->op1->value))->op1->type == S_E){
-			ret = exprGC(tree->op1->value, LEFT);
-			if(ret.ret != OK)  return ret; 
+			//v pravo uz nesjou podstromy jdemem do leva
+			if(((Tleaf*)(tree->op1->value))->op1->type == S_E){
+				ret = exprGC(tree->op1->value, LEFT);
+				if(ret.ret != OK)  return ret; 
+			}
 		}
 
 		//dosli jsme na dno
@@ -685,6 +689,7 @@ int generateTempVar(T_Token *tok){
 	if(sprintf(name,"temp%d",temp_var)==-1)
 		return ERROR_INTER;
 	temp_var++;
+	tok->type = S_ID;
 	tok->value = name;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ){
