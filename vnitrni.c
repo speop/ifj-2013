@@ -355,7 +355,7 @@ int generateCode(){
 		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d",paska[x].vysledek.type );
 		if ( paska[x].operator == S_EQ || paska[x].operator == S_NEQ || paska[x].operator == S_GEQ || paska[x].operator == S_LEQ || paska[x].operator == S_GRT || paska[x].operator == S_LST) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_PLUS || paska[x].operator == S_MUL || paska[x].operator == S_DIV || paska[x].operator == S_MINUS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
-		if ( paska[x].operator == S_IS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
+		if ( paska[x].operator == S_IS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type ); 
 
 		if ( paska[x].operator == STORE_PARAM){
 			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
@@ -395,6 +395,20 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 			if((generate(CALL, NULL, NULL, NULL)) != OK ) {ret.ret= ERROR_INTER; return ret;}
 
 			//vse v poradku
+			if(smer == LEFT){
+				if((ret.leftVar = (T_Token*)malloc(sizeof(T_Token))) == NULL ) { ret.ret = ERROR_INTER; return ret; }
+				ret.leftVar->type = S_ID;
+				if ((ret.leftVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
+			}
+
+			else {
+				if((ret.rightVar = (T_Token*)malloc(sizeof(T_Token))) == NULL) { ret.ret = ERROR_INTER; return ret; }
+				ret.rightVar->type = S_ID;
+				if ((ret.rightVar->value = mystrdup(tempVar.value)) == NULL) { ret.ret = ERROR_INTER; return ret; }
+			}
+
+			if(LastVar.value) free(LastVar.value);
+			LastVar.value = mystrdup(tempVar.value);
 			ret.ret = OK;
 			return ret;
 		}
@@ -420,7 +434,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 		//dosli jsme na dno
 		else{
 	
-			if(tree->op->type ==  S_IS){ printf("is nastavim zde 2\n"); 		
+			if(tree->op->type ==  S_IS){ 		
 				if((generate(S_IS, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1))  != OK ){ ret.ret = ERROR_INTER; return ret; }
 
 				if(LastVar.value) free(LastVar.value);
@@ -454,7 +468,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 
 		//printf("prvek za dnem : %d\n",tree->op->type );
 		if(LastVar.value) free(LastVar.value);
-		if(tree->op->type ==  S_IS){printf("is nastavim zde\n");
+		if(tree->op->type ==  S_IS){
 			
 			//vysledek nam muze probublat jen zprava
 			if(ret.rightVar != NULL) { 
@@ -463,9 +477,23 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 			}
 			else {
 				//pokud budou segfaulty na rovna se tak to bude zde
-				T_Token *pomToken = (T_Token*)(((Tleaf*)(tree->op2->value))->op1);
+				//printf("\nd0  %d\n",((Tleaf*)(tree->op2->value))->op->type);
+				T_Token *pomToken = (T_Token*)(((Tleaf*)(tree->op2->value))->op1); //printf("d1  %d\n",pomToken->type);
+				
+				if(((Tleaf*)(tree->op2->value))->op->type != NULL) { //printf("dd  %d\n",((Tleaf*)(pomToken->value))->op->type);
+					ret = exprGC(((Tleaf*)(tree->op2->value)), RIGHT);	
+					
+					if(ret.rightVar != NULL) { 
+						if((generate(tree->op->type, ret.rightVar, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; } 
+						free(ret.rightVar->value);
+						free(ret.rightVar);
+						ret.rightVar = NULL;
+					}
+				
+				}
 				//printf("typ: %d\n",(T_Token*)(((Tleaf*)(pomToken->type);
-				if((generate(tree->op->type, ((Tleaf*)(pomToken->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; }
+				//asi tu ma byt to else
+				else {if((generate(tree->op->type, ((Tleaf*)(pomToken->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; } }
 			}
 			LastVar.value = mystrdup(((Tleaf*)(tree->op1->value))->op1->value);
 		} 
