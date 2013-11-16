@@ -123,7 +123,9 @@ int program(){
 			token.type = -1;
 			if ((result = getToken(&token)) != OK) return result;
 
-
+			#if debug
+				printf("Dokoncene zpracovani hlavicek\n");
+			#endif
  			result = st_list();
  			return result;
  			break;
@@ -278,13 +280,14 @@ int st_list(){
 				return ERROR_SYN;
 			}
 			
-			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			pomToken->type = FUNCTION;
 			pomToken->value = mystrdup(token.value);
 			funcName = pomToken->value;
 			token.value = NULL;
-			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
-
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
+			
+			
 
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_LBRA){
@@ -298,12 +301,12 @@ int st_list(){
 				//ulozime si jmeno parametru
 				if(token.type == S_ID){
 				
-					if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+					if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 						pomToken->type = STORE_PARAM;
 						pomToken->value = mystrdup(token.value);
-						funcName = pomToken->value;
+						//funcName = pomToken->value;
 						token.value = NULL;
-						if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+						if (push(alejStromu,pomToken) != OK) {fprintf(stderr,"Leaf pushing error\n"); tokenFree(pomToken); return ERROR_INTER;}
 				}
 				
 			}
@@ -316,10 +319,10 @@ int st_list(){
 				return ERROR_SYN;
 			}
 
-			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			pomToken->type = FUNCTION_BLOCK_START;
 			pomToken->value = NULL;
-			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
 
 			if ((result = getToken(&token)) != OK) return result;
 			
@@ -329,8 +332,7 @@ int st_list(){
 				//printf("zmena tabulky \n");
 				//zmenime tabulku symbolu na danou funkci
 				func = findFunctionST(funcName , functionTable);
-				if(func == NULL ) return ERROR_INTER;
-
+				if(func == NULL ) {fprintf(stderr,"Error in changing symbol table\n");return ERROR_INTER;}
 				actualST = func->data->symbolTable;
 
 				result = st_list();
@@ -345,17 +347,17 @@ int st_list(){
 			}
 			konecBloku--;
 			//hodime si info pro sebe ze konci blok funkce
-			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			pomToken->type = INTER_RETURN;
 			pomToken->value = NULL;
-			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
 
 			actualST = symbolTable;
 
-			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			pomToken->type = FUNCTION_BLOCK_END;
 			pomToken->value = NULL;
-			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); return ERROR_INTER;}
+			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
 
 			if ((result = getToken(&token)) != OK) return result;
 			result = st_list();
@@ -372,21 +374,21 @@ int st_list(){
 
 				if(result != OK ) return result;
 
-				if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+				if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 				pomToken->type = RETURN;
 				pomToken->value = exprTree;
 				//printf("v returnu expr: %d\n",((Tleaf*)(exprTree->value))->op->type );
-				if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); return INTERNAL_ERROR; }
-				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+				if ((pomVetev =   makeLeaf(pomToken, exprTree , NULL)) == NULL) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER; }
+				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 				eTokenAlej->type = S_E;
 				eTokenAlej->value = pomVetev;
 				if (push(alejStromu,eTokenAlej) != OK) { tokenFree(eTokenAlej); return ERROR_INTER;}
 			}
 			else{
-				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return INTERNAL_ERROR;
+				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 				eTokenAlej->type = RETURN;
 				eTokenAlej->value = NULL;
-				if (push(alejStromu,eTokenAlej) != OK) { free(eTokenAlej); return ERROR_INTER;}
+				if (push(alejStromu,eTokenAlej) != OK) { free(eTokenAlej); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
 			}
 
 			if ((result = getToken(&token)) != OK) return result;
@@ -887,17 +889,17 @@ int expr(){
 				case S_RBRA:
 						
 					//zrusime zavorku
-					tokenFree (((T_Token*)(pomItem)->data));
+					tokenFree (((T_Token*)(pomItem)->data)); 
 					free(pomItem);
 					
 					//pomItem je E, nebo zavorka
 					pomItem = pop_top(zasobnik); 
-
+					
 					//je to E
 					if((((T_Token*)(pomItem)->data)->type) == S_E) {
 											
 						pomItem2 = pop_top(zasobnik); 
-
+						
 						if((((T_Token*)(pomItem2)->data)->type) != S_LBRA){
 							tokenFree (((T_Token*)(pomItem2)->data));
 							free(pomItem2);
@@ -941,14 +943,15 @@ int expr(){
 						}	
 					}
 					
-					pomItem3 = top(zasobnik); 
+					
+					pomItem3 = top(zasobnik);
 					// pravidlo 3. E -> (E) 
 					if(((T_Token*)(pomItem3)->data)->type != S_FUNC){
 						//v pomItem mame ulozene E.. takze nam staci jen pushnout zpatky pomItem na zasobnik prazdna zavorka je proste error
-						if((((T_Token*)(pomItem)->data)->type) != S_E) {fprintf(stderr, "Row: %d, expecting some expression\n",row );
-								return ERROR_SYN;}
-						if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free((T_Token*)(pomItem)->data);return ERROR_INTER;}
+						if((((T_Token*)(pomItem)->data)->type) == S_E) {
 						
+							if((push(zasobnik, (T_Token*)(pomItem)->data)) != OK ) {free((T_Token*)(pomItem)->data);return ERROR_INTER;}
+						}
 						//jinac tam jsou () takze je ignorujem
 						free(pomItem);
 						break;
@@ -959,7 +962,34 @@ int expr(){
 					pomItem2 = pop_top(zasobnik);
 					
 					//jenom jeden atribut					
-					if ( ((T_Token*)(pomItem)->data)->value!= NULL && ((Tleaf*)(((T_Token*)(pomItem)->data)->value))->op == NULL) params++;
+					//if ( ((T_Token*)(pomItem)->data)->value!= NULL && ((Tleaf*)(((T_Token*)(pomItem)->data)->value))->op == NULL) 
+					if((((T_Token*)(pomItem)->data)->type) == S_E) params++;
+					// dame si do pom item vetev ktera ma NULL, nic se tim nezkazi snad..
+					else {
+						 if((pomToken=(T_Token*)malloc(sizeof(T_Token))) == NULL ){free(pomItem); free(((T_Token*)(pomItem2)->data)->value); free(pomItem2); return ERROR_INTER;}
+						 if((pomToken->value=malloc(sizeof(int))) == NULL ){free(pomToken); free(pomItem); free(((T_Token*)(pomItem2)->data)->value); free(pomItem2); return ERROR_INTER;}
+						 
+						*((int*)(pomToken)->value) = 0;
+						pomToken->type = S_NULL;
+						
+						eToken =  (T_Token*)malloc(sizeof(T_Token));
+						if (eToken == NULL ){
+							free(pomToken->value); free(pomToken); free(pomItem); free(((T_Token*)(pomItem2)->data)->value); free(pomItem2); 
+							return ERROR_INTER;
+						}	
+
+						vetev = makeLeaf(NULL, pomToken,  NULL);
+
+						if (vetev == NULL){
+							free(eToken); free(pomToken->value); free(pomToken); free(pomItem); free(((T_Token*)(pomItem2)->data)->value); free(pomItem2); 
+							fprintf(stderr,"Inter error, allocating memory\n");
+							return ERROR_INTER;
+						}
+						eToken->type = S_E;
+						eToken->value = vetev;
+						free(pomItem->data);
+						pomItem->data = eToken;
+					}
 					
 					//semanticka akce kontrolujem jestli je funkce deklarovana
 					if((funkce = findFunctionST(((T_Token*)(pomItem2)->data)->value, functionTable)) == NULL ){
@@ -973,7 +1003,9 @@ int expr(){
 					}
 
 					//funkce ma malo parametru
-					//printf("Params def: %d, params call: %d \n", funkce->data->paramCount,params);
+					#if debug
+						printf("Params def: %d, params call: %d \n", funkce->data->paramCount,params);
+					#endif
 					if(funkce->data->paramCount > params ){
 						if((((T_Token*)(pomItem)->data)->type) == S_E) freeAss(pomItem->data);
 						fprintf(stderr,"Row: %d, too a few parameters in funciton  \"%s\"\n",row,(char*)((T_Token*)(pomItem2)->data)->value);

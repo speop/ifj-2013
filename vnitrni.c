@@ -462,7 +462,10 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 
 			}
 			else {
-				if((generate(tree->op->type, ((Tleaf*)(tree->op2->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; }
+				//pokud budou segfaulty na rovna se tak to bude zde
+				T_Token *pomToken = (T_Token*)(((Tleaf*)(tree->op2->value))->op1);
+				//printf("typ: %d\n",(T_Token*)(((Tleaf*)(pomToken->type);
+				if((generate(tree->op->type, ((Tleaf*)(pomToken->value))->op1, NULL, ((Tleaf*)(tree->op1->value))->op1 ))  != OK ) { ret.ret = ERROR_INTER; return ret; }
 			}
 			LastVar.value = mystrdup(((Tleaf*)(tree->op1->value))->op1->value);
 		} 
