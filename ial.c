@@ -407,3 +407,90 @@ int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
 	
 	return OK;
 }
+
+
+     typedef struct {
+        int length;
+        char *first;
+    }TString;
+
+char *merge(TString left, TString right)
+{
+    char *output=malloc((left.length+right.length)*sizeof(char));
+    int i=0;
+
+    while(left.length>0&& right.length>0)
+        {
+         if(left.first[0]<right.first[0])
+              {output[i]=left.first[0];
+               left.length--;
+               left.first=&left.first[1];
+              }
+         else
+              {output[i]= right.first[0];
+               right.length--;
+               right.first=&right.first[1];
+              }
+         i++;
+        }
+
+    while(left.length)
+        {output[i]=left.first[0];
+         left.length--;
+         i++;
+         left.first=&left.first[1];
+        }
+    while(right.length)
+        {output[i]=right.first[0];
+         right.length--;
+         i++;
+         right.first=&right.first[1];
+        }
+
+    return output;
+}
+
+
+char *sort_string(char *vstup)
+{   if(vstup==0)
+        return 0;
+
+    TString left, right, input;
+
+    input.first=vstup;
+    input.length=strlen(input.first);
+
+    if(input.length<=1)
+        return input.first;
+
+    left.length = input.length / 2;
+    right.length = input.length - left.length;
+
+    left.first = malloc(left.length*sizeof(char));
+    if(left.first==0)
+    return 0;
+    right.first = malloc(right.length*sizeof(char));
+    if(right.first==0)
+    return 0;
+
+    int i = 0;
+    for(; i<left.length; i++)
+        {left.first [i] = input.first [i];
+         }
+
+    for(int j=0; j<right.length; j++)
+        {right.first [j] = input.first [i+j];
+         }
+
+
+    left.first = sort_string(left.first);
+    if(left.first==0)
+        return 0;
+
+    right.first = sort_string(right.first);
+    if(right.first==0)
+        return 0;
+
+
+    return merge(left, right);
+}
