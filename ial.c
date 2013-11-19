@@ -414,6 +414,8 @@ int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
         char *first;
     }TString;
 
+
+//spojí dvě seřazené pole  do jednoho, 
 char *merge(TString left, TString right)
 {
     char *output=malloc((left.length+right.length)*sizeof(char));
@@ -451,6 +453,8 @@ char *merge(TString left, TString right)
 }
 
 
+
+//seřazení pole znaků
 char *sort_string(char *vstup)
 {   if(vstup==0)
         return 0;
@@ -494,3 +498,22 @@ char *sort_string(char *vstup)
 
     return merge(left, right);
 }
+
+
+//vyhledávání podřetězce
+char *get_substring(char input[], int a, int b)
+{   int c=0, length=strlen(input);
+    int lenght=b-a+1;
+        //testovani parametru
+    if(a<c||b<c||a>b||a>=length||b>length)
+        return 0;
+        
+    char *output=malloc((b-a+1)*sizeof(char));
+    if(output==0)
+        return output;
+     garbage_add(output,&garbage_default_erase);
+    for(int i=0; i<(lenght); i++)       //plneni vystupniho pole
+        output[i]=input[a+i-1];
+
+    return output;
+    }
