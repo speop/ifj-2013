@@ -409,11 +409,6 @@ int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
 }
 
 
-     typedef struct {
-        int length;
-        char *first;
-    }TString;
-
 
 //spojí dvě seřazené pole  do jednoho, 
 char *merge(TString left, TString right)
