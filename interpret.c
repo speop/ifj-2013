@@ -201,6 +201,8 @@ int main()
 
                 res = findVarST(Instr->vysledek->value, symbolTable);
                 if (res->data->value != NULL) free(res->data->value);
+                res->data->type = S_BOOL;
+                res->data->value = (int*)malloc(sizeof(int));
 
                 if(op1_typ != op2_typ) res->data->value = false; 
                 else res->data->value = (op1 == op2);
