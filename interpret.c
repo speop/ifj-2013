@@ -170,16 +170,12 @@ int main()
                             někamtypu bool=less(FindVar(Instr->operand1), FindVar(Instr->operand2));
                                 break;
             case S_LST:
-                                break;
             case S_GRT:
-                                break;
             case S_LEQ:
-                                break;
             case S_GEQ:
-                                break;
             case S_EQ:
             case S_NEQ:
-                if(Instr->operand1.type == S_ID) { //operand1 je to promenna
+                if(Instr->operand1.type == S_ID) { //operand1 je promenna
                     aux = findVarST(Instr->operand1->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
                     op1_typ = aux->data.type;
                     op1 = aux->data->value;
@@ -189,7 +185,7 @@ int main()
                     op1 = Instr->operand1->value;
                 }
         
-                if(Instr->operand2.type == S_ID) { //operand2 je to promenna
+                if(Instr->operand2.type == S_ID) { //operand2 je promenna
                     aux = findVarST(Instr->operand2->value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
                     op2_typ = aux->data.type;
                     op2 = aux->data->value;
@@ -204,13 +200,36 @@ int main()
                 res->data->type = S_BOOL;
                 res->data->value = (int*)malloc(sizeof(int));
 
-                if(op1_typ != op2_typ) res->data->value = false; 
-                else res->data->value = (op1 == op2);
-
-                //-----------------------------------------------------------------------------------------
-                //zde porovnat a dat do vysledku
-                //-----------------------------------------------------------------------------------------
-
+                //jestli se typy nerovnaji, je to false nebo chyba
+                if(op1_typ != op2_typ) {
+                  if(Instr->operator == S_EQ || Instr->operator == S_NEQ)
+                    res->data->value = false;
+                  else
+                    return SEM_TYPE_ERROR;
+                }
+                //typy se rovnaji
+                else {
+                  switch(Instr->operator) {
+                      case S_LST:
+                        res->data->value = (op1 < op2);
+                        break;
+                      case S_GRT:
+                        res->data->value = (op1 > op2);
+                        break;
+                      case S_LEQ:
+                        res->data->value = (op1 <= op2);
+                        break;
+                      case S_GEQ:
+                        res->data->value = (op1 >= op2);
+                        break;
+                      case S_EQ:
+                        res->data->value = (op1 == op2);
+                        break;
+                      case S_NEQ:
+                        res->data->value = (op1 != op2);
+                        break;
+                  }
+                }
                 break;
             case CALL: dalsi Instrukce = FindVar(Instr->operand1);
                                 break;
