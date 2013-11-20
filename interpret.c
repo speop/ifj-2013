@@ -71,17 +71,17 @@ int main()
           if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operaror == S_MUL || Instr->operaror == S_DIV) {
             res->data->value = (double*)malloc(sizeof(double));
           
-          if(Instr->operaror == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2))
-          else if (Instr->operaror == S_DIV) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2))
-          else if(Instr->operaror == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2))
-          else *(res->data->value) =  *((double*)(res->data)->value) = *((double*)(op1)) - *((double*)(op2))
+          if(Instr->operaror == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2));
+          else if (Instr->operaror == S_DIV) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2));
+          else if(Instr->operaror == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2));
+          else *((double*)(res->data)->value) = *((double*)(op1)) - *((double*)(op2));
           
           res->data->type = S_DOUB;
         }
         else {
           res->data->value = (int*)malloc(sizeof(int));
-          if(Instr->operaror == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2))
-          else *(res->data->value) = *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2))
+          if(Instr->operaror == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2));
+          else *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2));
           res->data->type = S_INT;
         }
 
@@ -199,11 +199,12 @@ int main()
                     op2 = Instr->operand1->value;
                 }
 
-                if(op1_typ != op2_typ) return SEM_TYPE_ERROR;   //musi byt stejne typy
-        
                 res = findVarST(Instr->vysledek->value, symbolTable);
                 if (res->data->value != NULL) free(res->data->value);
-                
+
+                if(op1_typ != op2_typ) res->data->value = false; 
+                else res->data->value = (op1 == op2);
+
                 //-----------------------------------------------------------------------------------------
                 //zde porovnat a dat do vysledku
                 //-----------------------------------------------------------------------------------------
