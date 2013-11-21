@@ -165,10 +165,63 @@ int main()
         
                 break; 
         
-            case S_FUNC:       
-                            &FindVar(Instr.vysledek) = funkce v FindVar(Instr.operand1) case S_LST:
-                            někamtypu bool=less(FindVar(Instr->operand1), FindVar(Instr->operand2));
+            case S_FUNC:    //volani vestavene funkce
+                           if(Instr->operand1->value=="get_string");
+                                {*(Instr->vysledek) = get_string();
+                                 break;
+                                }
+                           
+                           if(Instr->operand1->value=="put_string")
+                                {while(Instr=paska[i++]==STORE_PARAM)
+                                    if(Instr->operand1->type==S_STR)
+                                        printf("%s", Instr->operand1->value);
+                                    else return 13; //asi ostatni chyby
+                                 break;   
+                                }
+                                    
+                            if(Instr->operand1->value=="strlen")
+                                {
+                                 if(Instr->operand1->value==S_STR)
+                                     *(Instr->vysledek) = strlen(strval(Instr->operand1->value));
+                                  else return 13;
+                                  
+                                 break;
+                                }
+                            
+                            if(Instr->operand1->value=="get_substring")
+                                {
+                                  if(array=maloc(3 * sizeof(void))==NULL) return  INTERNAL_ERROR;
+                                  garbage_add(array, &garbage_default_erase);
+                                  if(Instr->operand1->value==S_STR)
+                                    array[0]=Instr->operand1->value;
+                                  else return 13;
+                                  
+                                  for(int j=1; j<3; j++)
+                                     {
+                                      if(Instr->operand1->value==S_INT)
+                                        array[j]=paska[i+j]->operand1->value;      //předávání parametru, hodnota i zustava nezmenena
+                                      else return 13;
+                                     }
+                                  paska[i]->vysledek = get_substring(strval(array[0]), intval(array[1]), intval(array[2]));
+                                  break;
+                                }
+                            
+                            if(Instr->operand1->value=="find_string")
+                            {
+                                if(Innstr->operand1->type==S_STR && paska[i+1]->operand1->type==S_STR)
+                                    &(Instr->vysledek->value) = find_string(Instr->operdand1->value, paska[i+1]->operdand1->value);
+                                else return 13;
                                 break;
+                            }
+                        
+                            if(Instr->operand1->value=="sort_string")
+                                {
+                                    if(Instr->operand1->value==S_STR)
+                                        &(Instr->vysledek->value) = sort_string(Instr->operdand1->value);
+                                    else return 13;
+                                     break;
+                                }
+                            
             case S_LST:
             case S_GRT:
             case S_LEQ:
