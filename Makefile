@@ -43,9 +43,9 @@ main.o:  main.c parser.h
 	#global.h parser.h global.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-main: main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o
+main: main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o
 #parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o 
-	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o -o main -lm
+	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o  -o main -lm
 	#
 	#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o -o main -lm
 
