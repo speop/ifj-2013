@@ -27,7 +27,6 @@ built_in.o: built_in.c built_in.h ial.h types.h
 #expr.o: expr.c expr.h parser.h list.h ial.h scanner.h
 #	$(CC) $(CFLAGS) -c expr.c -o expr.o
 
-
 parser.o: parser.c parser.h types.h ial.h garbage_collector.h scaner.h ast_tree.h built_in.h
 	$(CC) $(CFLAGS) -c parser.c -o parser.o
 
@@ -36,6 +35,9 @@ stack.o: stack.c stack.h types.h
 
 #cilovy_kod.o: cilovy_kod.c cilovy_kod.h built_in.h global.h ial.h vnitrni_kod.h
 #	$(CC) $(CFLAGS) -c cilovy_kod.c -o cilovy_kod.o
+
+interpret.o: interpret.c stack.h ial.h types.h vnitrni.h parser.h
+	$(CC) $(CFLAGS) -c interpret.c -o interpret.o
 
 main.o:  main.c parser.h
 	#global.h parser.h global.h
