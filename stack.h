@@ -1,6 +1,8 @@
 #ifndef STACK_H
 #define STACK_H
 
+#include <stdbool.h>
+
 typedef struct tStackItem{
 		void *data;
 		struct tStackItem *prev, *next; // next vyse na zasobniku
