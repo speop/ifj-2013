@@ -270,11 +270,14 @@ int interpret()
                         
                             if(funcStack->top->data->funkce->name == "get_string")
                                 {Instr->vysledek->value=get_string();
+                                 StackHelpItem = pop_top(funcStack->top->data->paramstack);
                                  break;
                                 }
                                 
                             if(funcStack->top->data->funkce->name == "put_string")
-                                break;
+                                {StackHelpItem = pop_top(funcStack->top->data->paramstack);
+                                 break;
+                                }
                                 
                             if(funcStack->top->data->funkce->name == "strlen")
                                 {
@@ -283,6 +286,7 @@ int interpret()
                                     if(StackHelpItem->data->paramstack->top->data->type==S_STR)
                                         Instr->vysledek->value=strlen(StackHelpItem->data->paramstack->top->data->value);
                                     else return 13;
+                                 StackHelpItem = pop_top(funcStack->top->data->paramstack);
                                  break;
                                 }
                             
@@ -299,6 +303,7 @@ int interpret()
                                  else return 13;        //ostatni
                                 }
                              else return 4;      //chybi parametr
+                             StackHelpItem = pop_top(funcStack->top->data->paramstack);
                              break;
                             }
                         
@@ -312,6 +317,7 @@ int interpret()
                                  else return 13;        //ostatni
                                 }
                              else return 4;      //chybi parametr
+                             StackHelpItem = pop_top(funcStack->top->data->paramstack);
                              break;
                             }
                            
@@ -333,7 +339,8 @@ int interpret()
                             returnStack->top->data->adress = i;
                             dalsi i = (Instr->operand1-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
                                                              //proto -1
-
+                            
+                            StackHelpItem = pop_top(funcStack->top->data->paramstack);
                                 break;
                                 
                                 
