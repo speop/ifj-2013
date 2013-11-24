@@ -15,7 +15,7 @@ extern TAC *paska;                  //z vnitrni.c
 extern T_ST_Vars *symbolTable;      //obe tabulky z parser.c
 extern T_ST_Funcs *functionTable;
 
-int main()
+int interpret()
 {
     TAC *Instr;          //Instrukce
     int i = 0;          //index/pozice na pasce
@@ -28,9 +28,9 @@ int main()
 
     while(1)
     {   
-        Instr = *(paska[i++]);         //nacitame z pasky a posouvame se po ni
-        switch (Instr->operaror){
-            case  FUNCTION: DefineFunction(Instr->operand1);
+        Instr = &(paska[i++]);         //nacitame z pasky a posouvame se po ni
+        switch (Instr->operator){
+            case  FUNCTION: //DefineFunction(Instr->operand1);
                             break;
             case  RETURN:
                             //zahodí aktuální tabulku proměnných
@@ -68,19 +68,19 @@ int main()
         if (res->data->value != NULL) free(res->data->value);
 
                 //vypocet
-          if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operaror == S_MUL || Instr->operaror == S_DIV) {
+          if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operator == S_MUL || Instr->operator == S_DIV) {
             res->data->value = (double*)malloc(sizeof(double));
           
-          if(Instr->operaror == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2));
-          else if (Instr->operaror == S_DIV) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2));
-          else if(Instr->operaror == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2));
+          if(Instr->operator == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2));
+          else if (Instr->operator == S_DIV) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2));
+          else if(Instr->operator == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2));
           else *((double*)(res->data)->value) = *((double*)(op1)) - *((double*)(op2));
           
           res->data->type = S_DOUB;
         }
         else {
           res->data->value = (int*)malloc(sizeof(int));
-          if(Instr->operaror == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2));
+          if(Instr->operator == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2));
           else *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2));
           res->data->type = S_INT;
         }
@@ -91,7 +91,7 @@ int main()
       
         if(Instr->operand1.type == S_ID) { //operand1 je to promenna
           aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-          op1_typ = aux->data.type;
+          op1_typ = aux->data->type;
           if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
           else op1 = aux->data->value;
         }
@@ -143,7 +143,7 @@ int main()
           //ulozeni hodnoty
           switch(op1_typ){
             case S_STR:
-                res->data->value = mystrdup((char*)op1);
+                //res->data->value = mystrdup((char*)op1);
                 res->data->type = S_STR;
                 break;
 
@@ -159,13 +159,12 @@ int main()
                 res->data->value = malloc(sizeof(double));
                 *((double*)(res->data)->value) = *(double*)op1;
                 res->data->type = S_DOUB;
-                break
-
+                break;
           }
         
                 break; 
         
-            case S_FUNC:    //volani vestavene funkce
+            /*case S_FUNC:    //volani vestavene funkce
                            if(Instr->operand1.value=="get_string");
                                 {*(Instr->vysledek) = get_string();
                                  break;
@@ -221,7 +220,7 @@ int main()
                                     else return 13;
                                      break;
                                 }
-                            
+            */                
             case S_LST:
             case S_GRT:
             case S_LEQ:
@@ -284,17 +283,17 @@ int main()
                   }
                 }
                 break;
-            case CALL: dalsi Instrukce = FindVar(Instr->operand1);
+            case CALL: //dalsi Instrukce = FindVar(Instr->operand1);
                                 break;
             case STORE_PARAM:
-                vysledek=FindVar(Instr->operand1);
+                //vysledek=FindVar(Instr->operand1);
                 break;
             case JMP:
-                i = Instr->operand1.type;      //zmeni se index na pasce
+                i = Instr->operand1.type - 1;      //zmeni se index na pasce
                 break;
             case JMP_NOT:
-                if(!boolval(Instr->operand1.value))
-                  i = Instr->operand1.type;
+                //if(!boolval(Instr->operand1.value))
+                  i = Instr->operand1.type - 1;
                 break;
         }
     }
