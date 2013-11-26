@@ -31,6 +31,18 @@ int interpret()
     tStack StackHelpItem;             //pomocny prvek pro zasobniky
     Tparam *param;           //struktura pro parametry
     T_Token pom1, pom2, pom3;   //pomocné tokeny
+    
+    typedef struct TRetValue{
+  int adress;         //sem se vraci po vykonani funkce
+  T_Token *returadress;    //sem se uklada vysledek funkce
+}TRetValue;
+
+typedef struct Tparam{
+  tStack paramstack;
+  int free;
+  T_ST_FuncsItem funkce;
+}Tparam;
+
     //místo čísel používat enumy!!!!
     //kontrolovat jenom typovost proměnných!!
     //Instr.type je bud promenna nebo prima hodnota
