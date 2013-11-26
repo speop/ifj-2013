@@ -374,72 +374,74 @@ char *DoubleToStr(double input)
 
 
 
-bool boolval(T_Token input)
-{
-    switch (input.type){
-    case 31: return IntToBool(*input.value);
+
+void boolval(T_Token input, T_Token *p_output)
+{   
+ output.type = S_BOOL;
+    switch (*p_input.type){
+    case S_INT: *p_output.value = IntToBool(*input.value);
                     break;
-    case 32: return DoubleToBool(*input.value);
+    case S_DOUB: *p_output.value = DoubleToBool(*input.value);
                     break;
-    case 33: return StrToBool(input.value);
+    case S_STR: *p_output.value = StrToBool(*input.value);
                     break;
-    case 34: return *input.value;
+    case S_BOOL: *p_output.value = input.value;
                     break;
-    case 35: return 0;
+    case S_NULL: *p_output.value = 0;
                     break;
     }
-    return NULL;
 }
 
-bool doublelval(T_Token input)
-{
+void doublelval(T_Token input, T_Token *p_output)
+{   
+ *p_output.type = S_DOUB;
     switch (input.type){
-    case 31: return IntToDouble(*input.value);
-                    break;
-    case 32: return *input.value;
-                    break;
-    case 33: return StrToDouble(input.value);
-                    break;
-    case 34: return BoolToDouble(*input.value);
-                    break;
-    case 35: return 0;
-                    break;
-    }
-    return NULL;
+        case S_INT: *p_output.value = IntToDouble(*input.value);
+                        break;
+        case S_DOUB: *p_output.value = input.value;
+                        break;
+        case S_STR: *p_output.value = StrToDouble(input.value);
+                        break;
+        case S_BOOL: *p_output.value = BoolToDouble(*input.value);
+                        break;
+        case S_NULL: *p_output.value = 0;
+                        break;
+        }
 }
 
-int intval(T_Token input)
-{
+void intval(T_Token input, T_Token *p_output)
+{   
+ *p_output.type = S_INT;
     switch (input.type){
-    case 31: return input.value;
-                    break;
-    case 32: return DoubleToInt(*input.value);
-                    break;
-    case 33: return StrToInt(input.value);
-                    break;
-    case 34: return BoolToInt(*input.value);
-                    break;
-    case 35: return 0;
-                    break;
-    }
-    return NULL;
+        case S_INT: *p_output.value = input.value;
+                        break;
+        case S_DOUB: *p_output.value = DoubleToInt(*input.value);
+                        break;
+        case S_STR: *p_output.value = StrToInt(input.value);
+                        break;
+        case S_BOOL: *p_output.value = BoolToInt(input.value);
+                        break;
+        case S_NULL: *p_output.value = 0;
+                        break;
+        }
 }
 
-char* strval(T_Token input)
-{
+void strval(T_Token input, T_Token *p_output)
+{   
+ *p_output.type = S_STR;
     switch (input.type){
-    case 31: return IntToStr(input.value);
+    case S_INT: *p_output.value = IntToStr(input.value);
                     break;
-    case 32: return DoubleToStr(*input.value);
+    case S_DOUB: *p_output.value = DoubleToStr(input.value);
                     break;
-    case 33: return input.value;
+    case S_STR: *p_output.value = input.value;
                     break;
-    case 34: return BoolToStr(*input.value);
+    case S_BOOL: *p_output.value = BoolToStr(input.value);
                     break;
-    case 35: return 0;
+    case S_NULL: *p_output.value = 0;
                     break;
     }
-    return NULL;
 }
+
 
 
