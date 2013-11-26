@@ -443,22 +443,3 @@ char* strval(T_Token input)
 }
 
 
-int main()
-{
-    
-    return 0;    
-}
-
-
-//datový struktury 
-//tabulka proměnných    binární vyhledávací stromy
-//zásobník 
-
-//přečíst jeden řádek k´du
-       // přečíst operátor
-       //zjistit, co je zač
-       //zjistit proměnné
-//vybrat pro ni proceduru
-//vybrat proměnné
-    //
-//zavolat proceduru        
