@@ -196,8 +196,8 @@ typedef struct Tparam{
 						return INTERNAL_ERROR;
 					 param->free = 0;
 					 param->funkce.name="get_string";
-					 param->paramCount=0;
-					 garbage_add(array,&garbage_default_erase);
+					 param->funkce.paramCount=0;
+					 garbage_add(param,&garbage_default_erase);
 					 if (push(funcStack, param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						 return INTERNAL_ERROR;
 					 break;
@@ -267,7 +267,7 @@ typedef struct Tparam{
 					return INTERNAL_ERROR;
 				 param->free = Instr;
 				 param->funkce=Instr->operand1;
-				 param->funkce.paramCount=Instr->operand1.paramCount;
+				 param->funkce.paramCount=Instr->operand1.value->funkce.paramCount;
 				 garbage_add(param,&garbage_default_erase);
 				 if (push(funcStack, param)==INTERNAL_ERROR)
 				   return ERROR_INTER;
@@ -407,7 +407,7 @@ typedef struct Tparam{
 					aux->data->value = pom1.value;
 				}
 				returnStack->top->data->adress = i;
-				i = (Instr->operand1-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
+				i = (*Instr->operand1.value-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
 												 //proto -1
 				
 				StackHelpItem = pop_top(funcStack->top->data->paramstack);
@@ -422,9 +422,9 @@ typedef struct Tparam{
 					case 0: 
 						break;      //pole s parametry je plne, prebytecne se zahazuji
 					default:
-						if(push(funcStack->top->data->paramStack, Instr->operand1)==INTERNAL_ERROR)
+						if(push(funcStack->top->data->paramStack, &Instr->operand1)==INTERNAL_ERROR)
 							return INTERNAL_ERROR;
-						*(funcStack->top->data->free--);       //snizeni hodnoty pocitadla volnych mist pro parametry
+						funcStack->top->data->free--;       //snizeni hodnoty pocitadla volnych mist pro parametry
 						break;
 				}
 				break;
