@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 
 	if(argc!=2)
 	{
-		fprintf(sdterr,"Spatne parametry\n");
+		fprintf(stderr,"Spatne parametry\n");
 		return 1;
 	}
 	if((pSource_File=fopen(argv[1], "r"))==NULL)
