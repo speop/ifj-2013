@@ -1,3 +1,4 @@
+//Implementace interpretu jazyka IFJ13.
 //xbucht18, Buchta David
 #include "ast_tree.h"
 #include <stdio.h>
@@ -30,13 +31,6 @@ bool freeAss( Tleaf* vetev){
 void printAss(Tleaf* vetev, int uroven )
 {	
 	printf("\turoven %d: \n",uroven++ );
-	/*if(vetev->op2 != NULL ) printAss( (T_Token*)(vetev->op2)->value ,uroven);
-	//dostali jsme se dospod v pravo
 
-	printf("\t\tToken %d, op1: %d \n",vetev->por, (T_Token*)(vetev->op1)->type );
-	if(vetev->op != NULL) printf("\t\t\tsign: %d\n", (T_Token*)(vetev->op)->type);
-	if(vetev->op2 != NULL) printf("\t\t\top2: %d\n", (T_Token*)(vetev->op2)->type);
-	if((T_Token*)(vetev->op1)->type  == S_E ) printAss( (T_Token*)(vetev->op1)->value ,uroven );
-	return; */
 
 }

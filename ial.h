@@ -1,3 +1,7 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+//xnovot0m, Novotny Vojtech
+
 #ifndef IAL_H
 #define IAL_H
 

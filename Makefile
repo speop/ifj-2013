@@ -24,30 +24,21 @@ vnitrni.o: vnitrni.c vnitrni.h ial.h types.h parser.h garbage_collector.h ast_tr
 built_in.o: built_in.c built_in.h ial.h types.h
 	$(CC) $(CFLAGS) -c built_in.c -o built_in.o
 
-#expr.o: expr.c expr.h parser.h list.h ial.h scanner.h
-#	$(CC) $(CFLAGS) -c expr.c -o expr.o
-
 parser.o: parser.c parser.h types.h ial.h garbage_collector.h scaner.h ast_tree.h built_in.h
 	$(CC) $(CFLAGS) -c parser.c -o parser.o
 
 stack.o: stack.c stack.h types.h
 	$(CC) $(CFLAGS) -c stack.c -o stack.o
 
-#cilovy_kod.o: cilovy_kod.c cilovy_kod.h built_in.h global.h ial.h vnitrni_kod.h
-#	$(CC) $(CFLAGS) -c cilovy_kod.c -o cilovy_kod.o
-
 interpret.o: interpret.c stack.h ial.h types.h vnitrni.h parser.h
 	$(CC) $(CFLAGS) -c interpret.c -o interpret.o
 
 main.o:  main.c parser.h
-	#global.h parser.h global.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
 main: main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o
-#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o 
 	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o  -o main -lm
-	#
-	#parser.o scanner.o list.o expr.o ial.o global.o vnitrni_kod.o cilovy_kod.o built_in.o -o main -lm
+	
 
 clean:
 	rm -f *.o *.out *.zip $(PROGS)

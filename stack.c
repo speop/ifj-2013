@@ -1,4 +1,5 @@
-//xbucht18
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
 
 #include "types.h"
 #include <stdbool.h>

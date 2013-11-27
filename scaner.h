@@ -1,3 +1,8 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+//xsalom04, Salomon Vit
+//xbulin02, Bulin Martin
+
 #ifndef SCANNER_H
 #define SCANNER_H
 

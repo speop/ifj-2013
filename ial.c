@@ -1,3 +1,7 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+//xnovot0m, Novotny Vojtech
+
 #define LEFT 1
 #define RIGHT 0
 #include "ial.h"

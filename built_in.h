@@ -1,3 +1,6 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+
 #ifndef BUILT_IN_H
 #define BUIILT_IN_H
 

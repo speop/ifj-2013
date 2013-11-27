@@ -1,3 +1,6 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+
 #include "ial.h"
 #include "types.h"
 

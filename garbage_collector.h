@@ -1,3 +1,4 @@
+//Implementace interpretu jazyka IFJ13.
 //xbucht18, Buchta David
 #ifndef GARBAGE_COLLECTOR
 #define GARBAGE_COLLECTOR

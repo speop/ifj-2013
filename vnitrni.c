@@ -1,3 +1,6 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +15,6 @@
 
 #define debug 1
 
-//#include "cilovy_kod.h"
 
 extern tStack *alejStromu; //z parseru, je to ASS
 T_ST_Vars *symbolTable;
@@ -31,7 +33,7 @@ int generateCode(){
 	
 	actualST = symbolTable;
 	T_ST_Funcs *funkce;
-	T_Token eToken, *iToken;
+	T_Token  *iToken;
 
 	LastVar.type =  S_ID;
 	LastVar.value = NULL;
@@ -480,7 +482,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 				//printf("\nd0  %d\n",((Tleaf*)(tree->op2->value))->op->type);
 				T_Token *pomToken = (T_Token*)(((Tleaf*)(tree->op2->value))->op1); //printf("d1  %d\n",pomToken->type);
 				
-				if(((Tleaf*)(tree->op2->value))->op->type != NULL) { //printf("dd  %d\n",((Tleaf*)(pomToken->value))->op->type);
+				if(((Tleaf*)(tree->op2->value))->op != NULL) { //printf("dd  %d\n",((Tleaf*)(pomToken->value))->op->type);
 					ret = exprGC(((Tleaf*)(tree->op2->value)), RIGHT);	
 					
 					if(ret.rightVar != NULL) { 

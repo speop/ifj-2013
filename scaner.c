@@ -1,13 +1,17 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+//xsalom04, Salomon Vit
+//xbulin02, Bulin Martin
 #include <stdio.h>
 #include <ctype.h>
-#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include <stdbool.h>
 
 #include "scaner.h"
 #include "types.h"
-//#include "string.h"
+
+#include <string.h>
 
 #define debug 0
 
@@ -177,7 +181,7 @@ int getTokenReal(T_Token *token)
 
             *(int*)token->value = 1;
             return OK;
-            printf("tu uz se nedostanu\n");
+           
         }
 
         //ani konstanty to nejsou takze se skutecne jedna o pojmenovani funkce
@@ -582,11 +586,11 @@ int readNumber(T_Token *token, char firstNum)
 
 int readString(T_Token *token){
 
-  int inString = 1;
+ // int inString = 1;
   int pozice = 0;
   int alokovano = 32;
   int nextChar,i;
-  char *string, *more_str,s,s1;
+  char *string, *more_str,s1;
   char scanned = fgetc(pSource_File);
 
   if ((string = (char*)malloc(alokovano * sizeof(char))) == NULL) return ERROR_INTER;

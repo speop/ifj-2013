@@ -1,3 +1,6 @@
+//Implementace interpretu jazyka IFJ13.
+//xbucht18, Buchta David
+
 #include <stdio.h>
 #include <stdlib.h>
 #include "parser.h"

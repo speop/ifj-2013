@@ -1,3 +1,4 @@
+//Implementace interpretu jazyka IFJ13.
 //xbucht18, Buchta David
 #include "garbage_collector.h"
 #include "stdio.h"
