@@ -8,6 +8,8 @@
 #include "types.h"
 #include "vnitrni.h"
 #include "parser.h"
+#include "vestavene_funkce.h"
+
 
 #define true 1
 #define false 0
@@ -44,11 +46,11 @@ typedef struct Tparam{
 	tStackItem StackHelpItem;             //pomocny prvek pro zasobniky
 	Tparam param;           //struktura pro parametry
 	T_Token pom1, pom2, pom3;   //pomocnĂ© tokeny
-	
+
 
 
 	while(1)
-	{   
+	{
 		Instr = &(paska[i++]);         //nacitame z pasky a posouvame se po ni
 		switch (Instr->operator) {
 			case  FUNCTION: //DefineFunction(Instr->operand1);
@@ -57,9 +59,9 @@ typedef struct Tparam{
 				garbage_add((pop_top(tableStack)),&garbage_default_erase); //odebere z vrcholu zasobniku jednu tabulku funkci
 				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
 				i= (((TRetValue *)(StackHelpItem).data)->adress);       //nastavi vykonavani nasledujici instrukce
-				(((TRetValue *)(StackHelpItem).data)->returnadress) = &Instr->operand1; 
+				(((TRetValue *)(StackHelpItem).data)->returnadress) = &Instr->operand1;
 							//zahodĂ­ aktuĂˇlnĂ­ tabulku promÄ›nnĂ˝ch
-							//nĂˇvrat na mĂ­sto, kde jsem byl volanej  
+							//nĂˇvrat na mĂ­sto, kde jsem byl volanej
 			break;
 			case S_PLUS:
 			case S_MINUS:
@@ -76,7 +78,7 @@ typedef struct Tparam{
 					if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 					else op1 = Instr->operand1.value;
 				}
-		
+
 				if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 					aux = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op2_typ = aux->data->type;
@@ -88,19 +90,19 @@ typedef struct Tparam{
 					if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 					else op2 = Instr->operand1.value;
 				}
-		
+
 				res = findVarST(Instr->vysledek.value, symbolTable);
 				if (res->data->value != NULL) free(res->data->value);
 
 					  //vypocet
 				if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operator == S_MUL || Instr->operator == S_DIV) {
 				  res->data->value = (double*)malloc(sizeof(double));
-				
+
 				if(Instr->operator == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2));
 				else if (Instr->operator == S_DIV) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2));
 				else if(Instr->operator == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2));
 				else *((double*)(res->data)->value) = *((double*)(op1)) - *((double*)(op2));
-				
+
 				res->data->type = S_DOUB;
 				}
 				else {
@@ -111,9 +113,9 @@ typedef struct Tparam{
 				}
 
 			break;
-				  
+
 			case S_CONCATENATE:
-			
+
 			  if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 				aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 				op1_typ = aux->data->type;
@@ -125,7 +127,7 @@ typedef struct Tparam{
 				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 				else op1 = Instr->operand1.value;
 			  }
-			  
+
 			  if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 				aux = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 				op2_typ = aux->data->type;
@@ -137,21 +139,21 @@ typedef struct Tparam{
 				if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 				else op2 = Instr->operand1.value;
 			  }
-			  
+
 			  res = findVarST(Instr->vysledek.value, symbolTable);
 			  if (res->data->value != NULL) free(res->data->value);
-			  
+
 			  len = strlen((char*)op1) + strlen((char*)op2) +1; // vysledna delka retezce
 			  res->data->value = (char*)malloc(sizeof(char)*len);
-			  
+
 			  strcpy ((char*)(res->data)->value,(char*)op1);
 			  strcat ((char*)(res->data)->value,(char*)op2);
 			  res->data->type = S_STR;
-			
+
 			  break;
-		  
-		  
-			case S_IS:  
+
+
+			case S_IS:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 				  aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 				  op1_typ = aux->data->type;
@@ -161,10 +163,10 @@ typedef struct Tparam{
 				  op1_typ = Instr->operand1.type;
 				  op1 = Instr->operand1.value;
 				}
-				
+
 				res = findVarST(Instr->vysledek.value, symbolTable);
 				if (res->data->value != NULL) free(res->data->value);
-				
+
 				//ulozeni hodnoty
 				switch(op1_typ){
 				  case S_STR:
@@ -185,122 +187,122 @@ typedef struct Tparam{
 					  *((double*)(res->data)->value) = *(double*)op1;
 					  res->data->type = S_DOUB;
 					  break;
-				}        
-				break; 
-		
+				}
+				break;
+
 			case S_FUNC:    //volani funkce get_string
 				if(strcmp(Instr->operand1.value, "get_string")==0); {
 					 param.free = 0;           //param je statická proměnná
 					 param.funkce.name="get_string";
 					 param.funkce.paramCount=0;
-					 
+
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						 return ERROR_INTER;
-					 
+
 					  funcStack->top->data= malloc(sizeof(Tparam));
 					  if(funcStack->top->data==NULL)return ERROR_INTER;
 					  *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-					 
+
 					 break;
 					}
-																	  
+
 			   if(strcmp(Instr->operand1.value, "put_string")==0) {
 					 param.free = -1;               //oznaceni teto funkce (pak se nemusi porovnavat nazvy)
-					 param.funkce.paramCount=0;   
-					 param.funkce.name="put_string";   
-					 
+					 param.funkce.paramCount=0;
+					 param.funkce.name="put_string";
+
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
-					 
+
 					 funcStack->top->data= malloc(sizeof(Tparam));
 					 if(funcStack->top->data==NULL)return ERROR_INTER;
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-					 
+
 					 break;
 					}
-					
+
 				if(strcmp(Instr->operand1.value, "strlen")==0) {
 					 param.free = 1;
 					 param.funkce.paramCount=1;
 					 param.funkce.name="strlen";
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
-					 
+
 					 funcStack->top->data= malloc(sizeof(Tparam));
 					 if(funcStack->top->data==NULL)return ERROR_INTER;
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-					 
+
 					 break;
 					}
-				
+
 				if(strcmp(Instr->operand1.value, "get_substring")==0) {
 					 param.free = 3;
 					 param.funkce.name="get_substring";
 					 param.funkce.paramCount=3;
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
-					 
+
 					 funcStack->top->data= malloc(sizeof(Tparam));
 					 if(funcStack->top->data==NULL)return ERROR_INTER;
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-					 
+
 					 break;
 					}
-											
+
 				if(strcmp(Instr->operand1.value, "find_string")==0) {
 					 param.free = 2;
 					 param.funkce.name="find_string";
 					 param.funkce.paramCount=2;
-					 
+
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
-					 
+
 					 funcStack->top->data= malloc(sizeof(Tparam));
 					 if(funcStack->top->data==NULL)return ERROR_INTER;
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-					 
+
 					 break;
 					}
-				   
+
 			   if(strcmp(Instr->operand1.value, "sort_string")==0) {
 					 param.free = 1;
 					 param.funkce.name="sort_string";
 					 param.funkce.paramCount=1;
-					 
+
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
-					 
+
 					 funcStack->top->data= malloc(sizeof(Tparam));
 					 if(funcStack->top->data==NULL)return ERROR_INTER;
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-					 
+
 					 break;
 					}
 
 				 param.free = (((Tparam *)((Instr)->operand1).value)->funkce).paramCount;
 				 param.funkce = *(T_ST_FuncsItem *)(Instr->operand1.value);
 				 param.funkce.paramCount = (((Tparam *)((Instr)->operand1).value)->funkce).paramCount;
-				
+
 				if (push(funcStack, &param)==INTERNAL_ERROR)
 				   return ERROR_INTER;
 				 funcStack->top->data= malloc(sizeof(Tparam));
 				 if(funcStack->top->data==NULL)return ERROR_INTER;
-				 
+
 				 *(Tparam*)funcStack->top->data = param;
 				 garbage_add(funcStack->top->data,&garbage_default_erase);
-				 
-				 
+
+
 				 *RetValue->returnadress = Instr->vysledek;
 				 if(push(returnStack, RetValue)==INTERNAL_ERROR)
 				   return ERROR_INTER;
 				 break;
-			
+
 			case S_LST:
 			case S_GRT:
 			case S_LEQ:
@@ -316,7 +318,7 @@ typedef struct Tparam{
 					op1_typ = Instr->operand1.type;
 					op1 = Instr->operand1.value;
 				}
-		
+
 				if(Instr->operand2.type == S_ID) { //operand2 je promenna
 					aux = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op2_typ = (*aux).data->type;
@@ -365,31 +367,32 @@ typedef struct Tparam{
 				break;
 
 			case CALL:  //zjisti, kterou funkci volam a zkontroluj jeji parametry
-						
-				if(funcStack->top->data->funkce->name == "get_string") {
-					Instr->vysledek.value = get_string();
-					StackHelpItem = pop_top(funcStack->top->data->paramstack);
+
+				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "get_string") == 0) {
+					*(char *)(((Instr)->vysledek).value) = *(get_string());
+					Instr->vysledek.type = S_STR;
+					StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 					break;
 				}
-					
-				if(funcStack->top->data->funkce->name == "put_string") {
-					StackHelpItem = pop_top(funcStack->top->data->paramstack);
+
+				if(strcmp((Tparam *)(funcStack->top->data)->funkce.name, "put_string")) {
+					StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 					break;
 				}
-					
-				if(funcStack->top->data->funkce->name == "strlen") {
-				  if(funcStack->top->data->free == 0) {
-					 StackHelpItem = funcStack->top->data->paramstack->top;
-					 if(StackHelpItem.data->paramstack->top->data->type == S_STR)
+
+				if(strcmp((Tparam *)(((funcStack)->top)->data)->funkce->name, "strlen") == 0) {
+				  if(((Tparam *)((funcStack)->top)->data)->free == 0) {
+					 StackHelpItem = *((Tparam *)((funcStack)->top)->data)->paramstack->top;
+					 if(*(((int *)(Tparam *)(StackHelpItem).data)->paramstack->top->data)->type == S_STR)
 					   Instr->vysledek.value=strlen(StackHelpItem.data->paramstack->top->data->value);
 					 else
 					   return SEM_OTHER_ERROR;
 				   }
-				  StackHelpItem = pop_top(funcStack->top->data->paramstack);
+				  StackHelpItem = *(pop_top(((Tparam)((funcStack)->top)->data)->paramstack));
 				  break;
 				}
-						   
-			 if(strcmp(funcStack->top->data->funkce->name,  "find_string")==NULL) {
+
+			 if(strcmp(funcStack->top->data->funkce->name,  "find_string") == 0) {
 				 if(funcStack->top->data->free == 0) {
 					 StackHelpItem = funcStack->top->data->paramstack->top;
 					 pom1 = (pop_back(&StackHelpItem)->data);
@@ -403,7 +406,7 @@ typedef struct Tparam{
 				 StackHelpItem = pop_top(funcStack->top->data->paramstack);
 				 break;
 				}
-			
+
 				if(funcStack->top->data->funkce->name == "sort_string") {
 				 if(funcStack->top->data->free == 0) {
 					 StackHelpItem = funcStack->top->data->paramstack->top;
@@ -416,38 +419,38 @@ typedef struct Tparam{
 				 StackHelpItem = pop_top(funcStack->top->data->paramstack);
 				 break;
 				}
-			   
+
 					//kontrola poctu parametru
 				 if(funcStack->top->data->free != 0)
 					return SEM_MISSING_PARAMETER;
-				
+
 				 //kopĂ­ruji tabulku symbolu
 			   if(push(tableStack, copyTable(tableStack->top))==INTERNAL_ERROR) //prida na vrchol zasobniku novou tabulku
 					return ERROR_INTER;
-					
+
 					//pepisu v ni hodnoty parametru
 				for(int j=funcStack->top->data->funkce->paramCount; j>0; j--) {
-					pom1 = pop_top(funcStack->top->data->paramStack); 
+					pom1 = pop_top(funcStack->top->data->paramstack);
 					aux = findVarST( pom1.name, tableStack->top->data);
 					aux->data->value = pom1.value;
 				}
 				returnStack->top->data->adress = i;
-				i = (*Instr->operand1.value-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
+				i = (*(int *)(((Instr)->operand1).value)-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
 												 //proto -1
-				
-				StackHelpItem = pop_top(funcStack->top->data->paramstack);
+
+				StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 				break;
 
 			case STORE_PARAM:
-				switch (funcStack->top->data->free) {
+				switch (((Tparam *)((funcStack)->top)->data)->free) {
 					case -1:               //tisknou se parametry funkce put_string()
 						if(Instr->operand1.type==S_STR) printf(Instr->operand1.value);
 						else return SEM_OTHER_ERROR;
 						break;
-					case 0: 
+					case 0:
 						break;      //pole s parametry je plne, prebytecne se zahazuji
 					default:
-						if(push(((tStack)((funcStack)->top)->data)->paramStack, &Instr->operand1)==INTERNAL_ERROR)
+						if(push(&(((Tparam *)((funcStack)->top)->data)->paramstack), &Instr->operand1)==INTERNAL_ERROR)
 							return INTERNAL_ERROR;
 						((Tparam *)((funcStack)->top)->data)->free--;       //snizeni hodnoty pocitadla volnych mist pro parametry
 						break;
