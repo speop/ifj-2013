@@ -283,9 +283,9 @@ typedef struct Tparam{
 					 break;
 					}
 
-				 param.free = ((((T_ST_FuncsItem *)((Instr)->operand1).value).funkce).paramCount);
+				 param.free = (((Tparam *)((Instr)->operand1).value)->funkce).paramCount;
 				 param.funkce = *(T_ST_FuncsItem *)(Instr->operand1.value);
-				 param.funkce.paramCount = Instr->operand1.value->funkce.paramCount;
+				 param.funkce.paramCount = (((Tparam *)((Instr)->operand1).value)->funkce).paramCount;
 				
 				if (push(funcStack, &param)==INTERNAL_ERROR)
 				   return ERROR_INTER;
@@ -296,7 +296,7 @@ typedef struct Tparam{
 				 garbage_add(funcStack->top->data,&garbage_default_erase);
 				 
 				 
-				 *RetValue->returadress = Instr->vysledek;
+				 *RetValue->returnadress = Instr->vysledek;
 				 if(push(returnStack, RetValue)==INTERNAL_ERROR)
 				   return ERROR_INTER;
 				 break;
@@ -367,7 +367,7 @@ typedef struct Tparam{
 			case CALL:  //zjisti, kterou funkci volam a zkontroluj jeji parametry
 						
 				if(funcStack->top->data->funkce->name == "get_string") {
-					Instr->vysledek.value=get_string();
+					Instr->vysledek.value = get_string();
 					StackHelpItem = pop_top(funcStack->top->data->paramstack);
 					break;
 				}
@@ -389,7 +389,7 @@ typedef struct Tparam{
 				  break;
 				}
 						   
-			 if(funcStack->top->data->funkce->name == "find_string") {
+			 if(strcmp(funcStack->top->data->funkce->name,  "find_string")==NULL) {
 				 if(funcStack->top->data->free == 0) {
 					 StackHelpItem = funcStack->top->data->paramstack->top;
 					 pom1 = (pop_back(&StackHelpItem)->data);
@@ -447,9 +447,9 @@ typedef struct Tparam{
 					case 0: 
 						break;      //pole s parametry je plne, prebytecne se zahazuji
 					default:
-						if(push(funcStack->top->data->paramStack, &Instr->operand1)==INTERNAL_ERROR)
+						if(push(((tStack)((funcStack)->top)->data)->paramStack, &Instr->operand1)==INTERNAL_ERROR)
 							return INTERNAL_ERROR;
-						funcStack->top->data->free--;       //snizeni hodnoty pocitadla volnych mist pro parametry
+						((Tparam *)((funcStack)->top)->data)->free--;       //snizeni hodnoty pocitadla volnych mist pro parametry
 						break;
 				}
 				break;
