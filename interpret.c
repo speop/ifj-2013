@@ -20,7 +20,7 @@ int interpret()
 {
 		typedef struct TRetValue{
   int adress;         //sem se vraci po vykonani funkce
-  T_Token *returadress;    //sem se uklada vysledek funkce
+  T_Token *returnadress;    //sem se uklada vysledek funkce
 }TRetValue;
 
 typedef struct Tparam{
@@ -28,6 +28,8 @@ typedef struct Tparam{
   int free;
   T_ST_FuncsItem funkce;
 }Tparam;
+
+
 
 	TAC *Instr;          //Instrukce
 	int i = 0;          //index/pozice na pasce
@@ -40,14 +42,10 @@ typedef struct Tparam{
 	tStack *tableStack = SInit();         //zasobnik tabulek symbolu
 	tStack *funcStack = SInit();         //zasobnik s funkcemi a parametry pro volani
 	tStackItem StackHelpItem;             //pomocny prvek pro zasobniky
-	Tparam *param;           //struktura pro parametry
+	Tparam param;           //struktura pro parametry
 	T_Token pom1, pom2, pom3;   //pomocnĂ© tokeny
 	
 
-
-	//mĂ­sto ÄŤĂ­sel pouĹľĂ­vat enumy!!!!
-	//kontrolovat jenom typovost promÄ›nnĂ˝ch!!
-	//Instr.type je bud promenna nebo prima hodnota
 
 	while(1)
 	{   
@@ -56,10 +54,10 @@ typedef struct Tparam{
 			case  FUNCTION: //DefineFunction(Instr->operand1);
 							break;
 			case  RETURN:
-				StackHelpItem = *(pop_top(tableStack));   //odebere z vrcholu zasobniku jednu tabulku funkci
+				garbage_add((pop_top(tableStack)),&garbage_default_erase); //odebere z vrcholu zasobniku jednu tabulku funkci
 				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
-				i= StackHelpItem.data->adress;       //nastavi vykonavani nasledujici instrukce
-				StackHelpItem.data->returnadress = &Instr->operand1; 
+				i= (((TRetValue *)(StackHelpItem).data)->adress);       //nastavi vykonavani nasledujici instrukce
+				(((TRetValue *)(StackHelpItem).data)->returnadress) = &Instr->operand1; 
 							//zahodĂ­ aktuĂˇlnĂ­ tabulku promÄ›nnĂ˝ch
 							//nĂˇvrat na mĂ­sto, kde jsem byl volanej  
 			break;
@@ -192,85 +190,112 @@ typedef struct Tparam{
 		
 			case S_FUNC:    //volani funkce get_string
 				if(strcmp(Instr->operand1.value, "get_string")==0); {
-					 if(param=malloc(sizeof(Tparam))==NULL)
-						return INTERNAL_ERROR;
-					 param->free = 0;
-					 param->funkce.name="get_string";
-					 param->funkce.paramCount=0;
-					 garbage_add(param,&garbage_default_erase);
-					 if (push(funcStack, param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
-						 return INTERNAL_ERROR;
+					 param.free = 0;           //param je statická proměnná
+					 param.funkce.name="get_string";
+					 param.funkce.paramCount=0;
+					 
+					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
+						 return ERROR_INTER;
+					 
+					  funcStack->top->data= malloc(sizeof(Tparam));
+					  if(funcStack->top->data==NULL)return ERROR_INTER;
+					  *(Tparam*)funcStack->top->data = param;
+					 garbage_add(funcStack->top->data,&garbage_default_erase);
+					 
 					 break;
 					}
 																	  
 			   if(strcmp(Instr->operand1.value, "put_string")==0) {
-					 if((param = malloc(sizeof(Tparam)))==0)
-						return INTERNAL_ERROR;
-					 param->free = -1;               //oznaceni teto funkce (pak se nemusi porovnavat nazvy)
-					 param->funkce.paramCount=0;   
-					 param->funkce.name="put_string";   
-					 garbage_add(param,&garbage_default_erase);
-					 if (push(funcStack, param)==INTERNAL_ERROR)
-						return INTERNAL_ERROR;
+					 param.free = -1;               //oznaceni teto funkce (pak se nemusi porovnavat nazvy)
+					 param.funkce.paramCount=0;   
+					 param.funkce.name="put_string";   
+					 
+					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
+						return ERROR_INTER;
+					 
+					 funcStack->top->data= malloc(sizeof(Tparam));
+					 if(funcStack->top->data==NULL)return ERROR_INTER;
+					 *(Tparam*)funcStack->top->data = param;
+					 garbage_add(funcStack->top->data,&garbage_default_erase);
+					 
 					 break;
 					}
 					
 				if(strcmp(Instr->operand1.value, "strlen")==0) {
-					   if(param = malloc(sizeof(Tparam))==0)
-						return INTERNAL_ERROR;
-					 param->free = 1;
-					 param->funkce.paramCount=1;
-					 param->funkce.name="strlen";
-					 garbage_add(param,&garbage_default_erase);
-					 if (push(funcStack, param)==INTERNAL_ERROR)
-						return INTERNAL_ERROR;
+					 param.free = 1;
+					 param.funkce.paramCount=1;
+					 param.funkce.name="strlen";
+					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
+						return ERROR_INTER;
+					 
+					 funcStack->top->data= malloc(sizeof(Tparam));
+					 if(funcStack->top->data==NULL)return ERROR_INTER;
+					 *(Tparam*)funcStack->top->data = param;
+					 garbage_add(funcStack->top->data,&garbage_default_erase);
+					 
 					 break;
 					}
 				
 				if(strcmp(Instr->operand1.value, "get_substring")==0) {
-					 if(param = malloc(sizeof(Tparam))==0)
-						return INTERNAL_ERROR;
-					 param->free = 3;
-					 param->funkce.name="get_substring";
-					 param->funkce.paramCount=3;
-					 garbage_add(param,&garbage_default_erase);
-					 if (push(funcStack, param)==INTERNAL_ERROR)
-						return INTERNAL_ERROR;
+					 param.free = 3;
+					 param.funkce.name="get_substring";
+					 param.funkce.paramCount=3;
+					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
+						return ERROR_INTER;
+					 
+					 funcStack->top->data= malloc(sizeof(Tparam));
+					 if(funcStack->top->data==NULL)return ERROR_INTER;
+					 *(Tparam*)funcStack->top->data = param;
+					 garbage_add(funcStack->top->data,&garbage_default_erase);
+					 
 					 break;
 					}
 											
 				if(strcmp(Instr->operand1.value, "find_string")==0) {
-					 if(param = malloc(sizeof(Tparam))==0)
-						return INTERNAL_ERROR;
-					 param->free = 2;
-					 param->funkce.name="find_string";
-					 param->funkce.paramCount=2;
-					 garbage_add(param,&garbage_default_erase);
-					 if (push(funcStack, param)==INTERNAL_ERROR)
-						return INTERNAL_ERROR;
+					 param.free = 2;
+					 param.funkce.name="find_string";
+					 param.funkce.paramCount=2;
+					 
+					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
+						return ERROR_INTER;
+					 
+					 funcStack->top->data= malloc(sizeof(Tparam));
+					 if(funcStack->top->data==NULL)return ERROR_INTER;
+					 *(Tparam*)funcStack->top->data = param;
+					 garbage_add(funcStack->top->data,&garbage_default_erase);
+					 
 					 break;
 					}
 				   
 			   if(strcmp(Instr->operand1.value, "sort_string")==0) {
-					if(param = malloc(sizeof(Tparam))==0)
-						return INTERNAL_ERROR;
-					 param->free = 1;
-					 param->funkce.name="sort_string";
-					 param->funkce.paramCount=1;
-					 garbage_add(param,&garbage_default_erase);
-					 if (push(funcStack, param)==INTERNAL_ERROR)
+					 param.free = 1;
+					 param.funkce.name="sort_string";
+					 param.funkce.paramCount=1;
+					 
+					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
+					 
+					 funcStack->top->data= malloc(sizeof(Tparam));
+					 if(funcStack->top->data==NULL)return ERROR_INTER;
+					 *(Tparam*)funcStack->top->data = param;
+					 garbage_add(funcStack->top->data,&garbage_default_erase);
+					 
 					 break;
 					}
 
-				 if(param = malloc(sizeof(Tparam))==0)
-					return INTERNAL_ERROR;
-				 param->free = Instr;
-				 param->funkce=Instr->operand1;
-				 param->funkce.paramCount=Instr->operand1.value->funkce.paramCount;
-				 garbage_add(param,&garbage_default_erase);
-				 if (push(funcStack, param)==INTERNAL_ERROR)
+				 param.free = ((((T_ST_FuncsItem *)((Instr)->operand1).value).funkce).paramCount);
+				 param.funkce = *(T_ST_FuncsItem *)(Instr->operand1.value);
+				 param.funkce.paramCount = Instr->operand1.value->funkce.paramCount;
+				
+				if (push(funcStack, &param)==INTERNAL_ERROR)
 				   return ERROR_INTER;
+				 funcStack->top->data= malloc(sizeof(Tparam));
+				 if(funcStack->top->data==NULL)return ERROR_INTER;
+				 
+				 *(Tparam*)funcStack->top->data = param;
+				 garbage_add(funcStack->top->data,&garbage_default_erase);
+				 
+				 
 				 *RetValue->returadress = Instr->vysledek;
 				 if(push(returnStack, RetValue)==INTERNAL_ERROR)
 				   return ERROR_INTER;
