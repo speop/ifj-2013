@@ -30,7 +30,7 @@ parser.o: parser.c parser.h types.h ial.h garbage_collector.h scaner.h ast_tree.
 stack.o: stack.c stack.h types.h
 	$(CC) $(CFLAGS) -c stack.c -o stack.o
 
-interpret.o: interpret.c stack.h ial.h types.h vnitrni.h parser.h
+interpret.o: interpret.c stack.h ial.h types.h vnitrni.h parser.h vestavene_funkce.h
 	$(CC) $(CFLAGS) -c interpret.c -o interpret.o
 
 main.o:  main.c parser.h
