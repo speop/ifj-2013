@@ -369,7 +369,7 @@ typedef struct Tparam{
 			case CALL:  //zjisti, kterou funkci volam a zkontroluj jeji parametry
 
 				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "get_string") == 0) {
-					(char *)((TRetValue *)(returnStack->top->data)->RetValue->returnvalue).value = get_string();	//
+					((char *)((TRetValue *)returnStack->top->data)->returnvalue.value) = get_string();	//
 					Instr->vysledek.type = S_STR;
 					StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 					break;
@@ -383,8 +383,8 @@ typedef struct Tparam{
 				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "strlen") == 0) {
 				  if(((Tparam *)((funcStack)->top)->data)->free == 0) {
 					 StackHelpItem = *((Tparam *)((funcStack)->top)->data)->paramstack.top;
-					 if((int *)(((int *)(Tparam *)(StackHelpItem).data)->paramstack->top->data)->type == S_STR)
-					   *(int *)Instr->vysledek.value=strlen(((Tparam *)StackHelpItem.data)->paramstack->top->data->value);
+					 if((int *)((int *)((Tparam *)StackHelpItem.data)->paramstack.top->data)->type == S_STR)
+					   *(int *)Instr->vysledek.value=strlen(((Tparam *)StackHelpItem.data)->paramstack.top->data->value);
 					 else
 					   return SEM_OTHER_ERROR;
 				   }
@@ -395,9 +395,9 @@ typedef struct Tparam{
 			 if(strcmp(funcStack->top->data->funkce->name,  "find_string") == 0) {
 				 if(funcStack->top->data->free == 0) {
 					 StackHelpItem = funcStack->top->data->paramstack->top;
-					 pom1 = (pop_back(&StackHelpItem)->data);
-					 pom2 = (pop_back(&StackHelpItem)->data);
-					 pom3 = (pop_back(&StackHelpItem)->data);
+					 pom1 = *(T_Token *)(pop_back(&StackHelpItem)->data);
+					 pom2 = *(T_Token *)(pop_back(&StackHelpItem)->data);
+					 pom3 = *(T_Token *)(pop_back(&StackHelpItem)->data);
 					 if(pom1.type== S_STR && pom2.type==S_INT && pom3.type==S_INT)
 						 Instr->vysledek.value=strlen(StackHelpItem.data->paramstack->top->data->value);
 					 else return SEM_OTHER_ERROR;        //ostatni
