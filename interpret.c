@@ -22,7 +22,7 @@ int interpret()
 {
 		typedef struct TRetValue{
   int adress;         //sem se vraci po vykonani funkce
-  T_Token *returnadress;    //sem se uklada vysledek funkce
+  T_Token *returnvalue;    //sem se uklada vysledek funkce
 }TRetValue;
 
 typedef struct Tparam{
@@ -35,7 +35,7 @@ typedef struct Tparam{
 
 	TAC *Instr;          //Instrukce
 	int i = 0;          //index/pozice na pasce
-	void *op1, *op2;
+	void *op1, *op2, *pomptr;
 	int op1_typ, op2_typ,len;   //typy operandu
 	T_ST_Vars *aux, *res;        //pomocny uzel a uzel pro vysledek
 	//T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
@@ -59,7 +59,7 @@ typedef struct Tparam{
 				garbage_add((pop_top(tableStack)),&garbage_default_erase); //odebere z vrcholu zasobniku jednu tabulku funkci
 				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
 				i= (((TRetValue *)(StackHelpItem).data)->adress);       //nastavi vykonavani nasledujici instrukce
-				(((TRetValue *)(StackHelpItem).data)->returnadress) = &Instr->operand1;
+				(((TRetValue *)(StackHelpItem).data)->returnvalue) = &Instr->operand1;
 							//zahodĂ­ aktuĂˇlnĂ­ tabulku promÄ›nnĂ˝ch
 							//nĂˇvrat na mĂ­sto, kde jsem byl volanej
 			break;
@@ -298,7 +298,7 @@ typedef struct Tparam{
 				 garbage_add(funcStack->top->data,&garbage_default_erase);
 
 
-				 *RetValue->returnadress = Instr->vysledek;
+				 *RetValue->returnvalue = Instr->vysledek;
 				 if(push(returnStack, RetValue)==INTERNAL_ERROR)
 				   return ERROR_INTER;
 				 break;
@@ -369,26 +369,26 @@ typedef struct Tparam{
 			case CALL:  //zjisti, kterou funkci volam a zkontroluj jeji parametry
 
 				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "get_string") == 0) {
-					*(char *)(((Instr)->vysledek).value) = *(get_string());
+					(char *)((TRetValue *)(returnStack->top->data)->RetValue->returnvalue).value = get_string();	//
 					Instr->vysledek.type = S_STR;
 					StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 					break;
 				}
 
-				if(strcmp((Tparam *)(funcStack->top->data)->funkce.name, "put_string")) {
+				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "put_string") == 0) {
 					StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 					break;
 				}
 
-				if(strcmp((Tparam *)(((funcStack)->top)->data)->funkce->name, "strlen") == 0) {
+				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "strlen") == 0) {
 				  if(((Tparam *)((funcStack)->top)->data)->free == 0) {
-					 StackHelpItem = *((Tparam *)((funcStack)->top)->data)->paramstack->top;
-					 if(*(((int *)(Tparam *)(StackHelpItem).data)->paramstack->top->data)->type == S_STR)
-					   Instr->vysledek.value=strlen(StackHelpItem.data->paramstack->top->data->value);
+					 StackHelpItem = *((Tparam *)((funcStack)->top)->data)->paramstack.top;
+					 if((int *)(((int *)(Tparam *)(StackHelpItem).data)->paramstack->top->data)->type == S_STR)
+					   *(int *)Instr->vysledek.value=strlen(((Tparam *)StackHelpItem.data)->paramstack->top->data->value);
 					 else
 					   return SEM_OTHER_ERROR;
 				   }
-				  StackHelpItem = *(pop_top(((Tparam)((funcStack)->top)->data)->paramstack));
+				  StackHelpItem = *(pop_top(((Tparam *)((funcStack)->top)->data)->paramstack));
 				  break;
 				}
 
@@ -424,19 +424,19 @@ typedef struct Tparam{
 				 if(funcStack->top->data->free != 0)
 					return SEM_MISSING_PARAMETER;
 
-				 //kopĂ­ruji tabulku symbolu
+				 //kopiruji tabulku symbolu
 			   if(push(tableStack, copyTable(tableStack->top))==INTERNAL_ERROR) //prida na vrchol zasobniku novou tabulku
 					return ERROR_INTER;
 
-					//pepisu v ni hodnoty parametru
-				for(int j=funcStack->top->data->funkce->paramCount; j>0; j--) {
-					pom1 = pop_top(funcStack->top->data->paramstack);
-					aux = findVarST( pom1.name, tableStack->top->data);
-					aux->data->value = pom1.value;
+					//prepisu v ni hodnoty parametru
+				for(int j=((Tparam *)funcStack->top->data)->funkce.paramCount; j>0; j--) {
+					pomptr = pop_top(&((Tparam *)funcStack->top->data)->paramstack);
+					aux = findVarST( ((char *)pom1.value), ((T_ST_Vars *)tableStack->top->data));
+					//aux->data->value = ((T_Token *)pomptr).value;
 				}
-				returnStack->top->data->adress = i;
+				((TRetValue *)returnStack->top->data)->adress = i;
 				i = (*(int *)(((Instr)->operand1).value)-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
-												 //proto -1
+															   //proto -1
 
 				StackHelpItem = *(pop_top(&((Tparam *)((funcStack)->top)->data)->paramstack));
 				break;
@@ -444,7 +444,7 @@ typedef struct Tparam{
 			case STORE_PARAM:
 				switch (((Tparam *)((funcStack)->top)->data)->free) {
 					case -1:               //tisknou se parametry funkce put_string()
-						if(Instr->operand1.type==S_STR) printf(Instr->operand1.value);
+						if(Instr->operand1.type==S_STR) printf("%s", (char *)(Instr->operand1).value);
 						else return SEM_OTHER_ERROR;
 						break;
 					case 0:
