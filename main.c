@@ -29,12 +29,12 @@ int main(int argc, char **argv)
 
 	if(argc!=2)
 	{
-		printf("Spatne parametry\n");
+		fprintf(sdterr,"Spatne parametry\n");
 		return 1;
 	}
 	if((pSource_File=fopen(argv[1], "r"))==NULL)
 	{
-		printf("Soubor se nepodarilo otevrit.\n");
+		fprintf(stderr,"Soubor se nepodarilo otevrit.\n");
 		return 1;
 	}
 
