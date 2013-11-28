@@ -1,8 +1,11 @@
 <?php
 
-hello("str");
-
-function hello($str)
+if (2 < 3)
 {
-	put_string("hello");
+	put_string("ano");
 }
+
+else {
+	put_string("ne");
+}
+

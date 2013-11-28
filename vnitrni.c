@@ -183,10 +183,20 @@ int generateCode(){
 					break;
 
 			 //BLOCK_END, BLOCK_START
+			
 			case S_BLOCK_END:
 
 				//konec programu 
-				if ((itemPom = bottom(alejStromu)) == NULL) break;
+
+				if ((itemPom = bottom(alejStromu)) == NULL) {
+					if ((adresaSkoku = pop_top(skoky)) == NULL){
+								fprintf(stderr, "ERROR binding jump adress\n" );
+								return ERROR_INTER;
+					}
+					pom = *((int*)(adresaSkoku)->data);
+					paska[pom].operand1.type = index; 
+					break; 
+				}
 				
 				
 				if(((T_Token*)(itemPom)->data)->type == S_E){
@@ -214,7 +224,6 @@ int generateCode(){
 							addr = (int*)malloc(sizeof(int));
 							*addr = index-1;
 							push(skoky,addr);
-							
 							
 
 							break;

@@ -504,7 +504,8 @@ int interpret()
 
 			case JMP_NOT:
 				//if(!boolval(Instr->operand1.value))
-				  i = Instr->operand1.type - 1;
+				printf("%d\n", Instr->vysledek.type );
+				  i = Instr->vysledek.type - 1;
 				break;
 
 			case THE_END:
