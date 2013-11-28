@@ -10,6 +10,8 @@
 #include "parser.h"
 #include "vestavene_funkce.h"
 
+#include "interpret.h"
+
 
 #define true 1
 #define false 0
@@ -20,16 +22,7 @@ extern T_ST_Funcs *functionTable;
 
 int interpret()
 {
-		typedef struct TRetValue{
-  int adress;         //sem se vraci po vykonani funkce
-  T_Token *returnvalue;    //sem se uklada vysledek funkce
-}TRetValue;
-
-typedef struct Tparam{
-  tStack paramstack;
-  int free;
-  T_ST_FuncsItem funkce;
-}Tparam;
+		
 
 
 
