@@ -13,8 +13,7 @@
 #include "interpret.h"
 
 
-#define true 1
-#define false 0
+
 
 extern TAC *paska;                  //z vnitrni.c
 extern T_ST_Vars *symbolTable;      //obe tabulky z parser.c
@@ -23,8 +22,6 @@ extern T_ST_Funcs *functionTable;
 int interpret()
 {
 		
-
-
 
 	TAC *Instr;          //Instrukce
 	int i = 0;          //index/pozice na pasce
@@ -378,7 +375,7 @@ int interpret()
 				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "strlen") == 0) {
 				  if(((Tparam *)((funcStack)->top)->data)->free == 0) {
 					 StackHelpItem = *(((Tparam *)funcStack->top->data)->paramstack.top);
-					 if(*(int *)((T_Token *)StackHelpItem.data)->type == S_STR)
+					 if((int )((T_Token *)StackHelpItem.data)->type == S_STR)
 					   *(int *)Instr->vysledek.value=strlen(((T_Token *)((Tparam *)StackHelpItem.data)->paramstack.top->data)->value);
 					 else
 					   return SEM_OTHER_ERROR;

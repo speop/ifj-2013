@@ -56,6 +56,7 @@ char *get_string()
 
 
 
+/* stejne jako v ial.h
 
 char *get_substring(char input[], int a, int b)
 {   int c=0, length=strlen(input);
@@ -81,6 +82,7 @@ char *get_substring(char input[], int a, int b)
         int length;
         char *first;
     }TString;
+
 
 char *merge(TString left, TString right)
 {
@@ -162,6 +164,8 @@ char *sort_string(char *vstup)
 
     return merge(left, right);
 }
+
+*/
 // hotové, funguje
 int find_string(char *string1, char *string2)
 {
@@ -200,7 +204,8 @@ int find_string(char *string1, char *string2)
     return pozice;
 }
 
-
+/*
+je nedefinovane NAN ale je to nepouzite v interpretu
 
 double StrToDouble(char *input)
 {
@@ -255,6 +260,7 @@ double StrToDouble(char *input)
         return (sign * output );
 }
 
+*/
 
 double IntToDouble(int input)
 {
@@ -277,7 +283,7 @@ bool StrToBool(char *input)
 {
     if(strlen(input))
         return true;
-    else return falfse;
+    else return false;
 }
 int StrToInt(char *input)
 {
@@ -347,7 +353,7 @@ char *IntToStr(int input)
     }
     return output;
 }
-*/
+
 char *DoubleToStr(double input)
 {   int i=0;
     int cislice;
@@ -377,12 +383,13 @@ char *DoubleToStr(double input)
 
 
 
+// tyto funkce neni nikde pouzita a jsou v ni syntakticke chyby
 
-
+/*
 void boolval(T_Token input, T_Token *p_output)
 {   
- output.type = S_BOOL;
-    switch (*p_input.type){
+    p_output->type = S_BOOL;
+    switch (p_input.type){
     case S_INT: *p_output.value = IntToBool(*input.value);
                     break;
     case S_DOUB: *p_output.value = DoubleToBool(*input.value);
@@ -395,6 +402,7 @@ void boolval(T_Token input, T_Token *p_output)
                     break;
     }
 }
+
 
 void doublelval(T_Token input, T_Token *p_output)
 {   
@@ -446,6 +454,6 @@ void strval(T_Token input, T_Token *p_output)
                     break;
     }
 }
-
+*/
 
 

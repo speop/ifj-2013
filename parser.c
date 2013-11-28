@@ -11,6 +11,8 @@
 #include "stack.h"
 #include "vnitrni.h"
 #include "built_in.h"
+#include "interpret.h"
+
 #define debug 0 //  0 - vypnuto, 1 - lehka verze, > 1 vypisuje se i stack a porovnavaci tokeny
 #define POLE 23
 
