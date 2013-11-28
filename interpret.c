@@ -501,13 +501,12 @@ int interpret()
 				break;
 
 			case JMP:
-				i = Instr->operand1.type - 1;      //zmeni se index na pasce
+				i = Instr->vysledek.type;      //zmeni se index na pasce
 				break;
 
 			case JMP_NOT:
-				//if(!boolval(Instr->operand1.value))
-				printf("%d\n", Instr->vysledek.type );
-				  i = Instr->vysledek.type - 1;
+				if(!boolval(Instr->operand1.value))
+				  i = Instr->vysledek.type;
 				break;
 
 			case THE_END:
