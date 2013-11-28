@@ -507,12 +507,38 @@ int interpret()
 			case JMP_NOT:
 				if(Instr->operand1.type == S_ID) {
 					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
-					backup.value = AuxSTVar->data->value;
-					backup.type = AuxSTVar->data->type;
+
+				switch(AuxSTVar->data->type){
+				  	case S_STR:
+					  	backup.value = mystrdup((char*)op1);
+					  	backup.type = S_STR;
+					  	break;
+
+				  	case S_BOOL:
+				  	case S_NULL:
+				  	case S_INT:
+					 	 backup.value = malloc(sizeof(int));
+					  	*((int*)(backup).value) = *(int*)op1;
+					  	backup.type = S_INT;
+					  	break;
+
+				  	case S_DOUB:
+						  backup.value = malloc(sizeof(double));
+					  	*((double*)(backup).value) = *(double*)op1;
+					  	backup.type = S_DOUB;
+					  	break;
+					}
+					
+					if(!boolval(backup)) i = Instr->vysledek.type;
+					break;
+					
 				}
-				if(!boolval(backup))
-				  i = Instr->vysledek.type;
-				break;
+
+				else {
+					if(!boolval(Instr->operand1)) i = Instr->vysledek.type;
+					break;
+				}
+				
 
 			case THE_END:
 				return OK;

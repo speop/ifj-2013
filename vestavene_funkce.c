@@ -387,6 +387,7 @@ char *DoubleToStr(double input)
 
 bool boolval(T_Token input)
 {   
+    printf("ier %d\n",*(int*)input.value );
     //p_output->type = S_BOOL;
     switch (input.type){
     case S_INT: return IntToBool(*(int*)(input).value);
