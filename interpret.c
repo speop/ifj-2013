@@ -81,7 +81,7 @@ int interpret()
 					op2_typ = Instr->operand2.type;
 					if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 					else op2 = Instr->operand2.value;
-					printf("parametr 1: %d, parametr2: %d\n",*((int*)(op1)), *((int*)(op2)));
+					
 				}
 
 				res = findVarST(Instr->vysledek.value, symbolTable);
@@ -98,7 +98,7 @@ int interpret()
 
 				res->data->type = S_DOUB;
 				}
-				else { printf("parametr 1: %d, parametr2: %d\n",*((int*)(op1)), *((int*)(op2)));
+				else { 
 				  res->data->value = (int*)malloc(sizeof(int));
 				  if(Instr->operator == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2));
 				  else *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2));
@@ -450,22 +450,27 @@ int interpret()
 								printf("null\n"); break;
 							case S_ID:
 								AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
+								op1 = AuxSTVar->data->value;
+
 								switch(AuxSTVar->data->type) {
 									case S_INT:
-										printf("%d", *((int *)(Instr->operand1).value)); break;
+										printf("%d", *(int*)op1); break;
 									case S_DOUB:
-										printf("%f", *((double *)(Instr->operand1).value)); break;
+										printf("%f", *(double *)op1); break;
 									case S_STR:
-										printf("%s", (char *)(Instr->operand1).value); break;
+										printf("%s", (char *)op1); break;
 									case S_BOOL:
-										printf("%d", (bool)(Instr->operand1).value); break;
+										printf("%d", (bool)op1); break;
 									}
+								break;
+
 							default:
 								/*printf("radek 439 je chyba \n");*/
 								return SEM_OTHER_ERROR;
 								break;
 						}
 
+						break;
 					//AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					//op1_typ = AuxSTVar->data->type;
 					//if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
