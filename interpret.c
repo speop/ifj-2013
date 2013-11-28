@@ -27,7 +27,7 @@ int interpret()
 	int i = 0;          //index/pozice na pasce
 	void *op1, *op2, *pomptr;
 	int op1_typ, op2_typ,len;   //typy operandu
-	T_ST_Vars *aux, *res;        //pomocny uzel a uzel pro vysledek
+	T_ST_Vars *AuxSTVar, *res;        //pomocny uzel a uzel pro vysledek
 	//T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
 	TRetValue *RetValue;                //prvek zasobniku pro navraty
 	tStack *returnStack = SInit();      //zasobnik navratovach hodnot
@@ -59,10 +59,10 @@ int interpret()
 			case S_MUL:
 			case S_DIV:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
-					aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					op1_typ = aux->data->type;
+					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					op1_typ = AuxSTVar->data->type;
 					if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
-					else op1 = aux->data->value;
+					else op1 = AuxSTVar->data->value;
 				}
 				else {     //operand1 neni promenna
 					op1_typ = Instr->operand1.type;
@@ -71,10 +71,10 @@ int interpret()
 				}
 
 				if(Instr->operand2.type == S_ID) { //operand2 je to promenna
-					aux = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					op2_typ = aux->data->type;
+					AuxSTVar = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					op2_typ = AuxSTVar->data->type;
 					if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
-					else op2 = aux->data->value;
+					else op2 = AuxSTVar->data->value;
 				}
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
@@ -108,10 +108,10 @@ int interpret()
 			case S_CONCATENATE:
 
 			  if(Instr->operand1.type == S_ID) { //operand1 je to promenna
-				aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-				op1_typ = aux->data->type;
+				AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				op1_typ = AuxSTVar->data->type;
 				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
-				else op1 = aux->data->value;
+				else op1 = AuxSTVar->data->value;
 			  }
 			  else {     //operand1 neni promenna
 				op1_typ = Instr->operand1.type;
@@ -120,10 +120,10 @@ int interpret()
 			  }
 
 			  if(Instr->operand2.type == S_ID) { //operand2 je to promenna
-				aux = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-				op2_typ = aux->data->type;
+				AuxSTVar = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				op2_typ = AuxSTVar->data->type;
 				if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
-				else op2 = aux->data->value;
+				else op2 = AuxSTVar->data->value;
 			  }
 			  else {      //operand2 neni promenna
 				op2_typ = Instr->operand2.type;
@@ -146,9 +146,9 @@ int interpret()
 
 			case S_IS:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
-				  aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-				  op1_typ = aux->data->type;
-				  op1 = aux->data->value;
+				  AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				  op1_typ = AuxSTVar->data->type;
+				  op1 = AuxSTVar->data->value;
 				}
 				else {     //operand1 neni promenna
 				  op1_typ = Instr->operand1.type;
@@ -302,9 +302,9 @@ int interpret()
 			case S_EQ:
 			case S_NEQ:
 				if(Instr->operand1.type == S_ID) { //operand1 je promenna
-					aux = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					op1_typ = (*aux).data->type;
-					op1 = aux->data->value;
+					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					op1_typ = (*AuxSTVar).data->type;
+					op1 = AuxSTVar->data->value;
 				}
 				else {     //operand1 neni promenna
 					op1_typ = Instr->operand1.type;
@@ -312,9 +312,9 @@ int interpret()
 				}
 
 				if(Instr->operand2.type == S_ID) { //operand2 je promenna
-					aux = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					op2_typ = (*aux).data->type;
-					op2 = aux->data->value;
+					AuxSTVar = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					op2_typ = (*AuxSTVar).data->type;
+					op2 = AuxSTVar->data->value;
 				}
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
@@ -422,8 +422,8 @@ int interpret()
 					//prepisu v ni hodnoty parametru
 				for(int j=((Tparam *)funcStack->top->data)->funkce.paramCount; j>0; j--) {
 					pomptr = pop_top(&((Tparam *)funcStack->top->data)->paramstack);
-					aux = findVarST( ((char *)pom1.value), ((T_ST_Vars *)tableStack->top->data));
-					aux->data->value = ((T_Token *)pomptr)->value;
+					AuxSTVar = findVarST( ((char *)pom1.value), ((T_ST_Vars *)tableStack->top->data));
+					AuxSTVar->data->value = ((T_Token *)pomptr)->value;
 				}
 				((TRetValue *)returnStack->top->data)->adress = i;
 				i = (*(int *)(((Instr)->operand1).value)-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
@@ -435,9 +435,41 @@ int interpret()
 			case STORE_PARAM:
 				switch (((Tparam *)((funcStack)->top)->data)->free) {
 					case -1:               //tisknou se parametry funkce put_string()
-						if(Instr->operand1.type==S_STR) printf("%s", (char *)(Instr->operand1).value);
-						else { printf("radek 439 je chyba \n"); return  SEM_OTHER_ERROR;  }
+						switch(Instr->operand1.type)
+							case S_INT:
+								printf("%d", (int *)(Instr->operand1).value); break;
+							case S_DOUB:
+								printf("%f", (double *)(Instr->operand1).value); break;
+							case S_STR:
+								printf("%s", (char *)(Instr->operand1).value); break;
+							case S_BOOL:
+								printf("%d", (bool *)(Instr->operand1).value); break;
+							case S_NULL:
+								printf("null\n"); break;
+							case S_ID:
+								AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
+								switch(AuxSTVar->data->type) {
+									case S_INT:
+										printf("%d", (int *)(Instr->operand1).value); break;
+									case S_DOUB:
+										printf("%f", (double *)(Instr->operand1).value); break;
+									case S_STR:
+										printf("%s", (char *)(Instr->operand1).value); break;
+									case S_BOOL:
+										printf("%d", (bool *)(Instr->operand1).value); break;
+									}
+							default:
+								/*printf("radek 439 je chyba \n");*/
+								return SEM_OTHER_ERROR;
+								break;
+						}
 						break;
+
+					//AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					//op1_typ = AuxSTVar->data->type;
+					//if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					//else op1 = AuxSTVar->data->value;
+
 					case 0:
 						break;      //pole s parametry je plne, prebytecne se zahazuji
 					default:
