@@ -68,6 +68,7 @@ int interpret()
 					op1_typ = Instr->operand1.type;
 					if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 					else op1 = Instr->operand1.value;
+
 				}
 
 				if(Instr->operand2.type == S_ID) { //operand2 je to promenna
@@ -79,7 +80,8 @@ int interpret()
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
 					if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
-					else op2 = Instr->operand1.value;
+					else op2 = Instr->operand2.value;
+					printf("parametr 1: %d, parametr2: %d\n",*((int*)(op1)), *((int*)(op2)));
 				}
 
 				res = findVarST(Instr->vysledek.value, symbolTable);
@@ -96,7 +98,7 @@ int interpret()
 
 				res->data->type = S_DOUB;
 				}
-				else {
+				else { printf("parametr 1: %d, parametr2: %d\n",*((int*)(op1)), *((int*)(op2)));
 				  res->data->value = (int*)malloc(sizeof(int));
 				  if(Instr->operator == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2));
 				  else *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2));
