@@ -473,6 +473,8 @@ int interpret()
 										printf("%s", (char *)op1); break;
 									case S_BOOL:
 										printf("%d", (bool)op1); break;
+									case S_NULL:
+										printf("null\n"); break;
 									}
 								break;
 
