@@ -192,9 +192,9 @@ int generateCode(){
 					if ((adresaSkoku = pop_top(skoky)) == NULL){
 								fprintf(stderr, "ERROR binding jump adress\n" );
 								return ERROR_INTER;
-					}
-					pom = *((int*)(adresaSkoku)->data);
-					paska[pom].operand1.type = index; 
+					} 
+					pom = *((int*)(adresaSkoku)->data); 
+					paska[pom].vysledek.type = index; 
 					break; 
 				}
 				
@@ -232,7 +232,7 @@ int generateCode(){
 							//pokud mame nekam priradit skok
 
 							//pokud byl jenom if tak by to pokazilo vsehny skoky, avsak to muzeme prekontrolovat jelikoz na vrcholu je JMP_NOT
-							if ((adresaSkoku = top(skoky)) != NULL){ 
+							if ((adresaSkoku = top(skoky)) != NULL){  printf("vleze to tu\n");
 							pom2 = *((int*)(adresaSkoku)->data);
 							if(paska[pom2].operator == JMP_NOT) { 
 									paska[pom2].vysledek.type = index; 
@@ -256,7 +256,7 @@ int generateCode(){
 									if ((adresaSkoku = pop_top(skoky)) != NULL){
 										
 										pom2 = *((int*)(adresaSkoku)->data);
-										paska[pom2].operand1.type = index;
+										paska[pom2].vysledek.type = index;
 										free(adresaSkoku->data);
 										free(adresaSkoku);
 									}
@@ -297,7 +297,7 @@ int generateCode(){
 							if ((adresaSkoku = pop_top(skoky)) != NULL){
 										
 								pom2 = *((int*)(adresaSkoku)->data);
-								paska[pom2].operand1.type = index;
+								paska[pom2].vysledek.type = index;
 								free(adresaSkoku->data);
 								free(adresaSkoku);
 							}
@@ -362,7 +362,7 @@ int generateCode(){
 	{
 		printf("Na pasce [%d] se naleza operace: %d",x,paska[x].operator );
 		if(paska[x].operator == CALL)  printf(", adresa volani/skoku je: %d",paska[x].operand1.type );
-		if ( paska[x].operator == JMP)  printf(", adresa skoku je: %d",paska[x].operand1.type );
+		if ( paska[x].operator == JMP)  printf(", adresa skoku je: %d",paska[x].vysledek.type );
 		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d",paska[x].vysledek.type );
 		if ( paska[x].operator == S_EQ || paska[x].operator == S_NEQ || paska[x].operator == S_GEQ || paska[x].operator == S_LEQ || paska[x].operator == S_GRT || paska[x].operator == S_LST) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_PLUS || paska[x].operator == S_MUL || paska[x].operator == S_DIV || paska[x].operator == S_MINUS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
