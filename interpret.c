@@ -9,6 +9,7 @@
 #include "vnitrni.h"
 #include "parser.h"
 #include "vestavene_funkce.h"
+#include "scaner.h" // mystrdup
 
 #include "interpret.h"
 
@@ -163,7 +164,7 @@ int interpret()
 				//ulozeni hodnoty
 				switch(op1_typ){
 				  case S_STR:
-					  //res->data->value = mystrdup((char*)op1);
+					  res->data->value = mystrdup((char*)op1);
 					  res->data->type = S_STR;
 					  break;
 

@@ -1,5 +1,7 @@
 <?php
+hello();
 
-$a = 2 +3;
-$a = "ahoj svete\n";
-put_string($a);
+function hello()
+{
+	put_string("hello");
+}
