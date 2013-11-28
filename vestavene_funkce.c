@@ -383,27 +383,28 @@ char *DoubleToStr(double input)
 
 
 
-// tyto funkce neni nikde pouzita a jsou v ni syntakticke chyby
 
-/*
-void boolval(T_Token input, T_Token *p_output)
+
+bool boolval(T_Token input)
 {   
-    p_output->type = S_BOOL;
-    switch (p_input.type){
-    case S_INT: *p_output.value = IntToBool(*input.value);
-                    break;
-    case S_DOUB: *p_output.value = DoubleToBool(*input.value);
-                    break;
-    case S_STR: *p_output.value = StrToBool(*input.value);
-                    break;
-    case S_BOOL: *p_output.value = input.value;
-                    break;
-    case S_NULL: *p_output.value = 0;
-                    break;
+    //p_output->type = S_BOOL;
+    switch (input.type){
+    case S_INT: return IntToBool(*(int*)(input).value);
+
+    case S_DOUB: return DoubleToBool(*(double*)(input).value);
+
+    case S_STR: return StrToBool((char*)(input).value);
+
+    case S_BOOL: return *(int*)input.value; // vnitrne je bool reprezentovan jakoint
+                  
+    case S_NULL: return false;
     }
+
+    return false;
 }
 
-
+// tyto funkce neni nikde pouzita a jsou v ni syntakticke chyby
+/*
 void doublelval(T_Token input, T_Token *p_output)
 {   
  *p_output.type = S_DOUB;

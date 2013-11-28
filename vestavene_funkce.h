@@ -15,6 +15,6 @@ int find_string(char *, char *);  //vyhledani podretezce
 void strval(T_Token input, T_Token *);
 void intval(T_Token input, T_Token *);
 void doublelval(T_Token input, T_Token *);
-void boolval(T_Token input, T_Token *);
+bool boolval(T_Token input);
 
 #endif
