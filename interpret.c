@@ -435,35 +435,34 @@ int interpret()
 			case STORE_PARAM:
 				switch (((Tparam *)((funcStack)->top)->data)->free) {
 					case -1:               //tisknou se parametry funkce put_string()
-						switch(Instr->operand1.type)
+						switch(Instr->operand1.type) {
 							case S_INT:
-								printf("%d", (int *)(Instr->operand1).value); break;
+								printf("%d", *((int *)(Instr->operand1).value)); break;
 							case S_DOUB:
-								printf("%f", (double *)(Instr->operand1).value); break;
+								printf("%f", *((double *)(Instr->operand1).value)); break;
 							case S_STR:
 								printf("%s", (char *)(Instr->operand1).value); break;
 							case S_BOOL:
-								printf("%d", (bool *)(Instr->operand1).value); break;
+								printf("%d", (bool)(Instr->operand1).value); break;
 							case S_NULL:
 								printf("null\n"); break;
 							case S_ID:
 								AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
 								switch(AuxSTVar->data->type) {
 									case S_INT:
-										printf("%d", (int *)(Instr->operand1).value); break;
+										printf("%d", *((int *)(Instr->operand1).value)); break;
 									case S_DOUB:
-										printf("%f", (double *)(Instr->operand1).value); break;
+										printf("%f", *((double *)(Instr->operand1).value)); break;
 									case S_STR:
 										printf("%s", (char *)(Instr->operand1).value); break;
 									case S_BOOL:
-										printf("%d", (bool *)(Instr->operand1).value); break;
+										printf("%d", (bool)(Instr->operand1).value); break;
 									}
 							default:
 								/*printf("radek 439 je chyba \n");*/
 								return SEM_OTHER_ERROR;
 								break;
 						}
-						break;
 
 					//AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					//op1_typ = AuxSTVar->data->type;
