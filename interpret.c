@@ -383,8 +383,8 @@ typedef struct Tparam{
 
 				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "strlen") == 0) {
 				  if(((Tparam *)((funcStack)->top)->data)->free == 0) {
-					 StackHelpItem = *(((Tparam *)funcStack.top->data).paramstack.top);
-					 if((int *)((int *)((Tparam *)StackHelpItem.data)->paramstack.top.data)->type == S_STR)
+					 StackHelpItem = *(((Tparam *)funcStack->top->data)->paramstack.top);
+					 if((int *)((int *)((Tparam *)StackHelpItem.data)->paramstack.top->data)->type == S_STR)
 					   *(int *)Instr->vysledek.value=strlen(((T_Token *)((Tparam *)StackHelpItem.data)->paramstack.top->data)->value);
 					 else
 					   return SEM_OTHER_ERROR;
@@ -424,14 +424,14 @@ typedef struct Tparam{
 					return SEM_MISSING_PARAMETER;
 
 				 //kopiruji tabulku symbolu
-			   if(push(tableStack, copyTable(tableStack->top.data))==INTERNAL_ERROR) //prida na vrchol zasobniku novou tabulku
+			   if(push(tableStack, copyTable(tableStack->top->data))==INTERNAL_ERROR) //prida na vrchol zasobniku novou tabulku
 					return ERROR_INTER;
 
 					//prepisu v ni hodnoty parametru
 				for(int j=((Tparam *)funcStack->top->data)->funkce.paramCount; j>0; j--) {
 					pomptr = pop_top(&((Tparam *)funcStack->top->data)->paramstack);
 					aux = findVarST( ((char *)pom1.value), ((T_ST_Vars *)tableStack->top->data));
-					aux->data->value = ((T_Token *)pomptr).value;
+					aux->data->value = ((T_Token *)pomptr)->value;
 				}
 				((TRetValue *)returnStack->top->data)->adress = i;
 				i = (*(int *)(((Instr)->operand1).value)-1);   //operand1 je dalsi instrukce, ale na zacatku cyklu se i inkrementuje
