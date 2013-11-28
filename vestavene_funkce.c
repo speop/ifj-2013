@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+
+#include "garbage_collector.h"
 #include "types.h"
 //#include <stdarg.h>
 
-#define true 1
-#define false 0
 
+
+//neprelozitelne
 
 //přečte jednenřádek ze vstupu
 //pokud se nepovede některá alokace, vracím nulu
