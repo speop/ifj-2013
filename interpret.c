@@ -37,7 +37,7 @@ int interpret()
 	tStackItem StackHelpItem;             //pomocny prvek pro zasobniky
 	Tparam param;           //struktura pro parametry
 	T_Token pom1, pom2, pom3;   //pomocnÄ‚Â© tokeny
-
+	T_Token backup;
 
 
 	while(1)
@@ -505,7 +505,6 @@ int interpret()
 				break;
 
 			case JMP_NOT:
-				T_Token backup;
 				if(Instr->operand1.type == S_ID) {
 					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
 					backup.value = AuxSTVar->data->value;

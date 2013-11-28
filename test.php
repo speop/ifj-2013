@@ -1,6 +1,6 @@
 <?php
 
-if (2 < 3)
+if (2 > 3)
 {
 	put_string("ano");
 }
