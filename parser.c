@@ -98,7 +98,7 @@ int parser(){
 	if(result!= OK) return result;
 
 	printf("\nChtel bych volat interpet :)\n");
-	result = int interpret();
+	result = interpret();
 	return result;
 
 

@@ -30,14 +30,17 @@ parser.o: parser.c parser.h types.h ial.h garbage_collector.h scaner.h ast_tree.
 stack.o: stack.c stack.h types.h
 	$(CC) $(CFLAGS) -c stack.c -o stack.o
 
+vestavene_funkce.o: vestavene_funkce.c vestavene_funkce.h
+	$(CC) $(CFLAGS) -c vestavene_funkce.c -o vestavene_funkce.o
+
 interpret.o: interpret.c stack.h ial.h types.h vnitrni.h parser.h vestavene_funkce.h
 	$(CC) $(CFLAGS) -c interpret.c -o interpret.o
 
 main.o:  main.c parser.h
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-main: main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o
-	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o  -o main -lm
+main: main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o vestavene_funkce.o
+	$(CC) $(CFLAGS) main.o garbage_collector.o ial.o parser.o stack.o ast_tree.o vnitrni.o scaner.o built_in.o interpret.o vestavene_funkce.o  -o main -lm
 	
 
 clean:
