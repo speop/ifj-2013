@@ -181,15 +181,15 @@ int interpret()
 				}
 				break;
 
-			case S_FUNC:    //volani funkce get_string
-				if(strcmp(Instr->operand1.value, "get_string")==0); {
+			case S_FUNC:    //volani funkce get_string 
+				if(strcmp(Instr->operand1.value, "get_string")==0) {
 					 param.free = 0;           //param je statickĂˇ promÄ›nnĂˇ
 					 param.funkce.name="get_string";
 					 param.funkce.paramCount=0;
 
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						 return ERROR_INTER;
-
+ 					
 					  funcStack->top->data= malloc(sizeof(Tparam));
 					  if(funcStack->top->data==NULL)return ERROR_INTER;
 					  *(Tparam*)funcStack->top->data = param;
@@ -198,10 +198,10 @@ int interpret()
 					 break;
 					}
 
-			   if(strcmp(Instr->operand1.value, "put_string")==0) {
+			   if(strcmp(Instr->operand1.value, "put_string")==0) { 
 					 param.free = -1;               //oznaceni teto funkce (pak se nemusi porovnavat nazvy)
 					 param.funkce.paramCount=0;
-					 param.funkce.name="put_string";
+					 param.funkce.name="put_string"; 
 
 					 if (push(funcStack, &param)==INTERNAL_ERROR) //prida na vrchol zasobniku pole s parametry
 						return ERROR_INTER;
@@ -238,7 +238,7 @@ int interpret()
 						return ERROR_INTER;
 
 					 funcStack->top->data= malloc(sizeof(Tparam));
-					 if(funcStack->top->data==NULL)return ERROR_INTER;
+					 if(funcStack->top->data==NULL)return ERROR_INTER; 
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
 
@@ -436,7 +436,7 @@ int interpret()
 				switch (((Tparam *)((funcStack)->top)->data)->free) {
 					case -1:               //tisknou se parametry funkce put_string()
 						if(Instr->operand1.type==S_STR) printf("%s", (char *)(Instr->operand1).value);
-						else return SEM_OTHER_ERROR;
+						else { printf("radek 439 je chyba \n"); return  SEM_OTHER_ERROR;  }
 						break;
 					case 0:
 						break;      //pole s parametry je plne, prebytecne se zahazuji
