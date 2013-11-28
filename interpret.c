@@ -505,7 +505,7 @@ int interpret()
 				break;
 
 			case JMP_NOT:
-				if(!boolval(Instr->operand1.value))
+				if(!boolval(Instr->operand1))
 				  i = Instr->vysledek.type;
 				break;
 
