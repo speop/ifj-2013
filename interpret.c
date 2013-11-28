@@ -45,7 +45,7 @@ typedef struct Tparam{
 	tStack *funcStack = SInit();         //zasobnik s funkcemi a parametry pro volani
 	tStackItem StackHelpItem;             //pomocny prvek pro zasobniky
 	Tparam param;           //struktura pro parametry
-	T_Token pom1, pom2, pom3;   //pomocnĂ© tokeny
+	T_Token pom1, pom2, pom3;   //pomocnÄ‚Â© tokeny
 
 
 
@@ -60,8 +60,8 @@ typedef struct Tparam{
 				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
 				i= (((TRetValue *)(StackHelpItem).data)->adress);       //nastavi vykonavani nasledujici instrukce
 				(((TRetValue *)(StackHelpItem).data)->returnvalue) = &Instr->operand1;
-							//zahodĂ­ aktuĂˇlnĂ­ tabulku promÄ›nnĂ˝ch
-							//nĂˇvrat na mĂ­sto, kde jsem byl volanej
+							//zahodÄ‚Â­ aktuÄ‚Ë‡lnÄ‚Â­ tabulku promĂ„â€şnnÄ‚Ëťch
+							//nÄ‚Ë‡vrat na mÄ‚Â­sto, kde jsem byl volanej
 			break;
 			case S_PLUS:
 			case S_MINUS:
@@ -192,7 +192,7 @@ typedef struct Tparam{
 
 			case S_FUNC:    //volani funkce get_string
 				if(strcmp(Instr->operand1.value, "get_string")==0); {
-					 param.free = 0;           //param je statická proměnná
+					 param.free = 0;           //param je statickĂˇ promÄ›nnĂˇ
 					 param.funkce.name="get_string";
 					 param.funkce.paramCount=0;
 
@@ -217,6 +217,7 @@ typedef struct Tparam{
 
 					 funcStack->top->data= malloc(sizeof(Tparam));
 					 if(funcStack->top->data==NULL)return ERROR_INTER;
+
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
 
@@ -384,7 +385,7 @@ typedef struct Tparam{
 				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "strlen") == 0) {
 				  if(((Tparam *)((funcStack)->top)->data)->free == 0) {
 					 StackHelpItem = *(((Tparam *)funcStack->top->data)->paramstack.top);
-					 if((int *)((int *)((Tparam *)StackHelpItem.data)->paramstack.top->data)->type == S_STR)
+					 if(*(int *)((T_Token *)StackHelpItem.data)->type == S_STR)
 					   *(int *)Instr->vysledek.value=strlen(((T_Token *)((Tparam *)StackHelpItem.data)->paramstack.top->data)->value);
 					 else
 					   return SEM_OTHER_ERROR;
