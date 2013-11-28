@@ -505,6 +505,10 @@ int interpret()
 				break;
 
 			case JMP_NOT:
+				if(Instr->operand1.type == S_ID) {
+					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
+					Instr->operand1 = AuxSTVar->data->value;
+				}
 				if(!boolval(Instr->operand1))
 				  i = Instr->vysledek.type;
 				break;
