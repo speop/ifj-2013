@@ -42,6 +42,7 @@ int interpret()
 	while(1)
 	{
 		Instr = &(paska[i++]);         //nacitame z pasky a posouvame se po ni
+
 		switch (Instr->operator) {
 			case  FUNCTION: //DefineFunction(Instr->operand1);
 							break;
@@ -455,6 +456,9 @@ int interpret()
 				//if(!boolval(Instr->operand1.value))
 				  i = Instr->operand1.type - 1;
 				break;
+
+			case THE_END:
+				return OK;
 		}
 	}
 
