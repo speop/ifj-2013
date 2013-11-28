@@ -664,7 +664,7 @@ int addJump(){
 			
 			
 			if(item == NULL) fun = -1;
-			else fun = ((T_Token*)(item->data))->type;
+			else fun = ((T_Token*)(item->data))->type +1;// z duvodu interpretu
 			
 			paramItem = top(params);
 			

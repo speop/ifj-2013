@@ -1,7 +1,8 @@
 <?php
-hello();
 
-function hello()
+hello("str");
+
+function hello($str)
 {
 	put_string("hello");
 }

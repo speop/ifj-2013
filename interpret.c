@@ -43,10 +43,21 @@ int interpret()
 	while(1)
 	{
 		Instr = &(paska[i++]);         //nacitame z pasky a posouvame se po ni
-
+		
 		switch (Instr->operator) {
-			case  FUNCTION: //DefineFunction(Instr->operand1);
+			case  FUNCTION:  //definice funkce.. tu jen preskocime
+
+							do {
+								Instr = &(paska[i++]);
+							}
+							while (Instr->operator != FUNCTION_BLOCK_END); printf("%d\n", Instr->operator );
 							break;
+
+			case FUNCTION_BLOCK_START:
+					//skok pri volani funkce
+					break;
+					
+
 			case  RETURN:
 				garbage_add((pop_top(tableStack)),&garbage_default_erase); //odebere z vrcholu zasobniku jednu tabulku funkci
 				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
@@ -54,7 +65,7 @@ int interpret()
 				(((TRetValue *)(StackHelpItem).data)->returnvalue) = &Instr->operand1;
 							//zahodÄ‚Â­ aktuÄ‚Ë‡lnÄ‚Â­ tabulku promĂ„â€şnnÄ‚Ëťch
 							//nÄ‚Ë‡vrat na mÄ‚Â­sto, kde jsem byl volanej
-			break;
+				break;
 			case S_PLUS:
 			case S_MINUS:
 			case S_MUL:
