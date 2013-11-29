@@ -1,15 +1,6 @@
 <?php
-
-
-
-
-if (2 < 3)
+vypis();
+function vypis()
 {
-	put_string("ano");
+  put_string("jsem zde");
 }
-
-elseif (2 > 3) {
-	put_string("ne");
-}
-
-else {put_string("nevim");}

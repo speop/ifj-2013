@@ -25,17 +25,21 @@ int interpret()
 		
 
 	TAC *Instr;          //Instrukce
-	int i = 0;          //index/pozice na pasce
+	int i = 0;          //index/pozice na pasce 
+	char *funcName;
 	void *op1, *op2, *pomptr;
 	int op1_typ, op2_typ,len;   //typy operandu
 	T_ST_Vars *AuxSTVar, *res;        //pomocny uzel a uzel pro vysledek
-	//T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
-	TRetValue *RetValue;                //prvek zasobniku pro navraty
+	T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
+	TCallStack *CallStack;                //prvek zasobniku pro navraty
+	Tparam *param;
 	tStack *returnStack = SInit();      //zasobnik navratovach hodnot
 	tStack *tableStack = SInit();         //zasobnik tabulek symbolu
 	tStack *funcStack = SInit();         //zasobnik s funkcemi a parametry pro volani
+	tStack *callStack = SInit();
+	tStack *paramStack = SInit();
 	tStackItem StackHelpItem;             //pomocny prvek pro zasobniky
-	Tparam param;           //struktura pro parametry
+	//Tparam param;           //struktura pro parametry
 	T_Token pom1, pom2, pom3;   //pomocnÄ‚Â© tokeny
 	T_Token backup;
 
@@ -59,6 +63,7 @@ int interpret()
 					
 
 			case  RETURN:
+				printf("neco\n");
 				garbage_add((pop_top(tableStack)),&garbage_default_erase); //odebere z vrcholu zasobniku jednu tabulku funkci
 				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
 				i= (((TRetValue *)(StackHelpItem).data)->adress);       //nastavi vykonavani nasledujici instrukce
@@ -199,6 +204,16 @@ int interpret()
 				break;
 
 			case S_FUNC:    //volani funkce get_string 
+					if((param = (Tparam*)malloc(sizeof(Tparam))) == NULL) return ERROR_INTER;
+
+					param->funcName = mystrdup(Instr->operand1.value);
+					funkce = findFunctionST(param->funcName, functionTable);
+					param = copyTable(funkce->data->symbolTable);
+					param->returnvalue = mystrdup(Instr->vysledek.value);
+					param->paramCount = funkce->data->paramCount;
+					push(paramstack, param);
+					/*
+
 				if(strcmp(Instr->operand1.value, "get_string")==0) {
 					 param.free = 0;           //param je statickĂˇ promÄ›nnĂˇ
 					 param.funkce.name="get_string";
@@ -228,7 +243,7 @@ int interpret()
 
 					 *(Tparam*)funcStack->top->data = param;
 					 garbage_add(funcStack->top->data,&garbage_default_erase);
-
+					
 					 break;
 					}
 
@@ -307,9 +322,10 @@ int interpret()
 				 garbage_add(funcStack->top->data,&garbage_default_erase);
 
 
-				 *RetValue->returnvalue = Instr->vysledek;
+				 RetValue->returnvalue = mystrdup(Instr->vysledek.value);
+				printf("neco\n");
 				 if(push(returnStack, RetValue)==INTERNAL_ERROR)
-				   return ERROR_INTER;
+				   return ERROR_INTER;*/
 				 break;
 
 			case S_LST:
@@ -335,7 +351,7 @@ int interpret()
 				}
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
-					op2 = Instr->operand1.value;
+					op2 = Instr->operand2.value;
 				}
 
 				res = findVarST(Instr->vysledek.value, symbolTable);
@@ -346,39 +362,104 @@ int interpret()
 				//jestli se typy nerovnaji, je to false nebo chyba
 				if(op1_typ != op2_typ) {
 				  if(Instr->operator == S_EQ || Instr->operator == S_NEQ)
-					res->data->value = false;
-				  else
-					return SEM_TYPE_ERROR;
-				}
-				//typy se rovnaji
-				else {
-				  switch(Instr->operator) {
-					  case S_LST:
-					  // je to tu cele blbe, musis porovnavat jednotlive typy a ukladat 1 nebo 0... ty ternarni operatory mi nefungujou
-						*((int*)(res->data)->value) = (op1 < op2) ? 1 : 0;
-						break;
-					  case S_GRT:
-						*((int*)(res->data)->value) = (op1 > op2) ? 1 : 0;
-						break;
-					  case S_LEQ:
-						*((int*)(res->data)->value) = (op1 <= op2);
-						break;
-					  case S_GEQ:
-						*((int*)(res->data)->value) = (op1 >= op2);
-						break;
-					  case S_EQ:
-						*((int*)(res->data)->value) = (op1 == op2);
-						break;
-					  case S_NEQ:
-						*((int*)(res->data)->value) = (op1 != op2);
-						break;
+						res->data->value = false;
+				  else {
+				  	fprintf(stderr, "porovnavani rozdilnych typu\n");
+						return SEM_TYPE_ERROR;
 				  }
+				}
+				else {		//typy se rovnaji
+					switch(op1_typ) {		//kdyz se rovnaji, staci kontrolovat jen prvni
+						case S_INT:
+						case S_BOOL:
+							  switch(Instr->operator) {
+									case S_LST:
+										if((*((int *)op1) < *((int *)op2))) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										break;
+									case S_GRT:
+										if((*((int *)op1) > *((int *)op2))) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										break;
+									case S_LEQ:
+										if((*((int *)op1) <= *((int *)op2))) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										break;
+									case S_GEQ:
+										if((*((int *)op1) >= *((int *)op2))) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										break;
+									case S_EQ:
+										if(((*(int *)op1) == *((int *)op2))) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										break;
+									case S_NEQ:
+										if((*((int *)op1) != *((int *)op2))) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										break;
+							  }
+						case S_DOUB:
+							  switch(Instr->operator) {
+									case S_LST:
+										*((int*)(res->data)->value) = (*((double *)op1) < *((double *)op2));
+										break;
+									case S_GRT:
+										*((int*)(res->data)->value) = (*((double *)op1) > *((double *)op2));
+										break;
+									case S_LEQ:
+										*((int*)(res->data)->value) = (*((double *)op1) <= *((double *)op2));
+										break;
+									case S_GEQ:
+										*((int*)(res->data)->value) = (*((double *)op1) >= *((double *)op2));
+										break;
+									case S_EQ:
+										*((int*)(res->data)->value) = (*((double *)op1) == *((double *)op2));
+										break;
+									case S_NEQ:
+										*((int*)(res->data)->value) = (*((double *)op1) != *((double *)op2));
+										break;
+							  }
+						case S_STR:
+							  switch(Instr->operator) {
+							  	case S_LST:
+							  		if(strcmp((char *)op1, (char *)op2) < 0) *((int*)(res->data)->value) = 1;
+							  		else *((int*)(res->data)->value) = 0;
+							  		break;
+							  	case S_GRT:
+							  		if(strcmp((char *)op1, (char *)op2) > 0) *((int*)(res->data)->value) = 1;
+							  		else *((int*)(res->data)->value) = 0;
+							  		break;
+							  	case S_LEQ:
+							  		if(strcmp((char *)op1, (char *)op2) <= 0) *((int*)(res->data)->value) = 1;
+							  		else *((int*)(res->data)->value) = 0;
+							  		break;
+							  	case S_GEQ:
+							  		if(strcmp((char *)op1, (char *)op2) >= 0) *((int*)(res->data)->value) = 1;
+							  		else *((int*)(res->data)->value) = 0;
+							  		break;
+							  	case S_EQ:
+							  		if(strcmp((char *)op1, (char *)op2) == 0) *((int*)(res->data)->value) = 1;
+							  		else *((int*)(res->data)->value) = 0;
+							  		break;
+							  	case S_NEQ:
+							  		if(strcmp((char *)op1, (char *)op2) != 0) *((int*)(res->data)->value) = 1;
+							  		else *((int*)(res->data)->value) = 0;
+							  		break;
+							  }
+					}				 
 				}
 				break;
 
 			case CALL:  //zjisti, kterou funkci volam a zkontroluj jeji parametry
+				 //kopiruji tabulku symbolu
 
-				if(strcmp(((Tparam *)((funcStack)->top)->data)->funkce.name, "get_string") == 0) {
+				//zjistime si jmeno funkce
+				funcName = ((Tparam *)((funcStack)->top)->data)->funkce.name;
+
+			   if(push(tableStack, copyTable(tableStack->top->data))==INTERNAL_ERROR) //prida na vrchol zasobniku novou tabulku
+					return ERROR_INTER;
+
+				if(strcmp(, "get_string") == 0) {
 					((TRetValue *)returnStack->top->data)->returnvalue->value = get_string();	//
 
 					Instr->vysledek.type = S_STR;
@@ -429,13 +510,6 @@ int interpret()
 				 break;
 				}
 
-					//kontrola poctu parametru
-				 if(((Tparam *)funcStack->top->data)->free != 0)
-					return SEM_MISSING_PARAMETER;
-
-				 //kopiruji tabulku symbolu
-			   if(push(tableStack, copyTable(tableStack->top->data))==INTERNAL_ERROR) //prida na vrchol zasobniku novou tabulku
-					return ERROR_INTER;
 
 					//prepisu v ni hodnoty parametru
 				for(int j=((Tparam *)funcStack->top->data)->funkce.paramCount; j>0; j--) {
@@ -511,6 +585,7 @@ int interpret()
 			case JMP_NOT:
 				if(Instr->operand1.type == S_ID) {
 					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);
+					op1 = AuxSTVar->data->value;
 
 				switch(AuxSTVar->data->type){
 				  	case S_STR:

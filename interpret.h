@@ -10,15 +10,18 @@
 #ifndef INTERPRET_H
 #define INTERPRET_H
 
-typedef struct TRetValue{
+typedef struct TCallStack{
   int adress;         //sem se vraci po vykonani funkce
-  T_Token *returnvalue;    //sem se uklada vysledek funkce
-}TRetValue;
+  T_ST_Vars *symbolTable;
+  char *returnvalue;
+      //sem se uklada vysledek funkce
+}TCallStack;
 
 typedef struct Tparam{
-  tStack paramstack;
-  int free;
-  T_ST_FuncsItem funkce;
+  int paramCount;
+  char *funcName;
+  char *returnvalue;
+  T_ST_Vars symbolTable;
 }Tparam;
 
 int interpret();
