@@ -29,7 +29,7 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("term");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 
 	funkce->paramCount = 1;
@@ -44,7 +44,7 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("term");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 
 	funkce->paramCount = 1;
@@ -59,7 +59,7 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("term");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 
 	funkce->paramCount = 1;
@@ -74,7 +74,7 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("term");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 
 	funkce->paramCount = 1;
@@ -110,7 +110,7 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("string");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 	
 
@@ -126,15 +126,15 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("string");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 	
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("integer1");
+	promena->name = mystrdup2("b");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 	
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("integer2");
+	promena->name = mystrdup2("c");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 
 	funkce->paramCount = 3;
@@ -149,11 +149,11 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("string1");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 	
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("string2");
+	promena->name = mystrdup2("b");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;
 
 	funkce->paramCount = 2;
@@ -168,7 +168,7 @@ int registerBuiltIn(T_ST_Funcs *functionTable){
 	funkce->symbolTable = symboly;
 
 	if((promena = (T_ST_VarsItem*) malloc(sizeof(T_ST_VarsItem))) == NULL ) return ERROR_INTER;
-	promena->name = mystrdup2("string");
+	promena->name = mystrdup2("a");
 	if((addVarNodeToST(promena , symboly)) != ADDING_SUCCESSFUL)  return ERROR_INTER;;
 
 	funkce->paramCount = 1;
