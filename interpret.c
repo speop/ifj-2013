@@ -32,20 +32,20 @@ int interpret()
 	TAC *Instr;          //Instrukce
 	int i = 0;          //index/pozice na pasce 
 	char *funcName;
-	void *op1, *op2, *pomptr;
+	void *op1, *op2;
 	int op1_typ, op2_typ,len;   //typy operandu
 	T_ST_Vars *AuxSTVar, *res, *res1, *res2;        //pomocny uzel a uzel pro vysledek
 	T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
 	TCallStack *CallStack;                //prvek zasobniku pro navraty
 	Tparam *param;
-	tStack *returnStack = SInit();      //zasobnik navratovach hodnot
-	tStack *tableStack = SInit();         //zasobnik tabulek symbolu
-	tStack *funcStack = SInit();        //zasobnik s funkcemi a parametry pro volani
+	//tStack *returnStack = SInit();      //zasobnik navratovach hodnot
+	//tStack *tableStack = SInit();         //zasobnik tabulek symbolu
+	//tStack *funcStack = SInit();        //zasobnik s funkcemi a parametry pro volani
 	tStack *callStack = SInit();
 	tStack *paramStack = SInit();
-	tStackItem *StackHelpItem;             //pomocny prvek pro zasobniky
+	tStackItem *StackHelpItem, *StackHelpItem2;            //pomocny prvek pro zasobniky
 	//Tparam param;           //struktura pro parametry
-	T_Token pom1, pom2, pom3;   //pomocnÄ‚Â© tokeny
+	//T_Token pom1, pom2, pom3;   //pomocnÄ‚Â© tokeny
 	T_Token backup;
 
 	T_ST_Vars *actualST, *newST;
@@ -68,15 +68,63 @@ int interpret()
 					break;
 					
 
-			case  RETURN: /*
-				printf("neco\n");
-				garbage_add((pop_top(tableStack)),&garbage_default_erase); //odebere z vrcholu zasobniku jednu tabulku funkci
-				StackHelpItem = *(pop_top(returnStack)); //odebere hodnotu z vrcholu zasobniku
-				i= (((TRetValue *)(StackHelpItem).data)->adress);       //nastavi vykonavani nasledujici instrukce
-				(((TRetValue *)(StackHelpItem).data)->returnvalue) = &Instr->operand1;
-							//zahodÄ‚Â­ aktuÄ‚Ë‡lnÄ‚Â­ tabulku promĂ„â€şnnÄ‚Ëťch
-							//nÄ‚Ë‡vrat na mÄ‚Â­sto, kde jsem byl volanej 
-							*/
+			case  RETURN: 
+				StackHelpItem = pop_top(callStack);
+				newST = ((TCallStack *)(StackHelpItem->data))->symbolTable; //tabulka symbolu z ktere byla tato funkce volana
+				
+				StackHelpItem2 = pop_top(paramStack);
+				
+				//mame hodnotu na ulozeni tak ji ulozime
+				if(Instr->operand1.type != NOT_EXIST){
+
+					res = findVarST(Instr->operand1.value, newST);
+					if(res->data->value != NULL) free (res->data->value);
+
+					AuxSTVar = findVarST(Instr->operand1.value, newST);
+
+
+					op1 = AuxSTVar->data->value;
+					switch(AuxSTVar->data->type){
+				  		case S_STR:
+					  		res->data->value = mystrdup((char*)op1);
+					  		res->data->type = S_STR;
+					  		break;
+
+				  		case S_BOOL:
+				  		case S_NULL:
+				  		case S_INT:
+					 		res->data->value = malloc(sizeof(int));
+					  		*(int*)(res->data->value) = *(int*)op1;
+					  		res->data->type = S_INT;
+					  		break;
+
+				  		case S_DOUB:
+							 res->data->value = malloc(sizeof(double));
+					  		*(double*)(res->data->value) = *(double*)op1;
+					  		res->data->type = S_DOUB;
+					  		break;
+					}
+
+					
+				}
+				//neni navratova hodnota nahrajem NULL
+				else
+				{
+					res = findVarST(Instr->operand1.value, newST);
+					if(res->data->value != NULL) free (res->data->value);
+
+					res->data->value = malloc(sizeof(int));
+					*(int*)(res->data->value) = 0;
+					res->data->type = S_NULL;
+
+				}
+
+				//jeste zmenit tabulky symbolu
+				actualST = newST;
+
+				//a nastavit index na pasce
+				i = ((TCallStack *)(StackHelpItem->data))->adress; 
+				
 				break;
 			case S_PLUS:
 			case S_MINUS:
@@ -215,7 +263,7 @@ int interpret()
 
 					param->funcName = mystrdup(Instr->operand1.value);
 					funkce = findFunctionST(param->funcName, functionTable);
-					param = copyTable(funkce->data->symbolTable);
+					param->symbolTable = copyTable(funkce->data->symbolTable);
 					param->returnvalue = mystrdup(Instr->vysledek.value);
 					param->paramCount = funkce->data->paramCount;
 
@@ -367,17 +415,13 @@ int interpret()
 
 				//zjistime si jmeno funkce
 				StackHelpItem = top(paramStack);
-				funcName = (Tparam *)(StackHelpItem->data)->funcName;
+				funcName = ((Tparam *)(StackHelpItem->data))->funcName;
 
-				newST = (Tparam *)(StackHelpItem->data)->symbolTable;
-				// alokujeme novy prvek pro stack tabulku symbolu
-				
-
-
-				
+				newST = ((Tparam *)(StackHelpItem->data))->symbolTable;
+								
 
 			 	//zpracujeme interni funkce
-			 	AuxSTVar = findVarST((Tparam *)(StackHelpItem->data)->returnvalue, actualST); 
+			 	AuxSTVar = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue, actualST); 
 
 				if(strcmp(funcName, "get_string") == 0) {
 					AuxSTVar->data->value = get_string();//
@@ -438,6 +482,7 @@ int interpret()
 				}
 
 				//StackHelpItem = pop_top(paramStack);
+				// alokujeme novy prvek pro stack tabulku symbolu
 
 				CallStack = (TCallStack*)malloc(sizeof(TCallStack));
 				CallStack->symbolTable = actualST; 
@@ -445,7 +490,7 @@ int interpret()
 
 				if(push(callStack, CallStack)==INTERNAL_ERROR) {fprintf(stderr, "Could not push actual symbolTableon stack\n" ); return ERROR_INTER;}
 				//zmenime aktualni tabulku symbolu
-				actualST = (Tparam *)(StackHelpItem->data)->symbolTable;
+				actualST = ((Tparam *)(StackHelpItem->data))->symbolTable;
 
 				//a zmenime i i
 				i = Instr->operand1.type;
@@ -503,7 +548,7 @@ int interpret()
 
 					//zkontrolujeme si jestli to neni BI funkce
 					if(param->BIf){
-						AuxSTVar = findVarST((char *)variables[BIfPointer], param->symbolTable); 
+						AuxSTVar = findVarST((char *)variables[param->BIfPointer], param->symbolTable); 
 						param->BIfPointer++;
 						//je to BI funkce promenou kam to ulozit zjistime z pole retezcu
 					}
