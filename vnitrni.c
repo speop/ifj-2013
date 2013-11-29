@@ -363,7 +363,7 @@ int generateCode(){
 		printf("Na pasce [%d] se naleza operace: %d",x,paska[x].operator );
 		if(paska[x].operator == CALL)  printf(", adresa volani/skoku je: %d",paska[x].operand1.type );
 		if ( paska[x].operator == JMP)  printf(", adresa skoku je: %d",paska[x].vysledek.type );
-		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d",paska[x].vysledek.type );
+		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d , promena: %s",paska[x].vysledek.type, (char*)(paska[x].operand1).value  );
 		if ( paska[x].operator == S_EQ || paska[x].operator == S_NEQ || paska[x].operator == S_GEQ || paska[x].operator == S_LEQ || paska[x].operator == S_GRT || paska[x].operator == S_LST) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_PLUS || paska[x].operator == S_MUL || paska[x].operator == S_DIV || paska[x].operator == S_MINUS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_IS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type ); 

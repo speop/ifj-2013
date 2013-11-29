@@ -129,7 +129,10 @@ int interpret()
 			  }
 			  else {     //operand1 neni promenna
 				op1_typ = Instr->operand1.type;
-				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+				if(op1_typ == S_DOUB);  //typ promenne  neni istr musime provest konverzi
+				else if (op1_typ == S_INT);
+				else if  (op1_typ == S_BOOL);
+				else if (op1_typ == S_NULL);
 				else op1 = Instr->operand1.value;
 			  }
 
@@ -351,10 +354,11 @@ int interpret()
 				else {
 				  switch(Instr->operator) {
 					  case S_LST:
-						*((int*)(res->data)->value) = (op1 < op2);
+					  // je to tu cele blbe, musis porovnavat jednotlive typy a ukladat 1 nebo 0... ty ternarni operatory mi nefungujou
+						*((int*)(res->data)->value) = (op1 < op2) ? 1 : 0;
 						break;
 					  case S_GRT:
-						*((int*)(res->data)->value) = (op1 > op2);
+						*((int*)(res->data)->value) = (op1 > op2) ? 1 : 0;
 						break;
 					  case S_LEQ:
 						*((int*)(res->data)->value) = (op1 <= op2);
