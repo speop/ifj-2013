@@ -14,12 +14,13 @@
 #include "interpret.h"
 
 
-const char *variables[2];
+const char *variables[4] = {"a", "b", "c", "d"};
+/*
 variables[0] = "a";
 variables[1] = "b";
 variables[2] = "c";
 variables[3] = "d";
-
+*/
 extern TAC *paska;                  //z vnitrni.c
 extern T_ST_Vars *symbolTable;      //obe tabulky z parser.c
 extern T_ST_Funcs *functionTable;
@@ -234,7 +235,7 @@ int interpret()
 					else param->BIf =  false;
 
 
-					push(paramstack, param);
+					push(paramStack, param);
 
 					break;
 					
@@ -401,8 +402,8 @@ int interpret()
 				 	AuxSTVar->data->value = malloc(sizeof(int));
 				 	AuxSTVar->data->type = S_INT;
 
-				 	res = findVarST(variables[0], newST);
-				 	*(int*)(AuxSTVar->data)->value = strlen(res->value);
+				 	res = findVarST((char *)variables[0], newST);
+				 	*(int*)(AuxSTVar->data)->value = strlen((char *)(res->data->value));
 				
 					 StackHelpItem = pop_top(paramStack);
 				  
@@ -414,11 +415,11 @@ int interpret()
 					AuxSTVar->data->value = malloc(sizeof(int));
 				 	AuxSTVar->data->type = S_INT;
 
-				 	res = findVarST(variables[0], newST);
-				 	res1 = findVarST(variables[1], newST);
-				 	//res2 = findVarST(variables[0], newST);
+				 	res = findVarST((char *)variables[0], newST);
+				 	res1 = findVarST((char *)variables[1], newST);
+				 	//res2 = findVarST((char *)variables[0], newST);
 
-				 	*(int*)(AuxSTVar->data)->value = find_string(res->value ,res1->value);
+				 	*(int*)(AuxSTVar->data)->value = find_string((char *)(res->data->value) ,(char *)(res1->data->value));
 				
 					 StackHelpItem = pop_top(paramStack);
 				  
@@ -429,14 +430,14 @@ int interpret()
 				
 				if(strcmp(funcName, "sort_string") == 0) {
 					AuxSTVar->data->type = S_STR;
-					res = findVarST(variables[0], newST);
+					res = findVarST((char *)variables[0], newST);
 
-					AuxSTVar->data->value = sort_string(res->value);
+					AuxSTVar->data->value = sort_string((char *)(res->data->value));
 					StackHelpItem = pop_top(paramStack);
 					break;
 				}
 
-				StackHelpItem = pop_top(paramStack);
+				//StackHelpItem = pop_top(paramStack);
 
 				CallStack = (TCallStack*)malloc(sizeof(TCallStack));
 				CallStack->symbolTable = actualST; 
@@ -456,8 +457,8 @@ int interpret()
 
 				//vestavene funkce je treba zpracovat speicfikovanym zpusobem
 				//zjistime si jmeno funkce
-				param = ((Tparam *)((paramstack)->top)->data);
-				funcName = ((Tparam *)((paramstack)->top)->data)->funcName;
+				param = ((Tparam *)((paramStack)->top)->data);
+				funcName = ((Tparam *)((paramStack)->top)->data)->funcName;
 
 				//pokud je to putstring tak se vypisujou parametry
 
@@ -502,7 +503,7 @@ int interpret()
 
 					//zkontrolujeme si jestli to neni BI funkce
 					if(param->BIf){
-						AuxSTVar = findVarST(variables[BIfPointer], param->symbolTable); 
+						AuxSTVar = findVarST((char *)variables[BIfPointer], param->symbolTable); 
 						param->BIfPointer++;
 						//je to BI funkce promenou kam to ulozit zjistime z pole retezcu
 					}
@@ -523,7 +524,7 @@ int interpret()
 				  	case S_NULL:
 				  	case S_INT:
 					 	 AuxSTVar->data->value = malloc(sizeof(int));
-					  	*((int*)(AuxSTVar->data->)->value) = *(int*)op1;
+					  	*((int*)(AuxSTVar->data)->value) = *(int*)op1;
 					  	AuxSTVar->data->type = S_INT;
 					  	break;
 
