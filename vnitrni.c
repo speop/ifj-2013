@@ -161,10 +161,10 @@ int generateCode(){
 							
 							item = pop_back(alejStromu);
 							if ((iToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
-							iToken->type = index -1;
+							iToken->type = index; // kvuli interpetu nastavuju plus jedna takze musim i zde
 							iToken->value = ((T_Token*)(item)->data)->value;
 							
-							if(iToken->value != NULL) push(params, iToken);
+							if(iToken->value != NULL) push_back(params, iToken);
 							else free(iToken);
 														
 						}
@@ -616,6 +616,7 @@ int funGC(Tleaf *tree){
 	}
 	else{
 		//v levem operadnu je nejaky eToken ktery je  cislo, promena atd.. z principu funkce generovani ASSu jsou ostatni veci prazdne
+		
 		if((generate(STORE_PARAM, tree->op1, NULL, NULL)) != OK ) return ERROR_INTER;
 	}
 	return result;
@@ -710,8 +711,8 @@ int addJump(){
 				
 				//ulozime si jmena promenych kam to ulozit
 				//jsou tam navic parametry
-				else if(item == NULL || (((T_Token*)(item->data))->type != fun)) continue; //imho dost zbytecny radek ale nechci to ted mazat jelikoz nemam cas hledat co to ovlivni
-				else if (paska[i].operator == STORE_PARAM){
+				//else if(item == NULL || (((T_Token*)(item->data))->type != fun)) continue; //imho dost zbytecny radek ale nechci to ted mazat jelikoz nemam cas hledat co to ovlivni
+				else if (paska[i].operator == STORE_PARAM){ 
 					if(paramItem ==NULL || ((T_Token*)(paramItem->data))->type != fun ) continue; 
 					
 					(paska[i]).vysledek.value = mystrdup(((T_Token*)(paramItem->data))->value);
