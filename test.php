@@ -1,14 +1,15 @@
 <?php
 
-$a = "aaaa ".4;
 
 
-if (3 < 2)
+
+if (2 < 3)
 {
 	put_string("ano");
 }
 
-else {
+elseif (2 > 3) {
 	put_string("ne");
 }
 
+else {put_string("nevim");}

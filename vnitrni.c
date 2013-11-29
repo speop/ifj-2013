@@ -189,12 +189,28 @@ int generateCode(){
 				//konec programu 
 
 				if ((itemPom = bottom(alejStromu)) == NULL) {
-					if ((adresaSkoku = pop_top(skoky)) == NULL){
-								fprintf(stderr, "ERROR binding jump adress\n" );
+
+					pSkok = pop_top(pocetSkoku);
+					if (pSkok != NULL){
+						pom = *((int*)(pSkok)->data);
+						while(pom>= 0) //metoda strycka Frantiska... jestli bude hazet vnitrni segfault tak tu dat jenom vetsi
+						{	
+							if ((adresaSkoku = pop_top(skoky)) != NULL){
+								
+								pom2 = *((int*)(adresaSkoku)->data);
+								paska[pom2].vysledek.type = index;
+								free(adresaSkoku->data);
+								free(adresaSkoku);
+							}
+								
+							else if (pom){
+								fprintf(stderr, "ERROR binding jump adress\n");
 								return ERROR_INTER;
-					} 
-					pom = *((int*)(adresaSkoku)->data); 
-					paska[pom].vysledek.type = index; 
+							}
+							pom--;
+						}
+					}
+					
 					break; 
 				}
 				
@@ -228,11 +244,11 @@ int generateCode(){
 
 							break;
 
-						default:	
+						default: 	
 							//pokud mame nekam priradit skok
 
 							//pokud byl jenom if tak by to pokazilo vsehny skoky, avsak to muzeme prekontrolovat jelikoz na vrcholu je JMP_NOT
-							if ((adresaSkoku = top(skoky)) != NULL){  printf("vleze to tu\n");
+							if ((adresaSkoku = top(skoky)) != NULL){ 
 							pom2 = *((int*)(adresaSkoku)->data);
 							if(paska[pom2].operator == JMP_NOT) { 
 									paska[pom2].vysledek.type = index; 
@@ -272,7 +288,7 @@ int generateCode(){
 					}
 				}
 
-				else{
+				else{ 
 					if ((adresaSkoku = top(skoky)) != NULL){ 
 							pom2 = *((int*)(adresaSkoku)->data);
 							if(paska[pom2].operator == JMP_NOT) { 
@@ -309,6 +325,7 @@ int generateCode(){
 							pom--;
 						}
 					}
+					else{ printf("ze se tu dostanu .. \n");}
 				}
 				break;
 			//jenda se o ukonceni whilu zpravime adresy
