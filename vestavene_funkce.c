@@ -5,9 +5,9 @@
 
 #include "garbage_collector.h"
 #include "types.h"
-//#include <stdarg.h>
+#include "ial.h"
 
-
+#define NAN (0.0/0.0)
 
 //přečte jednenřádek ze vstupu
 //pokud se nepovede některá alokace, vracím nulu
@@ -202,8 +202,6 @@ int find_string(char *string1, char *string2)
     return pozice;
 }
 
-/*
-je nedefinovane NAN ale je to nepouzite v interpretu
 
 double StrToDouble(char *input)
 {
@@ -258,7 +256,7 @@ double StrToDouble(char *input)
         return (sign * output );
 }
 
-*/
+
 
 double IntToDouble(int input)
 {
@@ -383,17 +381,16 @@ char *DoubleToStr(double input)
 
 
 
-bool boolval(T_Token input)
+bool newboolval(T_ST_VarsItem input)
 {   
-    //p_output->type = S_BOOL;
-    switch (input.type){
-    case S_INT: return IntToBool(*(int*)(input).value);
+   switch (input.type){
+    case S_INT: return IntToBool(*(int *)input.value);
 
     case S_DOUB: return DoubleToBool(*(double*)(input).value);
 
     case S_STR: return StrToBool((char*)(input).value);
 
-    case S_BOOL: return *(int*)input.value; // vnitrne je bool reprezentovan jakoint
+    case S_BOOL: return *(int*)input.value; // vnitrne je bool reprezentovan jako int
                   
     case S_NULL: return false;
     }
@@ -401,58 +398,71 @@ bool boolval(T_Token input)
     return false;
 }
 
-// tyto funkce neni nikde pouzita a jsou v ni syntakticke chyby
-/*
-void doublelval(T_Token input, T_Token *p_output)
+bool boolval(T_Token input)
 {   
- *p_output.type = S_DOUB;
-    switch (input.type){
-        case S_INT: *p_output.value = IntToDouble(*input.value);
-                        break;
-        case S_DOUB: *p_output.value = input.value;
-                        break;
-        case S_STR: *p_output.value = StrToDouble(input.value);
-                        break;
-        case S_BOOL: *p_output.value = BoolToDouble(*input.value);
-                        break;
-        case S_NULL: *p_output.value = 0;
-                        break;
-        }
-}
+   switch (input.type){
+    case S_INT: return IntToBool(*(int *)input.value);
 
-void intval(T_Token input, T_Token *p_output)
-{   
- *p_output.type = S_INT;
-    switch (input.type){
-        case S_INT: *p_output.value = input.value;
-                        break;
-        case S_DOUB: *p_output.value = DoubleToInt(*input.value);
-                        break;
-        case S_STR: *p_output.value = StrToInt(input.value);
-                        break;
-        case S_BOOL: *p_output.value = BoolToInt(input.value);
-                        break;
-        case S_NULL: *p_output.value = 0;
-                        break;
-        }
-}
+    case S_DOUB: return DoubleToBool(*(double*)(input).value);
 
-void strval(T_Token input, T_Token *p_output)
-{   
- *p_output.type = S_STR;
-    switch (input.type){
-    case S_INT: *p_output.value = IntToStr(input.value);
-                    break;
-    case S_DOUB: *p_output.value = DoubleToStr(input.value);
-                    break;
-    case S_STR: *p_output.value = input.value;
-                    break;
-    case S_BOOL: *p_output.value = BoolToStr(input.value);
-                    break;
-    case S_NULL: *p_output.value = 0;
-                    break;
+    case S_STR: return StrToBool((char*)(input).value);
+
+    case S_BOOL: return *(int*)input.value; // vnitrne je bool reprezentovan jako int
+                  
+    case S_NULL: return false;
     }
-}
-*/
 
+    return false;
+}
+
+double doubleval(T_ST_VarsItem input)
+{   
+   switch (input.type){
+    case S_INT: return IntToDouble(*(int *)input.value);
+
+    case S_DOUB: return *(double*)(input).value;
+
+    case S_STR: return StrToDouble((char*)(input).value);
+
+    case S_BOOL: return BoolToDouble(*(int*)input.value); // vnitrne je bool reprezentovan jako int
+                  
+    case S_NULL: return false;
+    }
+
+    return false;
+}
+
+int intval(T_ST_VarsItem input)
+{   
+   switch (input.type){
+    case S_INT: return *(int *)input.value;
+
+    case S_DOUB: return DoubleToInt(*(double*)(input).value);
+
+    case S_STR: return StrToInt((char*)(input).value);
+
+    case S_BOOL: return *(int*)input.value; // vnitrne je bool reprezentovan jako int
+                  
+    case S_NULL: return 0;
+    }
+
+    return false;
+}
+
+char *strval(T_ST_VarsItem input)
+{   
+   switch (input.type){
+    case S_INT: return IntToStr(*(int *)input.value);
+
+    case S_DOUB: return DoubleToStr(*(double*)(input).value);
+
+    case S_STR: return (char*)(input).value;
+
+    case S_BOOL: return BoolToStr(*(int*)input.value); // vnitrne je bool reprezentovan jako int
+                  
+    case S_NULL: return "";
+    }
+
+    return false;
+}
 

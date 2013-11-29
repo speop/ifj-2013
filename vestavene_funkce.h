@@ -12,9 +12,10 @@ int find_string(char *, char *);  //vyhledani podretezce
 
 
 //prevody datovach typu
-void strval(T_Token input, T_Token *);
-void intval(T_Token input, T_Token *);
-void doublelval(T_Token input, T_Token *);
-bool boolval(T_Token input);
+char *strval(T_ST_VarsItem input);
+int intval(T_ST_VarsItem input);
+double doubleval(T_ST_VarsItem input);
+bool newboolval(T_ST_VarsItem input);
+bool boolval(T_Token input);		//rozdil v datovych typech na vstupu
 
 #endif
