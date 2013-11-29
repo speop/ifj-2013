@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 1
+#define debug 0
 
 
 extern tStack *alejStromu; //z parseru, je to ASS

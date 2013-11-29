@@ -8,7 +8,7 @@
 #include "garbage_collector.h"
 #include "types.h"
 #include "parser.h"
-#define debug 1
+#define debug 0
 
 FILE *pSource_File;
 TGarbageList trash;
@@ -41,17 +41,7 @@ int main(int argc, char **argv)
 	garbage_init();
 	void *data;
 
-	// priklad uziti GC
-	data = malloc(sizeof (int));
-	(*(int*)data) = 30;
-	garbage_add(data,&test);
-	
-	data = malloc(sizeof (int));
-	(*(int*)data) = 20;
-	garbage_add(data,&garbage_default_erase);
 
-	garbage_delete_by_pointer(data, FREE_DATA);
-	garbage_delete_by_id(1, FREE_DATA);
 	
 
 	//garbage_add(data,&garbage_default_erase);

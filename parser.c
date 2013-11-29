@@ -95,11 +95,16 @@ int parser(){
 	result = program();	
 	if(result!= OK) return result;
 
-	printf("\nVolam generator\n");
+	#if debug 
+		printf("\nVolam generator\n");
+	#endif
+		
 	result = generateCode();
 	if(result!= OK) return result;
 
-	printf("\nChtel bych volat interpet :)\n");
+	#if debug
+		printf("\nChtel bych volat interpet :)\n");
+	#endif
 	result = interpret();
 	return result;
 
