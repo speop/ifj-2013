@@ -73,12 +73,12 @@ int interpret()
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 					AuxSTVar = findVarST(Instr->operand1.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op1_typ = AuxSTVar->data->type;
-					if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					if(op1_typ != S_INT && op1_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op1 = AuxSTVar->data->value;
 				}
 				else {     //operand1 neni promenna
 					op1_typ = Instr->operand1.type;
-					if(op1_typ != S_INT && op1_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					if(op1_typ != S_INT && op1_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }   //typ promenne  neni int ani double
 					else op1 = Instr->operand1.value;
 
 				}
@@ -86,12 +86,12 @@ int interpret()
 				if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 					AuxSTVar = findVarST(Instr->operand2.value, symbolTable);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					op2_typ = AuxSTVar->data->type;
-					if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					if(op2_typ != S_INT && op2_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op2 = AuxSTVar->data->value;
 				}
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
-					if(op2_typ != S_INT && op2_typ != S_DOUB) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+					if(op2_typ != S_INT && op2_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op2 = Instr->operand2.value;
 					
 				}

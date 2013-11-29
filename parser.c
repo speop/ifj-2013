@@ -1121,12 +1121,12 @@ int expr(){
 											case S_FUNC:
 											case S_MUL: break;
 											default: 
-												fprintf(stderr, "Row: %d, 1 incompatible types in expression\n",row );
+												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 										}
 										break;
-									default: 	fprintf(stderr, "Row: %d, 2 incompatible types in expression\n",row );
+									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = false;
 								}
@@ -1152,12 +1152,12 @@ int expr(){
 											case S_FUNC:
 											case S_MUL: break;
 											default: 
-												fprintf(stderr, "Row: %d, 3 incompatible types in expression\n",row );
+												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 										}
 										break;
-									default: 	fprintf(stderr, "Row: %d, 4 incompatible types in expression\n",row );
+									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
 												projimadlo = true;
 								}
@@ -1174,6 +1174,7 @@ int expr(){
 
 										} 
 										break;
+									/* neni to semanticka chyba
 									case S_E:
 										if(znamenko1!= S_CONCATENATE && znamenko1 != S_FUNC){
 												fprintf(stderr, "Row: %d, 5 incompatible types in expression\n",row );
@@ -1183,7 +1184,7 @@ int expr(){
 										break;
 									default: 	fprintf(stderr, "Row: %d, 6 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
-												projimadlo = true;
+												projimadlo = true; */
 								}
 								if (projimadlo) break;
 								switch(typ2){
@@ -1196,7 +1197,7 @@ int expr(){
 
 										} 
 										break;
-									case S_E:
+									/*case S_E: neni to semanticka chyba
 										if(znamenko2!= S_CONCATENATE && znamenko2 != S_FUNC){
 												fprintf(stderr, "Row: %d, 7 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
@@ -1205,7 +1206,7 @@ int expr(){
 										break;
 									default: 	fprintf(stderr, "Row: %d, 8 incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
-												projimadlo = true;
+												projimadlo = true; */
 								}
 								break;
 
