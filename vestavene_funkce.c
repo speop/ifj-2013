@@ -9,8 +9,6 @@
 
 
 
-//neprelozitelne
-
 //přečte jednenřádek ze vstupu
 //pokud se nepovede některá alokace, vracím nulu
 //HOTOVO

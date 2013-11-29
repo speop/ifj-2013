@@ -49,6 +49,7 @@ int interpret()
 	T_Token backup;
 
 	T_ST_Vars *actualST, *newST;
+	actualST = symbolTable;
 
 	while(1)
 	{
@@ -60,13 +61,38 @@ int interpret()
 							do {
 								Instr = &(paska[i++]);
 							}
-							while (Instr->operator != FUNCTION_BLOCK_END); printf("%d\n", Instr->operator );
+							while (Instr->operator != FUNCTION_BLOCK_END); 
 							break;
 
-			case FUNCTION_BLOCK_START:
+			case FUNCTION_BLOCK_START: 
 					//skok pri volani funkce
 					break;
+			
+			case FUNCTION_BLOCK_END: 
+					StackHelpItem = pop_top(callStack);
+					newST = ((TCallStack *)(StackHelpItem->data))->symbolTable; //tabulka symbolu z ktere byla tato funkce volana
 					
+					StackHelpItem2 = pop_top(paramStack);
+				
+
+					
+					if(((Tparam *)(StackHelpItem->data))->returnvalue != NULL) 
+					{
+						res = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue ,newST);
+						if(res->data->value != NULL) free (res->data->value);
+					
+						res->data->value = malloc(sizeof(int));
+						*(int*)(res->data->value) = 0;
+						res->data->type = S_NULL;
+					}
+
+				
+
+					//jeste zmenit tabulky symbolu
+					actualST = newST;
+					
+					i = ((TCallStack *)(StackHelpItem->data))->adress; 	
+					break;
 
 			case  RETURN: 
 				StackHelpItem = pop_top(callStack);
@@ -110,12 +136,15 @@ int interpret()
 				//neni navratova hodnota nahrajem NULL
 				else
 				{
-					res = findVarST(Instr->operand1.value, newST);
-					if(res->data->value != NULL) free (res->data->value);
-
-					res->data->value = malloc(sizeof(int));
-					*(int*)(res->data->value) = 0;
-					res->data->type = S_NULL;
+					if(((Tparam *)(StackHelpItem->data))->returnvalue != NULL) 
+					{
+						res = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue ,newST);
+						if(res->data->value != NULL) free (res->data->value);
+					
+						res->data->value = malloc(sizeof(int));
+						*(int*)(res->data->value) = 0;
+						res->data->type = S_NULL;
+					}
 
 				}
 
@@ -261,11 +290,11 @@ int interpret()
 			case S_FUNC:   
 					if((param = (Tparam*)malloc(sizeof(Tparam))) == NULL) return ERROR_INTER;
 
-					param->funcName = mystrdup(Instr->operand1.value);
-					funkce = findFunctionST(param->funcName, functionTable);
-					param->symbolTable = copyTable(funkce->data->symbolTable);
+					param->funcName = mystrdup(Instr->operand1.value); 
+					funkce = findFunctionST(param->funcName, functionTable); 
+					param->symbolTable = copyTable(funkce->data->symbolTable); 
 					param->returnvalue = mystrdup(Instr->vysledek.value);
-					param->paramCount = funkce->data->paramCount;
+					param->paramCount = funkce->data->paramCount; 
 
 					param->BIfPointer = 0; // ukazatatel do pole nazvu promenych
 
@@ -418,11 +447,11 @@ int interpret()
 				funcName = ((Tparam *)(StackHelpItem->data))->funcName;
 
 				newST = ((Tparam *)(StackHelpItem->data))->symbolTable;
-								
-
+				
+					
 			 	//zpracujeme interni funkce
 			 	AuxSTVar = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue, actualST); 
-
+			 	//printf("a tu uz to neprojde jo?\n");
 				if(strcmp(funcName, "get_string") == 0) {
 					AuxSTVar->data->value = get_string();//
 					AuxSTVar->data->type = S_STR;
@@ -431,13 +460,13 @@ int interpret()
 					break;
 				}
 
-				if(strcmp(funcName, "put_string") == 0) {
+				if(strcmp(funcName, "put_string") == 0) { 
 					AuxSTVar->data->value = malloc(sizeof(int));
 				 	AuxSTVar->data->type = S_NULL;
 
 				 	*(int*)(AuxSTVar->data)->value = 0;
 
-					StackHelpItem = pop_top(paramStack);
+					StackHelpItem = pop_top(paramStack); 
 					break;
 				}
 
@@ -483,7 +512,7 @@ int interpret()
 
 				//StackHelpItem = pop_top(paramStack);
 				// alokujeme novy prvek pro stack tabulku symbolu
-
+				
 				CallStack = (TCallStack*)malloc(sizeof(TCallStack));
 				CallStack->symbolTable = actualST; 
 				CallStack->adress = i;			
@@ -506,8 +535,7 @@ int interpret()
 				funcName = ((Tparam *)((paramStack)->top)->data)->funcName;
 
 				//pokud je to putstring tak se vypisujou parametry
-
-				if(strcmp(funcName, "put_string")){
+				if(strcmp(funcName, "put_string") == 0){ 
 					switch(Instr->operand1.type) {
 							case S_INT:
 								printf("%d", *((int *)(Instr->operand1).value)); break;
@@ -528,7 +556,7 @@ int interpret()
 										printf("%d", *(int*)op1); break;
 									case S_DOUB:
 										printf("%f", *(double *)op1); break;
-									case S_STR:
+									case S_STR: 
 										printf("%s", (char *)op1); break;
 									case S_BOOL:
 										printf("%d", (bool)op1); break;

@@ -388,6 +388,7 @@ int generateCode(){
 		if ( paska[x].operator == STORE_PARAM){
 			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
 			else printf(", promena pro ulozeni parametru je: %s",(char*)(paska[x].vysledek.value) );
+			printf(" ukladam typ: %d",  paska[x].operand1.type );
 		}
 		//if(paska[x].operator == IF) printf(", blah %d",paska[x].operand1.type );
 		printf("\n");

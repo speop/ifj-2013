@@ -1,6 +1,7 @@
 <?php
 vypis();
+
 function vypis()
 {
-  put_string("jsem zde");
+  put_string("testovaci string\n");
 }

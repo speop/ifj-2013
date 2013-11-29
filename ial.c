@@ -380,10 +380,10 @@ void freeFuncSTpom(T_ST_Funcs* tree, int smer){
 
 T_ST_Vars* copyTable(T_ST_Vars* hd)
 {
-	T_ST_Vars* sb;
-		
+	T_ST_Vars* sb = NULL;
+			
     if (hd != NULL)
-    {
+    {	
 		sb = (T_ST_Vars*)malloc(sizeof(T_ST_Vars));
 		varSTInit(sb);
 		if(copyTableFill(hd,sb) != OK) return NULL;
@@ -398,15 +398,15 @@ int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
 	T_ST_VarsItem* item;
 	int ret;
 	
-    if (hd != NULL)
-    {
+    if (hd != NULL && hd->data != NULL)
+    {	
 		if (( item = (T_ST_VarsItem *)malloc (sizeof(T_ST_VarsItem)))  == NULL) return INTERNAL_ERROR;
 		item->name = mystrdup1(hd->data->name);	
 		ret = addVarNodeToST(item ,sb);
 		if(ret != OK) return ret;
-		
+			
         copyTableFill(hd->left,sb);
-        copyTableFill(hd->right,sb);
+        copyTableFill(hd->right,sb); 
     }
 	
 	return OK;
