@@ -483,7 +483,58 @@ int interpret()
 				  	break;
 				}
 
-			 
+			 	if(strcmp(funcName, "boolval") == 0) {
+					
+					AuxSTVar->data->value = malloc(sizeof(int));
+					AuxSTVar->data->type = S_BOOL;
+
+					res = findVarST((char *)variables[0], newST);
+					*(int*)(AuxSTVar->data)->value = newboolval(*(res->data));
+					
+					 StackHelpItem = pop_top(paramStack);
+				  
+					break;
+				}
+				
+				if(strcmp(funcName, "doubleval") == 0) {
+					
+					AuxSTVar->data->value = malloc(sizeof(int));
+					AuxSTVar->data->type = S_DOUB;
+
+					res = findVarST((char *)variables[0], newST);
+					*(double*)(AuxSTVar->data)->value = doubleval(*(res->data));
+					
+					 StackHelpItem = pop_top(paramStack);
+				  
+					break;
+				}
+			
+				if(strcmp(funcName, "intval") == 0) {
+					
+					AuxSTVar->data->value = malloc(sizeof(int));
+					AuxSTVar->data->type = S_INT;
+
+					res = findVarST((char *)variables[0], newST);
+					*(int*)(AuxSTVar->data)->value = intval(*(res->data));
+					
+					 StackHelpItem = pop_top(paramStack);
+				  
+					break;
+				}
+				
+				if(strcmp(funcName, "strval") == 0) {
+					
+					AuxSTVar->data->value = malloc(sizeof(int));
+					AuxSTVar->data->type = S_STR;
+
+					res = findVarST((char *)variables[0], newST);
+					/**(char *)*/(AuxSTVar->data)->value = strval(*(res->data));
+					
+					 StackHelpItem = pop_top(paramStack);
+				  
+					break;
+				}
+				
 				if(strcmp(funcName,  "find_string") == 0) {
 					AuxSTVar->data->value = malloc(sizeof(int));
 				 	AuxSTVar->data->type = S_INT;
