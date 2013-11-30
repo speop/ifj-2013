@@ -1,11 +1,13 @@
 <?php
+$a = 7;
 
-$i = 0;
-
-while ($i < 3)
+function factorial($no)
 {
-put_string("tisknu \n");
-$i= $i+1;
+	
 }
 
+	
+		$vysl = factorial(6);
+$message = "Vysledek je: ";
 
+ put_string("6");

@@ -13,7 +13,7 @@
 
 #include <string.h>
 
-#define debug 1
+#define debug 0
 
 FILE *pSource_File; //vstupni soubor
 //static int state; //soucasny stav automatu
@@ -66,7 +66,7 @@ int getToken(T_Token *token){
 
 	#if debug 
 		printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
-      if(token->type ==  S_STR) printf("\t\"%s\"\n",(char*)(token)->value);
+      if(token->type ==  S_STR || token->type ==  S_FUNC || token->type ==  S_ID ) printf("\t\"%s\"\n",(char*)(token)->value);
        printf("\tnavratova hodnota: %d\n================================================\n",result);
 	#endif
   return result;

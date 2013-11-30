@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 0
+#define debug 1
 
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -79,7 +79,8 @@ int generateCode(){
 
 			case S_E:  	
 				if(((Tleaf*)((T_Token*)(item)->data)->value)->op == NULL){
-					if(item->data != NULL) tokenFreepom(item->data);
+					//if(item->data != NULL) tokenFreepom(item->data);
+					if(item!= NULL) free(item);
 					item = pop_back(alejStromu);
 					continue;
 				}
@@ -160,13 +161,13 @@ int generateCode(){
 						
 						while(item != NULL && ((T_Token*)(item)->data)->type == STORE_PARAM ){
 							
-							if(item->data != NULL) tokenFreepom(item->data);
+							//if(item->data != NULL) tokenFreepom(item->data);
 							item = pop_back(alejStromu);
 
 							if ((iToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 							iToken->type = index; // kvuli interpetu nastavuju plus jedna takze musim i zde
 							iToken->value = ((T_Token*)(item)->data)->value;
-							
+							//printf("%s\n",(char*)(iToken)->value );
 							if(iToken->value != NULL) push_back(params, iToken);
 							else free(iToken);
 														
@@ -366,8 +367,13 @@ int generateCode(){
 			 		if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;
 					break;
 		}
-		if(item->data != NULL) tokenFreepom(item->data);
-		if(item != NULL) free(item);
+
+		if (item != NULL)
+		{
+			//if(item->data != NULL) tokenFreepom(item->data);
+			free(item);
+		}
+		
 		//printf("tu se dostanu\n");
 		item = pop_back(alejStromu);
 		//if(item != NULL) printf("\t\tnovy item %d\n",((T_Token*)(item)->data)->type );
@@ -780,7 +786,7 @@ bool destroyPaska(void *paskaFree)
 
 	TAC *paskaPom = (TAC*)paskaFree;
 	if(paskaPom == NULL) return true;
-	 
+
 	int index = 0;
 	while(true)
 	{

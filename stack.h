@@ -6,7 +6,6 @@
 
 #include <stdbool.h>
 #include "types.h"
-
 typedef struct tStackItem{
 		void *data;
 		struct tStackItem *prev, *next; // next vyse na zasobniku

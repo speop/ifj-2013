@@ -98,14 +98,14 @@ int parser(){
 	#if debug 
 		printf("\nVolam generator\n");
 	#endif
-	
+		
 	result = generateCode();
 	if(result!= OK) return result;
 
 	#if debug
 		printf("\nChtel bych volat interpet :)\n");
 	#endif
-	result = interpret(); 
+	result = interpret();
 	return result;
 
 
@@ -296,7 +296,6 @@ int st_list(){
 			pomToken->type = FUNCTION;
 			pomToken->value = mystrdup(token.value);
 			funcName = pomToken->value;
-			free(token.value);
 			token.value = NULL;
 			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
 			
@@ -656,8 +655,7 @@ int functionHeaders(){
 	
 	//pridame do tabulky funkci novou funkci a vytvorime ji tabulku symbolu
 	if (( funkce = (T_ST_FuncsItem *)malloc (sizeof(T_ST_FuncsItem)))  == NULL) return INTERNAL_ERROR;
-	funkce->name = mystrdup(token.value);
-		
+	funkce->name = mystrdup(token.value);	
 	ret = addFuncNodeToST(funkce ,functionTable);
 	
 	#if debug
@@ -1424,10 +1422,6 @@ int expr(){
 						//printf("EPXR: %d \n",((Tleaf*)(exprTree->value))->op->type);
 
 						free(pomItem);
-						//pokud bude segfault tohle dat pryc
-						free(pomItem2->data);
-						free(pomItem2);
-
 						//free(pomToken);
 						token.type = exprTempToken.type;
 						token.value = exprTempToken.value;
