@@ -383,7 +383,7 @@ int generateCode(){
 	//priradime konec pasky
 	generate(THE_END, NULL, NULL, NULL);
 
-	if((result = addJump())!= OK) return result;
+	if((result = addJump())!= OK) return result; 
 	#if debug
 	for (int x= 0; x<index; x++)
 	{
@@ -393,7 +393,7 @@ int generateCode(){
 		if ( paska[x].operator == JMP_NOT) printf(", adresa not skoku je: %d , promena: %s",paska[x].vysledek.type, (char*)(paska[x].operand1).value  );
 		if ( paska[x].operator == S_EQ || paska[x].operator == S_NEQ || paska[x].operator == S_GEQ || paska[x].operator == S_LEQ || paska[x].operator == S_GRT || paska[x].operator == S_LST) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_PLUS || paska[x].operator == S_MUL || paska[x].operator == S_DIV || paska[x].operator == S_MINUS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
-		if ( paska[x].operator == S_IS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type ); 
+		if ( paska[x].operator == S_IS) printf(", op1.type: %d value: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type, *(int*)(paska[x].operand1).value ,paska[x].operand2.type ,paska[x].vysledek.type ); 
 
 		if ( paska[x].operator == STORE_PARAM){
 			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
@@ -657,17 +657,17 @@ int generate(int operator, T_Token* tok1, T_Token* tok2, T_Token* vysTok){
 	
 	if(tok1 != NULL ){
 		(paska[index]).operand1.type = tok1->type;
-		(paska[index]).operand1.value = mystrdup(tok1->value);
+		(paska[index]).operand1.value = copyData(tok1);
 	}else (paska[index]).operand1.type = NOT_EXIST;
 
 	if(tok2 != NULL ){
 		(paska[index]).operand2.type = tok2->type;
-		(paska[index]).operand2.value = mystrdup(tok2->value);
+		(paska[index]).operand2.value = copyData(tok2);
 	}else (paska[index]).operand2.type = NOT_EXIST;
 
 	if(vysTok != NULL ){
 		(paska[index]).vysledek.type = vysTok->type;
-		(paska[index]).vysledek.value = mystrdup(vysTok->value);
+		(paska[index]).vysledek.value = copyData(vysTok);
 	}else (paska[index]).vysledek.type = NOT_EXIST;
 
 	// udelame si adresu funkce abychom mohli doplnit adresu skoku do call
@@ -678,7 +678,7 @@ int generate(int operator, T_Token* tok1, T_Token* tok2, T_Token* vysTok){
 			if(iToken == NULL) return ERROR_INTER;
 
 			iToken->type = index;
-			iToken->value = mystrdup(tok1->value);
+			iToken->value = mystrdup(tok1->value); 
 			push(pomStack, iToken);
 	}
 	
@@ -698,7 +698,7 @@ int addJump(){
 		if(paska[i].operator == S_FUNC){
 			
 			item = top(pomStack);
-			while(item != NULL && strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) item = item->prev; 
+			while(item != NULL && strcmp(((T_Token*)(item->data))->value, paska[i].operand1.value)) { item = item->prev; }
 			
 			
 			if(item == NULL) fun = -1;
@@ -801,4 +801,34 @@ bool destroyPaska(void *paskaFree)
 	free(paskaPom);
 
 	return true;
+}
+
+void* copyData(T_Token *tok)
+{	
+	
+	void *ptr = NULL;
+	void *op1 = tok->value;
+	if(tok == NULL) return ptr;
+	switch(tok->type){
+	
+
+	case S_BOOL:
+	case S_NULL:
+	case S_INT: 
+		ptr = malloc(sizeof(int));
+		*(int*)ptr = *(int*)op1;
+		break;
+
+	case S_DOUB: 
+		ptr = malloc(sizeof(double));
+		*(double*)ptr = *(double*)op1;
+		break;
+
+	// zde je vse ostatni kde nejsou cisla 
+	default: 
+			ptr = mystrdup((char*)op1);
+			break;
+	}
+
+	return ptr;
 }

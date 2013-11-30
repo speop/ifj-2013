@@ -38,6 +38,7 @@ int interpret()
 	T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
 	TCallStack *CallStack;                //prvek zasobniku pro navraty
 	Tparam *param;
+	double doub1, doub2;
 	//tStack *returnStack = SInit();      //zasobnik navratovach hodnot
 	//tStack *tableStack = SInit();         //zasobnik tabulek symbolu
 	//tStack *funcStack = SInit();        //zasobnik s funkcemi a parametry pro volani
@@ -76,9 +77,9 @@ int interpret()
 				
 
 					
-					if(((Tparam *)(StackHelpItem->data))->returnvalue != NULL) 
+					if(((Tparam *)(StackHelpItem2->data))->returnvalue != NULL) 
 					{
-						res = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue ,newST);
+						res = findVarST(((Tparam *)(StackHelpItem2->data))->returnvalue ,newST);
 						if(res->data->value != NULL) free (res->data->value);
 					
 						res->data->value = malloc(sizeof(int));
@@ -101,13 +102,12 @@ int interpret()
 				StackHelpItem2 = pop_top(paramStack);
 				
 				//mame hodnotu na ulozeni tak ji ulozime
-				if(Instr->operand1.type != NOT_EXIST){
-
-					res = findVarST(Instr->operand1.value, newST);
+				if(Instr->operand1.type != NOT_EXIST){ 
+					
+					res = findVarST(((Tparam *)(StackHelpItem2->data))->returnvalue ,newST);
 					if(res->data->value != NULL) free (res->data->value);
 
-					AuxSTVar = findVarST(Instr->operand1.value, newST);
-
+					AuxSTVar = findVarST(Instr->operand1.value, actualST);
 
 					op1 = AuxSTVar->data->value;
 					switch(AuxSTVar->data->type){
@@ -121,12 +121,14 @@ int interpret()
 				  		case S_INT:
 					 		res->data->value = malloc(sizeof(int));
 					  		*(int*)(res->data->value) = *(int*)op1;
-					  		res->data->type = S_INT;
+					  		res->data->type = AuxSTVar->data->type;
+					  		printf("returnuju %d\n", *(int*)op1);
 					  		break;
 
 				  		case S_DOUB:
 							 res->data->value = malloc(sizeof(double));
 					  		*(double*)(res->data->value) = *(double*)op1;
+					  		printf("returnuju2 %f\n", *(double*)(res->data->value));
 					  		res->data->type = S_DOUB;
 					  		break;
 					}
@@ -190,13 +192,20 @@ int interpret()
 
 					  //vypocet
 				if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operator == S_MUL || Instr->operator == S_DIV) {
+					
+					if(op1_typ == S_INT) doub1 = (double)(*(int*)op1);
+					else  doub1 = *(double*)op1;
+					
+					if(op1_typ == S_INT) doub2 = (double)(*(int*)op2);
+					else  doub1 = *(double*)op2;
+
 				  res->data->value = (double*)malloc(sizeof(double));
 
-				if(Instr->operator == S_MUL) *((double*)(res->data)->value) = *((double*)(op1)) * *((double*)(op2));
-				else if (Instr->operator == S_DIV) *((double*)(res->data)->value) = *((double*)(op1)) / *((double*)(op2));
-				else if(Instr->operator == S_PLUS) *((double*)(res->data)->value) = *((double*)(op1)) + *((double*)(op2));
-				else *((double*)(res->data)->value) = *((double*)(op1)) - *((double*)(op2));
-
+				if(Instr->operator == S_MUL) *((double*)(res->data)->value) = doub1 * doub2;
+				else if (Instr->operator == S_DIV) *((double*)(res->data)->value) =doub1 / doub2;
+				else if(Instr->operator == S_PLUS) *((double*)(res->data)->value) = doub1 + doub2;
+				else *((double*)(res->data)->value) = doub1 - doub2;
+				printf("\tpocitani -%f- -%f- = -%f- \n", doub1, doub2, *((double*)(res->data)->value) );
 				res->data->type = S_DOUB;
 				}
 				else { 
@@ -255,15 +264,17 @@ int interpret()
 				  AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 				  op1_typ = AuxSTVar->data->type;
 				  op1 = AuxSTVar->data->value;
+				  printf("\prirazuju promena \"%s\"\n",Instr->operand1.value );
 				}
 				else {     //operand1 neni promenna
 				  op1_typ = Instr->operand1.type;
 				  op1 = Instr->operand1.value;
+				  printf("%d %d \n",i,*(int*)op1 );
 				}
 
 				res = findVarST(Instr->vysledek.value, actualST);
 				if (res->data->value != NULL) free(res->data->value);
-
+				printf("\tkam  \"%s\"\n",Instr->vysledek.value );
 				//ulozeni hodnoty
 				switch(op1_typ){
 				  case S_STR:
@@ -277,12 +288,14 @@ int interpret()
 					  res->data->value = malloc(sizeof(int));
 					  *((int*)(res->data)->value) = *(int*)op1;
 					  res->data->type = S_INT;
+					  printf("prirazeni %d\n",*((int*)(res->data)->value) );
 					  break;
 
 				  case S_DOUB:
 					  res->data->value = malloc(sizeof(double));
 					  *((double*)(res->data)->value) = *(double*)op1;
 					  res->data->type = S_DOUB;
+					  printf("prirazeni3  %f\n", *((double*)(res->data)->value) );
 					  break;
 				}
 				break;
@@ -443,6 +456,7 @@ int interpret()
 				 //kopiruji tabulku symbolu
 
 				//zjistime si jmeno funkce
+
 				StackHelpItem = top(paramStack);
 				funcName = ((Tparam *)(StackHelpItem->data))->funcName;
 
@@ -636,9 +650,20 @@ int interpret()
 						AuxSTVar = findVarST(Instr->vysledek.value, param->symbolTable); 
 					}
 
+					// vyhledame hodnotu promene
+					if(Instr->operand1.type == S_ID){
+						res = findVarST((char *) (Instr->operand1).value, actualST); 
+						op1 = res->data->value;
+						op1_typ = res->data->type;
+						
+					}
+					else{
+						op1 = Instr->operand1.type;
+						op1_typ = Instr->operand1.value;
+					}
 					//ted zkopirujem do nalezene promene to hodnoty
-					op1 = Instr->operand1.value;
-					switch(Instr->operand1.type){
+					
+					switch(op1_typ){
 				  	case S_STR:
 					  	AuxSTVar->data->value = mystrdup((char*)op1);
 					  	AuxSTVar->data->type = S_STR;
@@ -649,7 +674,7 @@ int interpret()
 				  	case S_INT:
 					 	 AuxSTVar->data->value = malloc(sizeof(int));
 					  	*((int*)(AuxSTVar->data)->value) = *(int*)op1;
-					  	AuxSTVar->data->type = S_INT;
+					  	AuxSTVar->data->type = op1_typ;
 					  	break;
 
 				  	case S_DOUB:
@@ -685,7 +710,7 @@ int interpret()
 				  	case S_INT:
 					 	 backup.value = malloc(sizeof(int));
 					  	*((int*)(backup).value) = *(int*)op1;
-					  	backup.type = S_INT;
+					  	backup.type = AuxSTVar->data->type;
 					  	break;
 
 				  	case S_DOUB:
