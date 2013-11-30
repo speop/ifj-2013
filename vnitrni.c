@@ -658,17 +658,31 @@ int generate(int operator, T_Token* tok1, T_Token* tok2, T_Token* vysTok){
 	if(tok1 != NULL ){
 		(paska[index]).operand1.type = tok1->type;
 		(paska[index]).operand1.value = copyData(tok1);
-	}else (paska[index]).operand1.type = NOT_EXIST;
+	}
+	else{ 
+		(paska[index]).operand1.type = NOT_EXIST;
+		(paska[index]).operand1.value = NULL;
+	}
 
 	if(tok2 != NULL ){
 		(paska[index]).operand2.type = tok2->type;
 		(paska[index]).operand2.value = copyData(tok2);
-	}else (paska[index]).operand2.type = NOT_EXIST;
+	}
+	else{ 
+		(paska[index]).operand2.type = NOT_EXIST;
+		(paska[index]).operand2.value = NULL;
+	}
+
 
 	if(vysTok != NULL ){
 		(paska[index]).vysledek.type = vysTok->type;
 		(paska[index]).vysledek.value = copyData(vysTok);
-	}else (paska[index]).vysledek.type = NOT_EXIST;
+	}
+	else{ 
+		(paska[index]).vysledek.type = NOT_EXIST;
+		(paska[index]).vysledek.value = NULL;
+	}
+
 
 	// udelame si adresu funkce abychom mohli doplnit adresu skoku do call
 	if(operator == FUNCTION){

@@ -222,6 +222,22 @@ int getTokenReal(T_Token *token)
 
             }while((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || (scanned >= '0' && scanned <= '9') || scanned == '_');
 
+            //ulozime konec retezce za poseldni znak, i ted se muzeme dostat za to co mame alokovano tak musim zkontrolovat
+            if(pozice >= alokovano) {
+                alokovano  = alokovano << 1;
+
+                more_str = (char*) realloc (str, alokovano * sizeof(int));
+                if(more_str == NULL){
+                  free(str);
+                  return ERROR_INTER;
+                }
+                else str = more_str;
+            }
+
+            str[pozice++] = '\0';
+
+
+
             //vratime znak navic co jsme nacetli
             fseek(pSource_File, -1,SEEK_CUR);
             token->type = S_ID;
@@ -681,6 +697,7 @@ int readString(T_Token *token){
 
 char* mystrdup(const char* s)
 {
+    if(s== NULL) return NULL;
     char* p = malloc(strlen(s)+1);
     if(p==NULL) fprintf(stderr, "Cannot alocate memory\n");
     if (p) strcpy(p, s);

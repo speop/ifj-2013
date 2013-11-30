@@ -13,7 +13,7 @@ tStack* SInit(){
 
 	tStack *stack;
 
-	if((stack = (tStack*)malloc(sizeof(stack))) == NULL) return NULL;
+	if((stack = (tStack*)malloc(sizeof(tStack))) == NULL) return NULL;
 
 	stack->top = NULL;
 	stack->bottom = NULL;
@@ -109,7 +109,7 @@ int push_back(tStack *stack, void* data){
 
 tStackItem* pop_back(tStack *stack){
 
-	tStackItem *temp;
+	tStackItem *temp = NULL;
 
 	//prazdny zasobnik
 	if(stack->top == NULL) return NULL;

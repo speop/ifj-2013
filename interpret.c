@@ -34,7 +34,7 @@ int interpret()
 	char *funcName;
 	void *op1, *op2;
 	int op1_typ, op2_typ,len;   //typy operandu
-	T_ST_Vars *AuxSTVar, *res, *res1, *res2;        //pomocny uzel a uzel pro vysledek
+	T_ST_Vars *AuxSTVar, *res, *res1;        //pomocny uzel a uzel pro vysledek
 	T_ST_Funcs *funkce;        //pomocna promenna na uchovani dat o funkci
 	TCallStack *CallStack;                //prvek zasobniku pro navraty
 	Tparam *param;
@@ -426,7 +426,10 @@ int interpret()
 						case S_DOUB:
 							  switch(Instr->operator) {
 									case S_LST:
-										*((int*)(res->data)->value) = (*((double *)op1) < *((double *)op2));
+										if(*(double *)op1 < *(double *)op2) *((int*)(res->data)->value) = 1;
+										else *((int*)(res->data)->value) = 0;
+										
+										//*((int*)(res->data)->value) = (*((double *)op1) < *((double *)op2));
 										break;
 									case S_GRT:
 										*((int*)(res->data)->value) = (*((double *)op1) > *((double *)op2));
@@ -746,8 +749,8 @@ int interpret()
 						
 					}
 					else{
-						op1 = Instr->operand1.type;
-						op1_typ = Instr->operand1.value;
+						op1_typ = Instr->operand1.type;
+						op1 = Instr->operand1.value;
 					}
 					//ted zkopirujem do nalezene promene to hodnoty
 					

@@ -4,7 +4,7 @@
 //$z = put_string("Zadejte cislo pro vypocet faktorialu");
 //$a = get_string();
 
-$a = 10000000;//intval($a);
+$a = 6;//intval($a);
 // Definice funkce pro vypocet hodnoty faktorialu
 function factorial($n)
 {
