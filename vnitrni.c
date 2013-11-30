@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 0
+#define debug 1
 
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -351,7 +351,7 @@ int generateCode(){
 					pom = *((int*)(adresaSkoku)->data);
 					generate(JMP, NULL, NULL, NULL);
 					
-					paska[index-1].operand1.type = pom;
+					paska[index-1].vysledek.type = pom;
 					free(adresaSkoku->data);
 					free(adresaSkoku); 
 					break;

@@ -1,7 +1,11 @@
 <?php
-vypis();
 
-function vypis()
+$i = 0;
+
+while ($i < 3)
 {
-  put_string("testovaci string\n");
+put_string("tisknu \n");
+$i= $i+1;
 }
+
+

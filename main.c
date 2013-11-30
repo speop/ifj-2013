@@ -8,7 +8,7 @@
 #include "garbage_collector.h"
 #include "types.h"
 #include "parser.h"
-#define debug 0
+#define debug 1
 
 FILE *pSource_File;
 TGarbageList trash;

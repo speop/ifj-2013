@@ -47,4 +47,4 @@ clean:
 	rm -f *.o *.out *.zip $(PROGS)
 
 pack:
-	zip xbucht18.zip *.c *.h rozdeleni dokumentace.pdf Makefile
+	zip xbucht18.zip *.c *.h rozdeleni rozsireni dokumentace.pdf Makefile
