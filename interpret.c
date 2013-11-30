@@ -122,13 +122,13 @@ int interpret()
 					 		res->data->value = malloc(sizeof(int));
 					  		*(int*)(res->data->value) = *(int*)op1;
 					  		res->data->type = AuxSTVar->data->type;
-					  		printf("returnuju %d\n", *(int*)op1);
+					  		//printf("returnuju %d\n", *(int*)op1);
 					  		break;
 
 				  		case S_DOUB:
 							 res->data->value = malloc(sizeof(double));
 					  		*(double*)(res->data->value) = *(double*)op1;
-					  		printf("returnuju2 %f\n", *(double*)(res->data->value));
+					  		//printf("returnuju2 %f\n", *(double*)(res->data->value));
 					  		res->data->type = S_DOUB;
 					  		break;
 					}
@@ -166,6 +166,7 @@ int interpret()
 					op1_typ = AuxSTVar->data->type;
 					if(op1_typ != S_INT && op1_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op1 = AuxSTVar->data->value;
+					//printf(" \t pocitam s: %s\n", Instr->operand1.value );
 				}
 				else {     //operand1 neni promenna
 					op1_typ = Instr->operand1.type;
@@ -179,6 +180,8 @@ int interpret()
 					op2_typ = AuxSTVar->data->type;
 					if(op2_typ != S_INT && op2_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op2 = AuxSTVar->data->value;
+					//printf(" \t pocitam s: %s\n", Instr->operand2.value );
+
 				}
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
@@ -196,8 +199,8 @@ int interpret()
 					if(op1_typ == S_INT) doub1 = (double)(*(int*)op1);
 					else  doub1 = *(double*)op1;
 					
-					if(op1_typ == S_INT) doub2 = (double)(*(int*)op2);
-					else  doub1 = *(double*)op2;
+					if(op2_typ == S_INT) doub2 = (double)(*(int*)op2);
+					else  doub2 = *(double*)op2;
 
 				  res->data->value = (double*)malloc(sizeof(double));
 
@@ -205,7 +208,7 @@ int interpret()
 				else if (Instr->operator == S_DIV) *((double*)(res->data)->value) =doub1 / doub2;
 				else if(Instr->operator == S_PLUS) *((double*)(res->data)->value) = doub1 + doub2;
 				else *((double*)(res->data)->value) = doub1 - doub2;
-				printf("\tpocitani -%f- -%f- = -%f- \n", doub1, doub2, *((double*)(res->data)->value) );
+				//printf("\tpocitani -%f- -%f- = -%f- \n", doub1, doub2, *((double*)(res->data)->value) );
 				res->data->type = S_DOUB;
 				}
 				else { 
@@ -264,17 +267,17 @@ int interpret()
 				  AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 				  op1_typ = AuxSTVar->data->type;
 				  op1 = AuxSTVar->data->value;
-				  printf("\prirazuju promena \"%s\"\n",Instr->operand1.value );
+				  //printf("\prirazuju promena \"%s\"\n",Instr->operand1.value );
 				}
 				else {     //operand1 neni promenna
 				  op1_typ = Instr->operand1.type;
 				  op1 = Instr->operand1.value;
-				  printf("%d %d \n",i,*(int*)op1 );
+				  //printf("%d %d \n",i,*(int*)op1 );
 				}
 
 				res = findVarST(Instr->vysledek.value, actualST);
 				if (res->data->value != NULL) free(res->data->value);
-				printf("\tkam  \"%s\"\n",Instr->vysledek.value );
+				//printf("\tkam  \"%s\"\n",Instr->vysledek.value );
 				//ulozeni hodnoty
 				switch(op1_typ){
 				  case S_STR:
@@ -287,17 +290,18 @@ int interpret()
 				  case S_INT:
 					  res->data->value = malloc(sizeof(int));
 					  *((int*)(res->data)->value) = *(int*)op1;
-					  res->data->type = S_INT;
-					  printf("prirazeni %d\n",*((int*)(res->data)->value) );
+					  res->data->type = op1_typ;
+					  //printf("prirazena hodnota: %d\n",*((int*)(res->data)->value) );
 					  break;
 
 				  case S_DOUB:
 					  res->data->value = malloc(sizeof(double));
 					  *((double*)(res->data)->value) = *(double*)op1;
 					  res->data->type = S_DOUB;
-					  printf("prirazeni3  %f\n", *((double*)(res->data)->value) );
+					  //printf("prirazena hodnota#:  %f\n", *((double*)(res->data)->value) );
 					  break;
 				}
+
 				break;
 
 			case S_FUNC:   
