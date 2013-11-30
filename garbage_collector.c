@@ -125,7 +125,7 @@ bool garbage_default_erase(void *data)
 {	
 	//defaultni funkce pro uvolneni jednoduche pametove struktury
 	
-
+	free(data);
 	return true;
 }
 

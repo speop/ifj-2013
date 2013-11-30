@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 1
+#define debug 0
 
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -68,7 +68,7 @@ int generateCode(){
 	if(paska == NULL) return ERROR_INTER;
 	
 	
-
+	garbage_add(paska, &destroyPaska);
 
 	item = pop_back(alejStromu);
 
@@ -79,6 +79,7 @@ int generateCode(){
 
 			case S_E:  	
 				if(((Tleaf*)((T_Token*)(item)->data)->value)->op == NULL){
+					if(item->data != NULL) tokenFreepom(item->data);
 					item = pop_back(alejStromu);
 					continue;
 				}
@@ -159,7 +160,9 @@ int generateCode(){
 						
 						while(item != NULL && ((T_Token*)(item)->data)->type == STORE_PARAM ){
 							
+							if(item->data != NULL) tokenFreepom(item->data);
 							item = pop_back(alejStromu);
+
 							if ((iToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 							iToken->type = index; // kvuli interpetu nastavuju plus jedna takze musim i zde
 							iToken->value = ((T_Token*)(item)->data)->value;
@@ -325,7 +328,7 @@ int generateCode(){
 							pom--;
 						}
 					}
-					else{ printf("ze se tu dostanu .. \n");}
+					
 				}
 				break;
 			//jenda se o ukonceni whilu zpravime adresy
@@ -363,6 +366,7 @@ int generateCode(){
 			 		if ((result = generate(((T_Token*)(item)->data)->type, NULL, NULL,NULL)) != OK ) return result;
 					break;
 		}
+		if(item->data != NULL) tokenFreepom(item->data);
 		if(item != NULL) free(item);
 		//printf("tu se dostanu\n");
 		item = pop_back(alejStromu);
@@ -767,4 +771,26 @@ int generateTempVar(T_Token *tok){
 			return ERROR_INTER;
 	}
 	return OK;
+}
+
+
+bool destroyPaska(void *paskaFree)
+{
+	//muzeme mit nekonecnou smycku testujeme konec pasky
+
+	TAC *paskaPom = (TAC*)paskaFree;
+	int index = 0;
+	while(true)
+	{
+		if (paskaPom[index].operand1.value != NULL) free(paskaPom[index].operand1.value );
+		if (paskaPom[index].operand2.value != NULL) free(paskaPom[index].operand2.value );
+		if (paskaPom[index].vysledek.value != NULL) free(paskaPom[index].vysledek.value );
+		
+		if(paskaPom[index].operator == THE_END ) break;
+		index++;
+	}
+
+	free(paskaPom);
+
+	return true;
 }

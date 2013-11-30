@@ -6,6 +6,7 @@
 #include "stack.h"
 #include <stdlib.h>
 #include "ial.h"
+#include "ast_tree.h"
 
 //funkce vytvori a inicializuje zasobnik, vraci ukazatel na zasobnik
 tStack* SInit(){
@@ -140,14 +141,13 @@ tStackItem* bottom(tStack *stack){
 
 int empty(tStack *stack, bool (*function)(void*)){
 
-	tStackItem *temp;
-
+	tStackItem *temp; 
 	// nekonecna smycka cyklime tak dlouho dokud nam pop neposle NULL coz znamena prazdy zasobnik
 	while(true){
 
 		temp = pop_top(stack);
 		if(temp == NULL) break;
-		function(temp->data);
+		(*function)(temp->data);
 		free(temp);
 	}
 
@@ -190,7 +190,7 @@ void printStackInt(tStack *stack){
 // funkce ktere lze pridat do GC ktery je pak zavola na uvolneni pameti, v techto funkcich pak volam delte kde druhy parametr je opet funkce na uvolneni pameti ktera je stejna jak v GC
 bool emptySTVar(void * data){ 	deleteSt((tStack*)data, &freeVarST); return true;}
 bool emptySTFunc(void * data) { 	deleteSt((tStack*)data, &freeFuncST); return true;}
-bool emptyToken(void * data) { 	deleteSt((tStack*)data, &tokenFree); return true;}
+bool emptyToken(void * data) { 	deleteSt((tStack*)data, &tokenFree);  return true;}
 
 
 bool destroyST(void * data) {
@@ -210,8 +210,36 @@ bool destroyST(void * data) {
 
 
 //funkce pro dealokaci tokenu
-bool tokenFree(void *token){
+bool tokenFree(void *token){ 
+	// zkontrolujeme si jestli to neni E token... ten obsahuje odkazy na dalsi token
+	if(((T_Token *)token)->type == S_E){
+		//pro jistotu
+		if(((T_Token *)token)->value != NULL)
+		{
+			if(((Tleaf*)((T_Token*)token)->value)->op1 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op1);
+			if(((Tleaf*)((T_Token*)token)->value)->op2 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op2);
+			if(((Tleaf*)((T_Token*)token)->value)->op != NULL)  free(((Tleaf*)((T_Token*)token)->value)->op);
+		}
+		
+	}
 	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value ); 
+	return true;
+}
+
+bool tokenFreepom(T_Token *token)
+{	
+	// zkontrolujeme si jestli to neni E token... ten obsahuje odkazy na dalsi token
+	if(((T_Token *)token)->type == S_E){
+		//pro jistotu
+		if(((T_Token *)token)->value != NULL)
+		{
+			if(((Tleaf*)((T_Token*)token)->value)->op1 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op1);
+			if(((Tleaf*)((T_Token*)token)->value)->op2 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op2);
+			if(((Tleaf*)((T_Token*)token)->value)->op != NULL)  free(((Tleaf*)((T_Token*)token)->value)->op);
+		}
+	}
+	if(token->value != NULL) free(token->value ); 
+	free(token);
 	return true;
 }
 

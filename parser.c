@@ -98,14 +98,14 @@ int parser(){
 	#if debug 
 		printf("\nVolam generator\n");
 	#endif
-		
+	
 	result = generateCode();
 	if(result!= OK) return result;
 
 	#if debug
 		printf("\nChtel bych volat interpet :)\n");
 	#endif
-	result = interpret();
+	result = interpret(); 
 	return result;
 
 

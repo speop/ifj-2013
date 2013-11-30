@@ -33,7 +33,7 @@ int funGC(Tleaf *);
 int generate(int, T_Token* , T_Token* , T_Token*);
 int addJump();
 int generateTempVar(T_Token *);
-
+bool destroyPaska(void *);
 // seznam instrukci
 /*
 

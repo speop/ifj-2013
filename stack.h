@@ -5,6 +5,7 @@
 #define STACK_H
 
 #include <stdbool.h>
+#include "types.h"
 
 typedef struct tStackItem{
 		void *data;
@@ -42,6 +43,7 @@ void printStack(tStack *stack);
 void printStackInt(tStack *stack);
 //funkce pro dealokaci tokenu - nebylo ji kam umistit :D
 bool tokenFree(void *);
+bool tokenFreepom(T_Token *token);
 
 
 #endif
