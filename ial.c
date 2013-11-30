@@ -5,7 +5,7 @@
 #define LEFT 1
 #define RIGHT 0
 #include "ial.h"
-#define FREE_VAR_NAME 0
+#define FREE_VAR_NAME 1
 #define FREE_FUNC_NAME 1
 
 char* mystrdup1(const char* s)
@@ -310,12 +310,14 @@ bool freeVarST(void *tree)
 {	
 	//strom je prazdny
 	if(((T_ST_Vars*)tree)->data == NULL) return true;
-
+	
 	//existuje pravy podstrom
 	if(((T_ST_Vars*)tree)->right != NULL) freeVarSTpom(((T_ST_Vars*)tree)->right, RIGHT);
 	//existuje levy podstrom
 	if (((T_ST_Vars*)tree)->left != NULL) freeVarSTpom(((T_ST_Vars*)tree)->left, LEFT);
 
+	free(((T_ST_Vars*)tree)->data->name);
+	if(((T_ST_Vars*)tree)->data->value != NULL ) free(((T_ST_Vars*)tree)->data->value);
 	free(((T_ST_Vars*)tree)->data);
 	free ((T_ST_Vars*)tree);
 	return true;
@@ -334,6 +336,7 @@ void freeVarSTpom(T_ST_Vars* tree, int smer){
 
 	#if FREE_VAR_NAME
 		free(tree->data->name);
+		if(tree->data->value != NULL ) free(tree->data->value);
 	#endif
 		
 	free(tree->data);
@@ -347,7 +350,7 @@ bool freeFuncST(void *tree)
 
 	//strom je prazdny
 	if(((T_ST_Funcs*)tree)->data == NULL) return true;
-
+	
 	//existuje pravy podstrom
 	if(((T_ST_Funcs*)tree)->right != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->right, RIGHT);
 	//existuje levy podstrom
@@ -355,6 +358,7 @@ bool freeFuncST(void *tree)
 
 	//uvolnime tabulku symbolu dane funkce
 	if(((T_ST_Funcs*)tree)->data->symbolTable != NULL) freeVarST(((T_ST_Funcs*)tree)->data->symbolTable);
+	free(((T_ST_Funcs*)tree)->data->name);
 	free(((T_ST_Funcs*)tree)->data);
 	free ((T_ST_Funcs*)tree);
 	return true;
@@ -373,6 +377,7 @@ void freeFuncSTpom(T_ST_Funcs* tree, int smer){
 
 	//uvolnime tabulku symbolu dane funkce
 	if(tree->data->symbolTable != NULL)freeVarST((void*)tree->data->symbolTable);
+	free(tree->data->name);
 	free(tree->data);
 	free(tree);
 	return;

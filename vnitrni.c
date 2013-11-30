@@ -27,7 +27,7 @@ T_Token LastVar;
 int size = 64;
 int index = 0;
 int temp_var=0;
-TAC *paska;
+TAC *paska = NULL;
 
 int generateCode(){
 	
@@ -779,6 +779,8 @@ bool destroyPaska(void *paskaFree)
 	//muzeme mit nekonecnou smycku testujeme konec pasky
 
 	TAC *paskaPom = (TAC*)paskaFree;
+	if(paskaPom == NULL) return true;
+	 
 	int index = 0;
 	while(true)
 	{

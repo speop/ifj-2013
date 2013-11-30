@@ -81,7 +81,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 		printf("Vysypavam kos\n");
 	#endif
 	int i =0;
-	bool ret;
+	//bool ret;
 
 	trash.act = trash.last;
 
@@ -94,19 +94,8 @@ bool garbage_empty() // vyprazdni garbage_collector
 			printf("\tMazu prvek cislo: %d \n",trash.last->primaryKey);
 		#endif
 
-		do
-		{
-			ret = (*trash.last->function)(trash.last->data); //uvolnim pamet
-			i++;
-
-		} while (!ret && i < POCET_POKUSU);
-
-		if (i>= POCET_POKUSU){
-			#if debug 
-				printf("\t\tPrekrocen pocet pokusu\n");
-			#endif
-			return false;
-		}
+		(*trash.last->function)(trash.last->data); //uvolnim pamet
+		
 
 		free(trash.last);
 		trash.last = trash.act;
