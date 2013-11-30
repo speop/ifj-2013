@@ -88,11 +88,21 @@ int interpret()
 					}
 
 				
-
 					//jeste zmenit tabulky symbolu
 					actualST = newST;
-					
-					i = ((TCallStack *)(StackHelpItem->data))->adress; 	
+
+					//nastavime index na pasce
+					i = ((TCallStack *)(StackHelpItem->data))->adress;
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem2->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem2->data))->funcName);
+					free(((Tparam *)(StackHelpItem2->data))->returnvalue);
+					free(StackHelpItem2->data);
+					free(StackHelpItem2);
+
+					free(StackHelpItem);
+
 					break;
 
 			case  RETURN: 
@@ -156,6 +166,15 @@ int interpret()
 				//a nastavit index na pasce
 				i = ((TCallStack *)(StackHelpItem->data))->adress; 
 				
+				//uvolnime pamet
+				freeVarST(((Tparam *)(StackHelpItem2->data))->symbolTable);
+				free(((Tparam *)(StackHelpItem2->data))->funcName);
+				free(((Tparam *)(StackHelpItem2->data))->returnvalue);
+				free(StackHelpItem2->data);
+				free(StackHelpItem2);
+
+				free(StackHelpItem);
+
 				break;
 			case S_PLUS:
 			case S_MINUS:
@@ -474,7 +493,15 @@ int interpret()
 					AuxSTVar->data->value = get_string();//
 					AuxSTVar->data->type = S_STR;
 
-					StackHelpItem = pop_top(paramStack);
+					StackHelpItem = pop_top(paramStack);	
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
+
 					break;
 				}
 
@@ -484,7 +511,15 @@ int interpret()
 
 				 	*(int*)(AuxSTVar->data)->value = 0;
 
-					StackHelpItem = pop_top(paramStack); 
+					StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
+
 					break;
 				}
 
@@ -497,6 +532,13 @@ int interpret()
 				 	*(int*)(AuxSTVar->data)->value = strlen((char *)(res->data->value));
 				
 					 StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
 				  
 				  	break;
 				}
@@ -509,7 +551,14 @@ int interpret()
 					res = findVarST((char *)variables[0], newST);
 					*(int*)(AuxSTVar->data)->value = newboolval(*(res->data));
 					
-					 StackHelpItem = pop_top(paramStack);
+					StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
 				  
 					break;
 				}
@@ -523,6 +572,13 @@ int interpret()
 					*(double*)(AuxSTVar->data)->value = doubleval(*(res->data));
 					
 					 StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
 				  
 					break;
 				}
@@ -536,6 +592,13 @@ int interpret()
 					*(int*)(AuxSTVar->data)->value = intval(*(res->data));
 					
 					 StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
 				  
 					break;
 				}
@@ -548,7 +611,13 @@ int interpret()
 					res = findVarST((char *)variables[0], newST);
 					/**(char *)*/(AuxSTVar->data)->value = strval(*(res->data));
 					
-					 StackHelpItem = pop_top(paramStack);
+					StackHelpItem = pop_top(paramStack);
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
 				  
 					break;
 				}
@@ -563,7 +632,14 @@ int interpret()
 
 				 	*(int*)(AuxSTVar->data)->value = find_string((char *)(res->data->value) ,(char *)(res1->data->value));
 				
-					 StackHelpItem = pop_top(paramStack);
+					StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
 				  
 				  	break;
 				
@@ -576,6 +652,14 @@ int interpret()
 
 					AuxSTVar->data->value = sort_string((char *)(res->data->value));
 					StackHelpItem = pop_top(paramStack);
+
+					//uvolnime pamet
+					freeVarST(((Tparam *)(StackHelpItem->data))->symbolTable);
+					free(((Tparam *)(StackHelpItem->data))->funcName);
+					free(((Tparam *)(StackHelpItem->data))->returnvalue);
+					free(StackHelpItem->data);
+					free(StackHelpItem);
+
 					break;
 				}
 
@@ -609,7 +693,7 @@ int interpret()
 							case S_INT:
 								printf("%d", *((int *)(Instr->operand1).value)); break;
 							case S_DOUB:
-								printf("%f", *((double *)(Instr->operand1).value)); break;
+								printf("%g", *((double *)(Instr->operand1).value)); break;
 							case S_STR:
 								printf("%s", (char *)(Instr->operand1).value); break;
 							case S_BOOL:
@@ -624,7 +708,7 @@ int interpret()
 									case S_INT:
 										printf("%d", *(int*)op1); break;
 									case S_DOUB:
-										printf("%f", *(double *)op1); break;
+										printf("%g", *(double *)op1); break;
 									case S_STR: 
 										printf("%s", (char *)op1); break;
 									case S_BOOL:
