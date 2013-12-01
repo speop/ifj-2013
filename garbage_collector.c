@@ -80,7 +80,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 	#if debug 
 		printf("Vysypavam kos\n");
 	#endif
-	int i =0;
+	
 	//bool ret;
 
 	trash.act = trash.last;
@@ -99,7 +99,7 @@ bool garbage_empty() // vyprazdni garbage_collector
 
 		free(trash.last);
 		trash.last = trash.act;
-		i=0;
+		
 	}
 
 	#if debug 

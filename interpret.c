@@ -324,7 +324,7 @@ int interpret()
 				break;
 
 			case S_FUNC:   
-					if((param = (Tparam*)malloc(sizeof(Tparam))) == NULL) return ERROR_INTER;
+					if((param = (Tparam*)malloc(sizeof(Tparam))) == NULL) {fprintf(stderr,"Error in alocating stack for params\n"); return ERROR_INTER;}
 
 					param->funcName = mystrdup(Instr->operand1.value); 
 					funkce = findFunctionST(param->funcName, functionTable); 
@@ -423,13 +423,11 @@ int interpret()
 										else *((int*)(res->data)->value) = 0;
 										break;
 							  }
+							  break;
 						case S_DOUB:
 							  switch(Instr->operator) {
 									case S_LST:
-										if(*(double *)op1 < *(double *)op2) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
-										
-										//*((int*)(res->data)->value) = (*((double *)op1) < *((double *)op2));
+										*((int*)(res->data)->value) = (*((double *)op1) < *((double *)op2));
 										break;
 									case S_GRT:
 										*((int*)(res->data)->value) = (*((double *)op1) > *((double *)op2));
@@ -447,6 +445,7 @@ int interpret()
 										*((int*)(res->data)->value) = (*((double *)op1) != *((double *)op2));
 										break;
 							  }
+							  break;
 						case S_STR:
 							  switch(Instr->operator) {
 							  	case S_LST:

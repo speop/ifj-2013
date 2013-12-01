@@ -296,6 +296,7 @@ int st_list(){
 			pomToken->type = FUNCTION;
 			pomToken->value = mystrdup(token.value);
 			funcName = pomToken->value;
+			//if(token.value!= NULL) free(token.value);
 			token.value = NULL;
 			if (push(alejStromu,pomToken) != OK) {tokenFree(pomToken); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
 			
@@ -317,8 +318,10 @@ int st_list(){
 						pomToken->type = STORE_PARAM;
 						pomToken->value = mystrdup(token.value);
 						//funcName = pomToken->value;
+						//if(token.value!= NULL) free(token.value);
 						token.value = NULL;
-						if (push(alejStromu,pomToken) != OK) {fprintf(stderr,"Leaf pushing error\n"); tokenFree(pomToken); return ERROR_INTER;}
+						if (push(alejStromu,pomToken) != OK) {fprintf(stderr,"Leaf pushing error\n"); free(pomToken->value); tokenFree(pomToken); return ERROR_INTER;}
+						
 				}
 				
 			}

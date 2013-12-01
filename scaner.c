@@ -23,6 +23,7 @@ extern int row; // z main.c
 
 void putToken( T_Token *token)
 {
+
     prevToken = token;
 }
 
@@ -62,7 +63,10 @@ const int ASCII_a_TO_HEX=87;
 //kvuli testum getToken budu volat pres tuto pomocnou funkci abych mohl jednoduse vypsat co mi vraci
 int getToken(T_Token *token){
    
+  if (token->value != NULL ){free(token->value); token->value = NULL;}
   int result = getTokenReal(token);
+
+
 
 	#if debug 
 		printf("================================================\nFunkce getToken vracim:\n\ttoken.type = %d\n",token->type);
@@ -684,7 +688,19 @@ int readString(T_Token *token){
     }
     
 } while(scanned != '"');
+  
+  //jeste je treba nahrat znak konce retezce
+  if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
+      alokovano  = alokovano << 1;
 
+      more_str = (char*) realloc (string, alokovano * sizeof(int));
+      if(more_str == NULL){
+          free(string);
+          return ERROR_INTER;
+      }
+      else string = more_str;
+    }
+    string[pozice] ='\0';
   //fseek(pSource_File, -1,SEEK_CUR);
 
   token->type = S_STR;
