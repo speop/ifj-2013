@@ -80,6 +80,11 @@ int interpret()
 					if(((Tparam *)(StackHelpItem2->data))->returnvalue != NULL) 
 					{
 						res = findVarST(((Tparam *)(StackHelpItem2->data))->returnvalue ,newST);
+						if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+						}
+
 						if(res->data->value != NULL) free (res->data->value);
 					
 						res->data->value = malloc(sizeof(int));
@@ -115,9 +120,17 @@ int interpret()
 				if(Instr->operand1.type != NOT_EXIST){ 
 					
 					res = findVarST(((Tparam *)(StackHelpItem2->data))->returnvalue ,newST);
+					if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					if(res->data->value != NULL) free (res->data->value);
 
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);
+					if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 
 					op1 = AuxSTVar->data->value;
 					switch(AuxSTVar->data->type){
@@ -151,6 +164,10 @@ int interpret()
 					if(((Tparam *)(StackHelpItem->data))->returnvalue != NULL) 
 					{
 						res = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue ,newST);
+						if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+						}
 						if(res->data->value != NULL) free (res->data->value);
 					
 						res->data->value = malloc(sizeof(int));
@@ -182,6 +199,11 @@ int interpret()
 			case S_DIV:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
+
 					op1_typ = AuxSTVar->data->type;
 					if(op1_typ != S_INT && op1_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op1 = AuxSTVar->data->value;
@@ -196,12 +218,17 @@ int interpret()
 
 				if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 					AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
+
 					op2_typ = AuxSTVar->data->type;
 					if(op2_typ != S_INT && op2_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op2 = AuxSTVar->data->value;
 					//printf(" \t pocitam s: %s\n", Instr->operand2.value );
-
-				}
+					}
+					
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
 					if(op2_typ != S_INT && op2_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
@@ -210,6 +237,10 @@ int interpret()
 				}
 
 				res = findVarST(Instr->vysledek.value, actualST);
+				if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				if (res->data->value != NULL) free(res->data->value);
 
 					  //vypocet
@@ -243,6 +274,10 @@ int interpret()
 
 			  if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 				AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				op1_typ = AuxSTVar->data->type;
 				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 				else op1 = AuxSTVar->data->value;
@@ -258,6 +293,10 @@ int interpret()
 
 			  if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 				AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+				}
 				op2_typ = AuxSTVar->data->type;
 				if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
 				else op2 = AuxSTVar->data->value;
@@ -269,6 +308,10 @@ int interpret()
 			  }
 
 			  res = findVarST(Instr->vysledek.value, actualST);
+			  if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+				}
 			  if (res->data->value != NULL) free(res->data->value);
 
 			  len = strlen((char*)op1) + strlen((char*)op2) +1; // vysledna delka retezce
@@ -284,6 +327,10 @@ int interpret()
 			case S_IS:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 				  AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				  if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				  op1_typ = AuxSTVar->data->type;
 				  op1 = AuxSTVar->data->value;
 				  //printf("\prirazuju promena \"%s\"\n",Instr->operand1.value );
@@ -295,6 +342,10 @@ int interpret()
 				}
 
 				res = findVarST(Instr->vysledek.value, actualST);
+				if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				if (res->data->value != NULL) free(res->data->value);
 				//printf("\tkam  \"%s\"\n",Instr->vysledek.value );
 				//ulozeni hodnoty
@@ -361,6 +412,10 @@ int interpret()
 			case S_NEQ:
 				if(Instr->operand1.type == S_ID) { //operand1 je promenna
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					op1_typ = (*AuxSTVar).data->type;
 					op1 = AuxSTVar->data->value;
 				}
@@ -371,6 +426,10 @@ int interpret()
 
 				if(Instr->operand2.type == S_ID) { //operand2 je promenna
 					AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+					if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					op2_typ = (*AuxSTVar).data->type;
 					op2 = AuxSTVar->data->value;
 				}
@@ -380,6 +439,10 @@ int interpret()
 				}
 
 				res = findVarST(Instr->vysledek.value, actualST);
+				if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				if (res->data->value != NULL) free(res->data->value);
 				res->data->type = S_BOOL;
 				res->data->value = (int*)malloc(sizeof(int));
@@ -490,6 +553,10 @@ int interpret()
 					
 			 	//zpracujeme interni funkce
 			 	AuxSTVar = findVarST(((Tparam *)(StackHelpItem->data))->returnvalue, actualST); 
+			 	if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 			 	//printf("a tu uz to neprojde jo?\n");
 				if(strcmp(funcName, "get_string") == 0) {
 					AuxSTVar->data->value = get_string();//
@@ -531,6 +598,10 @@ int interpret()
 				 	AuxSTVar->data->type = S_INT;
 
 				 	res = findVarST((char *)variables[0], newST);
+				 	if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				 	*(int*)(AuxSTVar->data)->value = strlen((char *)(res->data->value));
 				
 					 StackHelpItem = pop_top(paramStack);
@@ -551,6 +622,10 @@ int interpret()
 					AuxSTVar->data->type = S_BOOL;
 
 					res = findVarST((char *)variables[0], newST);
+					if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					*(int*)(AuxSTVar->data)->value = newboolval(*(res->data));
 					
 					StackHelpItem = pop_top(paramStack);
@@ -571,6 +646,10 @@ int interpret()
 					AuxSTVar->data->type = S_DOUB;
 
 					res = findVarST((char *)variables[0], newST);
+					if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					*(double*)(AuxSTVar->data)->value = doubleval(*(res->data));
 					
 					 StackHelpItem = pop_top(paramStack);
@@ -591,6 +670,10 @@ int interpret()
 					AuxSTVar->data->type = S_INT;
 
 					res = findVarST((char *)variables[0], newST);
+					if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					*(int*)(AuxSTVar->data)->value = intval(*(res->data));
 					
 					 StackHelpItem = pop_top(paramStack);
@@ -611,6 +694,10 @@ int interpret()
 					AuxSTVar->data->type = S_STR;
 
 					res = findVarST((char *)variables[0], newST);
+					if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					/**(char *)*/(AuxSTVar->data)->value = strval(*(res->data));
 					
 					StackHelpItem = pop_top(paramStack);
@@ -629,7 +716,15 @@ int interpret()
 				 	AuxSTVar->data->type = S_INT;
 
 				 	res = findVarST((char *)variables[0], newST);
+				 	if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				 	res1 = findVarST((char *)variables[1], newST);
+				 	if(res1 == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 				 	//res2 = findVarST((char *)variables[0], newST);
 
 				 	*(int*)(AuxSTVar->data)->value = find_string((char *)(res->data->value) ,(char *)(res1->data->value));
@@ -651,6 +746,10 @@ int interpret()
 				if(strcmp(funcName, "sort_string") == 0) {
 					AuxSTVar->data->type = S_STR;
 					res = findVarST((char *)variables[0], newST);
+					if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 
 					AuxSTVar->data->value = sort_string((char *)(res->data->value));
 					StackHelpItem = pop_top(paramStack);
@@ -704,6 +803,10 @@ int interpret()
 								printf("null\n"); break;
 							case S_ID:
 								AuxSTVar = findVarST(Instr->operand1.value, actualST);
+								if(AuxSTVar == NULL){
+									fprintf(stderr, "Undefined variable\n");
+									return SEM_UNDECLARED_PARAMETER;
+								}
 								op1 = AuxSTVar->data->value;
 
 								switch(AuxSTVar->data->type) {
@@ -732,17 +835,29 @@ int interpret()
 					//zkontrolujeme si jestli to neni BI funkce
 					if(param->BIf){
 						AuxSTVar = findVarST((char *)variables[param->BIfPointer], param->symbolTable); 
+						if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+						}
 						param->BIfPointer++;
 						//je to BI funkce promenou kam to ulozit zjistime z pole retezcu
 					}
 					else{
 						//je to normal funkce jmeno kam ulozit je ve vysledku
-						AuxSTVar = findVarST(Instr->vysledek.value, param->symbolTable); 
+						AuxSTVar = findVarST(Instr->vysledek.value, param->symbolTable);
+						if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+						} 
 					}
 
 					// vyhledame hodnotu promene
 					if(Instr->operand1.type == S_ID){
 						res = findVarST((char *) (Instr->operand1).value, actualST); 
+						if(res == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+						}
 						op1 = res->data->value;
 						op1_typ = res->data->type;
 						
@@ -787,6 +902,10 @@ int interpret()
 			case JMP_NOT:
 				if(Instr->operand1.type == S_ID) {
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);
+					if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\n");
+							return SEM_UNDECLARED_PARAMETER;
+					}
 					op1 = AuxSTVar->data->value;
 
 				switch(AuxSTVar->data->type){

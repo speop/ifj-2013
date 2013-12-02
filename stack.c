@@ -220,7 +220,7 @@ bool tokenFree(void *token){
 			if(((Tleaf*)((T_Token*)token)->value)->op2 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op2);
 			if(((Tleaf*)((T_Token*)token)->value)->op != NULL)  free(((Tleaf*)((T_Token*)token)->value)->op);
 		}
-		
+	
 	}
 	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value ); 
 	return true;

@@ -17,7 +17,7 @@ Tleaf* makeLeaf(T_Token* sign, T_Token* op1, T_Token* op2)
 	newLeaf->op1 = op1;
 	newLeaf->op2 = op2;
 	newLeaf->op = sign;
-	newLeaf->por = ++por;
+	//newLeaf->por = ++por;
 	
 
 	return newLeaf;
