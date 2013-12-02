@@ -1,5 +1,5 @@
 <?php
 
-$x = "0123456789";
-$a = get_substring($x, 0,6);
+$c = get_string();
 
+put_string($c);

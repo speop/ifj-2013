@@ -14,42 +14,50 @@
 //HOTOVO
 
 char *get_string()
-{  char  *array;
-   int size=40;
-   int i=0;
+{  char  *str, *more_str;
+   int alokovano = 0;
+   int prirustek = 32;
+   int iterator =0;
+
+
 
    char c=getchar();
-   if(c!=EOF&&c!='\0')
-       {
-        array=malloc(size*sizeof(char));
-        if(array==0)
-            return array;
-        garbage_add(array, &garbage_default_erase);
+   str = (char *)malloc(prirustek*sizeof(char));
+   alokovano += prirustek;
 
-        for(;i<size; i++)
-            {c=getchar();
-             if(c==EOF||c=='\0')
-                return array;
-             array[i]=c;
-            }
-        size *= 2;
-        }
-        while(c!=EOF&&c!='\0')
-       {
-        array=realloc(array, size * sizeof(char));
-        if(array==0)
-            return array;
-        garbage_add(array, &garbage_default_erase);
+  
+   while(c!= EOF && c!='\n')
+   {
+        // v pripade potreby zvetsime pamet na retezec
+        if(iterator >= alokovano) {
+            alokovano  += prirustek;
 
-        for(;i<size; i++)
-            {c=getchar();
-             if(c==EOF||c=='\0')
-                return array;
-             array[i]=c;
+            more_str = (char*) realloc (str, alokovano * sizeof(int));
+            if(more_str == NULL){
+                free(str);
+                return NULL;
             }
-        size *= 2;
+            else str = more_str;
         }
-    return array;
+
+        str[iterator++] = c;//ulozime si znak   
+        c = getchar();
+   }
+
+   //nahrajeme koncovy znak
+   if(iterator >= alokovano) {
+        alokovano  += 1;
+        more_str = (char*) realloc (str, alokovano * sizeof(int));
+        
+        if(more_str == NULL){
+            free(str);
+            return NULL;
+        }
+        else str = more_str;
+    }
+
+    str[iterator] = '\0';
+    return str;
 }
 
 

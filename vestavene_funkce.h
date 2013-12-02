@@ -6,7 +6,7 @@
 char *get_string();
 
 
-char *get_substring(char[], int , int );	//vrati podretezec od pozice a do b
+//char *get_substring(char[], int , int );	//vrati podretezec od pozice a do b
 char *sort_string(char *);		  //serazeni retezce
 int find_string(char *, char *);  //vyhledani podretezce
 

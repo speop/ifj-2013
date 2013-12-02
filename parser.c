@@ -38,7 +38,7 @@ static int prtable [POLE][POLE] = {
 				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  		<		>		<=		>=		===		!==*/
 /*  0  + */	{	H,		L,		L,		H,		X,		H,		L,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
+/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
 /*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		H,		X,		X,		X,		X,		X,		X},
 /*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		X,		X,		H,		H,		H,		H,		H,		H,		H},
@@ -654,7 +654,7 @@ int functionHeaders(){
 	
 	if ((result = getFunctionHeader(&token, CONTINUE_READ)) != OK) return result;	
 	// ocekavame jmeno funkce
-	if (token.type != S_FUNC) return ERROR_SYN;
+	if (token.type != S_FUNC) {fprintf(stderr,"Row: %d, we were expecting function name.",row); return ERROR_SYN;}
 	
 	//pridame do tabulky funkci novou funkci a vytvorime ji tabulku symbolu
 	if (( funkce = (T_ST_FuncsItem *)malloc (sizeof(T_ST_FuncsItem)))  == NULL) return INTERNAL_ERROR;

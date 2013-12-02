@@ -505,19 +505,36 @@ char *sort_string(char *vstup)
 
 
 //vyhledávání podřetězce
-char *get_substring(char input[], int a, int b)
-{   int c=0, length=strlen(input);
-    int lenght=b-a+1;
+int get_substring( char* input, char** output, int a, int b)
+{   
+	
+	*output = NULL;
+	char *pom;
+	int length=strlen(input);
+    int outLen=b-a;
+    int i;
         //testovani parametru
-    if(a<c||b<c||a>b||a>=length||b>length)
-        return 0;
+    if(a<0||b<0||a>b||a>=length||b>length){
+    	fprintf(stderr, "get_substring error: indexes are in bad range\n" );
+        return SEM_OTHER_ERROR;
+    }
+  
         
-    char *output=malloc((b-a+1)*sizeof(char));
-    if(output==0)
-        return output;
-     garbage_add(output,&garbage_default_erase);
-    for(int i=0; i<(lenght); i++)       //plneni vystupniho pole
-        output[i]=input[a+i-1];
+    pom= (char*)malloc((outLen+2)*sizeof(char));
 
-    return output;
+    if(pom == NULL ){
+    	fprintf(stderr, "get_substring error: cannot alocate memory\n" );
+    	return ERROR_INTER;
+    }
+
+    for(i=0; i<(outLen); i++)       //plneni vystupniho pole
+        pom[i]=input[a+i];
+       		
+
+     
+    pom[i]='\0';
+
+   *output = pom;
+
+    return OK;
     }

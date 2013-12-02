@@ -512,9 +512,15 @@ int interpret()
 					res = findVarST((char *)variables[0], newST);
 					res1 = findVarST((char *)variables[1], newST);
 					res2 = findVarST((char *)variables[2], newST);
-					printf("str: \"%s\" meze1: %d, meze2: %d\n",(char *)(res->data->value),*(int *)(res1->data->value),*(int *)(res2->data->value));
-					AuxSTVar->data->value = get_substring((char *)(res->data->value),*(int *)(res1->data->value),*(int*)(res2->data->value));
-					printf("%s\n",AuxSTVar->data->value );
+					int retVal;
+					char* pom;
+
+					retVal = get_substring((char *)(res->data->value),&pom ,*(int *)(res1->data->value),*(int*)(res2->data->value));
+					if(retVal != OK) return retVal;
+
+					if(AuxSTVar->data->value  != NULL) free(AuxSTVar->data->value); 
+					AuxSTVar->data->value = pom;
+					
 					StackHelpItem = pop_top(paramStack);
 
 					//uvolnime pamet
@@ -523,15 +529,16 @@ int interpret()
 					free(((Tparam *)(StackHelpItem->data))->returnvalue);
 					free(StackHelpItem->data);
 					free(StackHelpItem);
-
+					
 					break;
 				}
 
 				if(strcmp(funcName, "put_string") == 0) { 
-					AuxSTVar->data->value = malloc(sizeof(int));
-				 	AuxSTVar->data->type = S_NULL;
+					//AuxSTVar->data->value = malloc(sizeof(int));
+				 	//AuxSTVar->data->type = S_NULL;
 
-				 	*(int*)(AuxSTVar->data)->value = 0;
+				 	//*(int*)(AuxSTVar->data)->value = 0;
+				 	//navratova hodnota se mi nastavi pri tisku parametru ktery se provadi pri storu
 
 					StackHelpItem = pop_top(paramStack);
 
@@ -711,6 +718,24 @@ int interpret()
 
 				//pokud je to putstring tak se vypisujou parametry
 				if(strcmp(funcName, "put_string") == 0){ 
+					
+					AuxSTVar = findVarST(param->returnvalue, actualST);
+					//tiskneme prvni parametr
+					if(!param->BIfPointer){
+						
+						if(AuxSTVar->data->value != NULL) free(AuxSTVar->data->value);
+						AuxSTVar->data->value = malloc(sizeof(int));
+						*((int*)(AuxSTVar->data)->value) = 1;
+						AuxSTVar->data->type = S_INT; 
+
+					} 
+					else{
+						//dalsi parametry
+
+						(*((int*)(AuxSTVar->data)->value))++;
+					} 
+					param->BIfPointer++;
+
 					switch(Instr->operand1.type) {
 							case S_INT:
 								printf("%d", *((int *)(Instr->operand1).value)); break;
@@ -751,7 +776,6 @@ int interpret()
 
 					//zkontrolujeme si jestli to neni BI funkce
 					if(param->BIf){
-						printf("jsem zde %d\n",param->BIfPointer );
 						AuxSTVar = findVarST((char *)variables[param->BIfPointer], param->symbolTable); 
 						param->BIfPointer++;
 						//je to BI funkce promenou kam to ulozit zjistime z pole retezcu

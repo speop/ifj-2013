@@ -55,7 +55,7 @@ typedef enum
 }ReturnCodesST;
 
 //hledani retezce
-char *get_substring(char [], int , int );
+int get_substring( char* input, char** output, int a, int b);
 
 //razeni pole
 char *merge(TString , TString ); //spoji dve serazene pole
