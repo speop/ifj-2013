@@ -932,7 +932,30 @@ int expr(){
 					
 						//zkontrolujeme jestli e neni nedefinovana promena
 
-						
+						if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type == S_ID){
+							if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){ 
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											tokenFree (((T_Token*)(pomItem)->data));
+											free(pomItem);
+											free(pomItem2); 
+											return  SEM_UNDECLARED_PARAMETER;
+							} 
+
+						}
+
+						if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2 != NULL){
+							if(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2->type == S_ID){
+								if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2->value, actualST)) == NULL){ 
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op2)->value );
+											tokenFree (((T_Token*)(pomItem)->data));
+											free(pomItem);
+											free(pomItem2); 
+											return  SEM_UNDECLARED_PARAMETER;
+								} 
+
+							}
+
+						}	
 					}
 					
 					
@@ -1055,7 +1078,9 @@ int expr(){
 
 					//stack obsahuje E [ S_E | value], value ukazuje na leaf [op1 | op | op2], kde op1 nebo op2 ukazujou bud na E token [ S_E | value], nebo na nejaky konkretni typ napr int [ S_INT | value ]
 					
-					
+					//printf("tisknu strom: \n");	
+					//printAss(((T_Token*)(pomItem)->data)->value );
+					//printAss(((T_Token*)(pomItem3)->data)->value );
 				
 					if( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1 != NULL ) typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;	
 					else typ1 = NOT_EXIST;
@@ -1069,7 +1094,10 @@ int expr(){
 					if(typ1== S_E)  znamenko1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op->type;
 					if(typ2 ==S_E)  znamenko2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op->type;
 					
-					
+					//printf("typ1: %d\n",typ1);
+					//printf("typ2: %d\n",typ2);
+					//okenFree (((T_Token*)(pomItem)->data));
+					//free(pomItem);
 					projimadlo = false;
 					
 					switch(((T_Token*)(pomItem2)->data)->type){
@@ -1083,8 +1111,15 @@ int expr(){
 								switch(typ1){
 									case S_INT:
 									//case S_FUNC:
-									case S_DOUB:
-									case S_ID:	break;
+									case S_DOUB: break;
+									case S_ID:
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value  );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
 									case S_E:
 										
 										switch(znamenko1){
@@ -1108,9 +1143,15 @@ int expr(){
 								switch(typ2){
 									case S_INT:
 									case S_FUNC:
-									case S_DOUB: 
-									case S_ID: break;
-										
+									case S_DOUB: break;
+									case S_ID: 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
 									case S_E:
 										switch(znamenko2){
 											case S_PLUS: 
@@ -1131,12 +1172,65 @@ int expr(){
 								break;
 							
 							case S_CONCATENATE:
-								
+								switch(typ1){
+									case S_STR: break;
+									case S_ID:  
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
+									/* neni to semanticka chyba
+									case S_E:
+										if(znamenko1!= S_CONCATENATE && znamenko1 != S_FUNC){
+												fprintf(stderr, "Row: %d, 5 incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true;
+										}
+										break;
+									default: 	fprintf(stderr, "Row: %d, 6 incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true; */
+								}
+								if (projimadlo) break;
+								switch(typ2){
+									case S_STR: break;
+									case S_ID: 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+
+										} 
+										break;
+									/*case S_E: neni to semanticka chyba
+										if(znamenko2!= S_CONCATENATE && znamenko2 != S_FUNC){
+												fprintf(stderr, "Row: %d, 7 incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true;
+										}
+										break;
+									default: 	fprintf(stderr, "Row: %d, 8 incompatible types in expression\n",row );
+												ret= SEM_TYPE_ERROR;
+												projimadlo = true; */
+								}
 								break;
 
 
 							case S_IS: 
-									
+									// prirazujeme neinicializovanou promenou
+									if(typ1 == S_ID){ 
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){ 
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value );
+											tokenFree (((T_Token*)(pomItem)->data));
+											tokenFree (((T_Token*)(pomItem3)->data));
+											free(pomItem);
+											free(pomItem2);
+											return  SEM_UNDECLARED_PARAMETER;
+										} 
+									}
 									//padnu zde
 									//prirazujeme do neceho jineho nez je promena
 									if(typ2 != S_ID){ fprintf(stderr, "Row: %d, request variable for assigment\n", row);
@@ -1180,6 +1274,22 @@ int expr(){
 							case S_GRT:
 							case S_NEQ:							
 							case S_EQ:
+									//zkontrolujem jsetli jsou inicializovane promene
+									if(typ1 == S_ID){
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1)->value  );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+										} 
+									}
+
+									if(typ2 == S_ID){
+										if((findVarST( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->value, actualST)) == NULL){
+											fprintf(stderr, "Row: %d, undefined variable \"%s\"\n",row, (char*)(((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1)->value );
+											ret= SEM_UNDECLARED_PARAMETER;
+											projimadlo = true;
+										} 
+									}
 									
 									break;
 							// stav zasobniku by mel byt $E
@@ -1209,7 +1319,7 @@ int expr(){
 								return ERROR_SYN;
 					}
 
-					if(projimadlo){ //printf("uzivam projimadlo")
+					if(projimadlo){ //printf("uyivam projimadlo")
 							tokenFree (((T_Token*)(pomItem)->data));
 							tokenFree (((T_Token*)(pomItem2)->data));
 							free(pomItem);
