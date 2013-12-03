@@ -206,7 +206,7 @@ int find_string(char *string1, char *string2)
             pozice += length2;
         }
 
-    
+    if(!shoda) pozice = -1;
     return pozice;
 }
 
