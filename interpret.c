@@ -418,13 +418,16 @@ int interpret()
 
 				res = findVarST(Instr->vysledek.value, actualST);
 				if (res->data->value != NULL) free(res->data->value);
+				
 				res->data->type = S_BOOL;
 				res->data->value = (int*)malloc(sizeof(int));
-
+				
 				//jestli se typy nerovnaji, je to false nebo chyba
 				if(op1_typ != op2_typ) {
-				  if(Instr->operator == S_EQ || Instr->operator == S_NEQ)
-						res->data->value = 0;
+				  if(Instr->operator == S_EQ || Instr->operator == S_NEQ){
+						*((int*)(res->data)->value) = 0;
+						break;
+				  }
 				  else {
 				  	fprintf(stderr, "porovnavani rozdilnych typu\n");
 						return SEM_TYPE_ERROR;

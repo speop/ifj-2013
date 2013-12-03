@@ -120,6 +120,8 @@ int program(){
  		// pravidllo 1. <program> → php <st-list>
  		case S_PHP:
  			
+ 			
+
  			#if debug 
 				printf("byl znak php zpracuju hlavicky funkci\n");		
 			#endif
@@ -143,7 +145,7 @@ int program(){
  			break;
 
  		default: 
- 			return result;
+ 			fprintf(stderr, "Program must start with \"<?php\" token\n" ); return ERROR_SYN;
 
  	}
  		
