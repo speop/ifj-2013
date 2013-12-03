@@ -394,7 +394,12 @@ int generateCode(){
 		if ( paska[x].operator == S_EQ || paska[x].operator == S_NEQ || paska[x].operator == S_GEQ || paska[x].operator == S_LEQ || paska[x].operator == S_GRT || paska[x].operator == S_LST) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_PLUS || paska[x].operator == S_MUL || paska[x].operator == S_DIV || paska[x].operator == S_MINUS) printf(", op1.type: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type ,paska[x].operand2.type ,paska[x].vysledek.type );
 		if ( paska[x].operator == S_IS) printf(", op1.type: %d value: %d, op2.type: %d, vysl.type: %d",paska[x].operand1.type, *(int*)(paska[x].operand1).value ,paska[x].operand2.type ,paska[x].vysledek.type ); 
-
+		if ( paska[x].operator == S_CONCATENATE){
+		 if(paska[x].operand1.value != NULL) printf(" op1: \"%s\"", (char*)(paska[x].operand1).value);
+		 if(paska[x].operand2.value != NULL) printf(" op2: \"%s\"", (char*)(paska[x].operand2).value);
+		 if(paska[x].vysledek.value != NULL) printf(" vysl: \"%s\"", (char*)(paska[x].vysledek).value);	
+		
+		}
 		if ( paska[x].operator == STORE_PARAM){
 			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
 			else printf(", promena pro ulozeni parametru je: %s",(char*)(paska[x].vysledek.value) );

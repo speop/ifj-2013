@@ -19,6 +19,10 @@ FILE *pSource_File; //vstupni soubor
 extern T_Token *prevToken;
 extern int row; // z main.c
 
+bool extenVar = false;
+bool readStr = false;
+bool con = false;
+
 void putToken( T_Token *token)
 {
 
@@ -82,6 +86,22 @@ int getTokenReal(T_Token *token)
   int pozice = 0;
   int alokovano = 32;
   char *str, *more_str;
+
+
+  //kvuli rozisreni expanze promene, posleme tecku
+  if(con){
+    token->type = S_CONCATENATE;
+    token->value = NULL;
+    con = false;
+    return OK;
+  }
+
+  if(extenVar || readStr) {
+    result = readString(token);
+    return result;
+  }
+
+ 
 
   while((scanned = fgetc(pSource_File)) != EOF){
     //printf("nacteny znak je: %c\n",scanned);
@@ -615,21 +635,138 @@ int readString(T_Token *token){
   char *string, *more_str,s1;
   char scanned = fgetc(pSource_File);
 
+
+
   if ((string = (char*)malloc(alokovano * sizeof(char))) == NULL) return ERROR_INTER;
 
-  do {
+  if (extenVar)
+  {     extenVar =false;
+        do { 
+          //kvuli znaku konce retezce
+          if(pozice >= alokovano+1) {                                                    //Realokace, kdy nemame misto
+            alokovano  = alokovano << 1;
 
-    if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
+            more_str = (char*) realloc (string, alokovano * sizeof(int));
+            if(more_str == NULL){
+              free(string);
+              fprintf(stderr, "Spatna reallokace stringu.\n");
+              return ERROR_INTER;
+            }
+            else string = more_str;
+        }
+        string[pozice++] = scanned;
+        scanned = fgetc(pSource_File);
+      }
+      while((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || (scanned >= '0' && scanned <= '9') || scanned == '_');
+
+    string[pozice] ='\0';
+    readStr =true;
+    con = true;
+    token->type = S_ID;
+    token->value = string;
+  
+    //vratime znak navic co jsme nacetli
+    fseek(pSource_File, -1,SEEK_CUR);
+
+    return OK;
+
+  }
+
+  else{ 
+
+    readStr = false;
+
+    do { 
+      
+      if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
+        alokovano  = alokovano << 1;
+
+        more_str = (char*) realloc (string, alokovano * sizeof(int));
+        if(more_str == NULL){
+          free(string);
+          fprintf(stderr, "Spatna reallokace stringu.\n");
+          return ERROR_INTER;
+        }
+        else string = more_str;
+      }
+
+      //konec souboru
+      if(scanned == EOF){
+        fprintf(stderr, "Chybi koned retezce.n");
+        return ERROR_INTER;
+      }
+
+      //expanze promenych
+      else if(scanned == '$'){
+        extenVar = true;
+        con = true;
+        fseek(pSource_File, -1,SEEK_CUR);
+        break;
+      }
+
+      //nacitani retezce
+      else{
+        //neni to escape sekvence pridame to 
+        if(scanned != '\\') string[pozice++] =scanned;
+        else{
+          //escape sekvence
+          scanned = fgetc(pSource_File);
+          switch(scanned){
+            case 'x':
+                nextChar = 0;
+
+                for (i = 0; i < 2; i++) {
+                    nextChar *= 16;
+                    s1 = fgetc(pSource_File);
+                  
+                    if (s1 >= 'A' && s1 <= 'F') {
+                      nextChar += s1 - ASCII_A_TO_HEX;
+                    }
+                    else if (s1 >= 'a' && s1 <= 'f') {
+                      nextChar += s1 - ASCII_a_TO_HEX;
+                    }
+                    else if (s1 >= '0' && s1 <= '9') {
+                      nextChar += s1 - ASCII_ZERO;
+                    }
+                }
+                string[pozice++] = nextChar;
+                break;
+            case '$':   string[pozice++] = '$'; break;                                      //$
+            case 'n':   string[pozice++] = '\n'; break;
+            case 't':   string[pozice++] = '\t'; break;
+            case '\\':  string[pozice++] = '\\'; break;
+            case '"':   string[pozice++] = '"'; break;
+          }
+        }
+      }
+      scanned = fgetc(pSource_File);
+
+    } while(scanned != '"');
+  }//konec else pro if(extenVar)
+
+    
+  //jeste je treba nahrat znak konce retezce
+  if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
       alokovano  = alokovano << 1;
 
       more_str = (char*) realloc (string, alokovano * sizeof(int));
       if(more_str == NULL){
           free(string);
-          fprintf(stderr, "Spatna reallokace stringu.\n");
+          fprintf(stderr, "Spatna realokace pri stringu.\n");
           return ERROR_INTER;
       }
       else string = more_str;
     }
+    string[pozice] ='\0';
+  //fseek(pSource_File, -1,SEEK_CUR);
+
+  token->type = S_STR;
+  token->value = mystrdup(string);
+  free(string);
+
+  return OK;
+
+    
 
     /*if (scanned == '"') {
       inString = 0;
@@ -639,6 +776,12 @@ int readString(T_Token *token){
       nextToken = T_CONCATENATE;
       return T_STRING;
     }*/
+
+
+     
+
+
+     /* autor tohoto zakomentovaneho kodu: Vit Salamon, prasacky napsane a jeste ne zcela funkci 
     else if (scanned == '\\' ) {                                                 //special znak
       scanned = fgetc(pSource_File);
       if (scanned == 'x') {                                                      //hexa hodnota
@@ -687,30 +830,10 @@ int readString(T_Token *token){
     if (scanned == EOF) {
     	fprintf(stderr, "Lexikalni chyba pri escape sekvencich.\n");
 	return ERROR_LEX;
-    }
+    } */
     
-} while(scanned != '"');
   
-  //jeste je treba nahrat znak konce retezce
-  if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
-      alokovano  = alokovano << 1;
-
-      more_str = (char*) realloc (string, alokovano * sizeof(int));
-      if(more_str == NULL){
-          free(string);
-          fprintf(stderr, "Spatna realokace pri stringu.\n");
-          return ERROR_INTER;
-      }
-      else string = more_str;
-    }
-    string[pozice] ='\0';
-  //fseek(pSource_File, -1,SEEK_CUR);
-
-  token->type = S_STR;
-  token->value = mystrdup(string);
-  free(string);
-
-  return OK;
+  
 }
 
 
