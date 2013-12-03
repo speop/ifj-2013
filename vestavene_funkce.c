@@ -234,25 +234,26 @@ else return "";
 
 char *IntToStr(int input)
 {
-    int i=1;
+    int i, j;
     int cislice;
     double source = input;
-    for(; input>=10; i++)   //zjistime pocet cislic
+    for(i = 1; input>=10; i++)   //zjistime pocet cislic
         {
             input /= 10;
             source /= 10;
+            printf("1. %d %d\n", input, source);
         }
     
-    char *output=malloc(sizeof (char)*i+1);
-    garbage_add(output, &garbage_default_erase);
+    char *output= (char *)malloc(sizeof (char)*i+1);
     
-    for(int j=0; i>j;j++ )
+    for(j = 0; i>j;j++ )
     {
         cislice = source;
         output[j] = source + '0';
         source -= cislice;
         source *= 10;
     }
+    output[j] = '\0';
     return output;
 }
 
