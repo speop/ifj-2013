@@ -691,7 +691,7 @@ int readString(T_Token *token){
         }
         else string = more_str;
       }
-      putchar(scanned);
+      
 
       //konec souboru
       if(scanned == EOF){
@@ -745,7 +745,7 @@ int readString(T_Token *token){
       scanned = fgetc(pSource_File);
 
     } while(scanned != '"');
-  }//konec else pro if(extenVar)
+  }//konec  else if(scanned != '"') pro if(extenVar)
 
     
   //jeste je treba nahrat znak konce retezce
