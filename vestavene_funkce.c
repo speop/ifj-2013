@@ -62,116 +62,6 @@ char *get_string()
 
 
 
-/* stejne jako v ial.h
-
-char *get_substring(char input[], int a, int b)
-{   int c=0, length=strlen(input);
-    int lenght=b-a+1;
-        //testovani parametru
-    if(a<c||b<c||a>b||a>=length||b>length)
-        return 0;
-        
-    char *output=malloc((b-a+1)*sizeof(char));
-    if(output==0)
-        return output;
-     garbage_add(output,&garbage_default_erase);
-    for(int i=0; i<(lenght); i++)       //plneni vystupniho pole
-        output[i]=input[a+i-1];
-
-    return output;
-    }
-
-
-
-
-     typedef struct {
-        int length;
-        char *first;
-    }TString;
-
-
-char *merge(TString left, TString right)
-{
-    char *output=malloc((left.length+right.length)*sizeof(char));
-    int i=0;
-
-    while(left.length>0&& right.length>0)
-        {
-         if(left.first[0]<right.first[0])
-              {output[i]=left.first[0];
-               left.length--;
-               left.first=&left.first[1];
-              }
-         else
-              {output[i]= right.first[0];
-               right.length--;
-               right.first=&right.first[1];
-              }
-         i++;
-        }
-
-    while(left.length)
-        {output[i]=left.first[0];
-         left.length--;
-         i++;
-         left.first=&left.first[1];
-        }
-    while(right.length)
-        {output[i]=right.first[0];
-         right.length--;
-         i++;
-         right.first=&right.first[1];
-        }
-
-    return output;
-}
-
-
-char *sort_string(char *vstup)
-{   if(vstup==0)
-        return 0;
-
-    TString left, right, input;
-
-    input.first=vstup;
-    input.length=strlen(input.first);
-
-    if(input.length<=1)
-        return input.first;
-
-    left.length = input.length / 2;
-    right.length = input.length - left.length;
-
-    left.first = malloc(left.length*sizeof(char));
-    if(left.first==0)
-    return 0;
-    right.first = malloc(right.length*sizeof(char));
-    if(right.first==0)
-    return 0;
-
-    int i = 0;
-    for(; i<left.length; i++)
-        {left.first [i] = input.first [i];
-         }
-
-    for(int j=0; j<right.length; j++)
-        {right.first [j] = input.first [i+j];
-         }
-
-
-    left.first = sort_string(left.first);
-    if(left.first==0)
-        return 0;
-
-    right.first = sort_string(right.first);
-    if(right.first==0)
-        return 0;
-
-
-    return merge(left, right);
-}
-
-*/
 // hotové, funguje
 int find_string(char *string1, char *string2)
 {
@@ -213,55 +103,58 @@ int find_string(char *string1, char *string2)
 
 double StrToDouble(char *input)
 {
-    double output=0;
-    unsigned int i=0, length=strlen(input);
-    double increment =1;
-    double  exponent=0;
-    double expsign=0;
-    double sign=1;
+    double output = 0;
+    unsigned int i = 0, length = strlen(input);
+    double increment = 1;
+    double  exponent = 0;
+    double expsign = 1;
+    double sign = 1;
 
+    // preskocime bile znaky (tabulator, mezera, konec radku)    
+    while((input[i] == ' ' || input[i] == ' ' || input[i] == '\n')&&i<length)
+        i++;
+   
     if(input[i]=='-')
         {sign = -1;
-        i++;
+         i++;
         }
-    while(input[i]>='0' && input[i]<='9'&&i<length)
+    while(input[i]>='0' && input[i]<='9' && i<length)
         {output *= 10;
-        output += input[i] - '0';
-        i++;
+         output += input[i] - '0';
+         i++;
         }
     if(input[i]=='.')
         {i++;
-        while(input[i]>='0' && input[i]<='9'&&i<length)
+         while(input[i]>='0' && input[i]<='9' && i<length)
             {increment *= 10;
-            output += (input[i] - '0') /increment;
+            output += (input[i] - '0') / increment;
             i++;
             }
-          }
-    if(input[i]=='e')
-        {
-            i++;
-            if(input[i]=='-')
-                expsign=-1;
-            else if(input[i]=='+')
-                        expsign=1;
-                    else return NAN;
-            while(input[i]>='0' && input[i]<='9'&&i<length)
-                 {exponent*=10;
-                 exponent += (input[i] - '0') ;
-                 i++;
-                }
-                if(expsign!=0)
-                    exponent *= expsign;
         }
-        if(i!=length)
-            return NAN;
+        
+    if(input[i] == 'e' || input[i] == 'E')
+        {
+         i++;
+         if(i<length && input[i] == '-' )
+            expsign = -1;
+         else if(input[i] == '+')
+                    expsign = 1;
+              else return (output * sign);
+              
+         while(i<length && input[i]>='0' && input[i]<='9')
+             {exponent*=10;
+             exponent += (input[i] - '0') ;
+             i++;
+            }
+         exponent *= expsign;
+        }
         if(exponent>0)
             for(; exponent>0; exponent--)
                 output*=10;
         if(exponent<0)
             for(;exponent<0; exponent++)
                 output/=10;
-        return (sign * output );
+    return (sign * output );
 }
 
 
@@ -293,21 +186,18 @@ int StrToInt(char *input)
 {
     int output=0;
     unsigned int i=0, length=strlen(input);
-    int sign=1;
 
-    while((input[i]<'0' || input[i]>'9')&&input[i]!='-'&&i<length)
+
+    // preskocime bile znaky (tabulator, mezera, konec radku)    
+    while((input[i] == ' ' || input[i] == ' ' || input[i] == '\n')&&i<length)
         i++;
-        
-    if(input[i]=='-')
-        {sign = -1;
-        i++;
-        }
+   
     while(input[i]>='0' && input[i]<='9'&&i<length)
         {output *= 10;
         output += input[i] - '0';
         i++;
         }
-        return (sign * output );
+        return output;
 }
 int BoolToInt(bool input)
 {
@@ -332,28 +222,33 @@ bool StringToBool(char *input)
             return false;
     else return true;
 }
+
 char *BoolToStr(bool input)
 {if(input)
     return "1";
 else return "";
 }
+
 char *IntToStr(int input)
 {
     int i=0;
     int cislice;
-    for(; input>=10; i++)
+    double source = input;
+    for(; input>=10; i++)   //zjistime pocet cislic
         {
-            input/=10;
+            input /= 10;
+            source /= 10;
             i++;
         }
     char *output=malloc(sizeof (char)*i+1);
     garbage_add(output, &garbage_default_erase);
+    
     for(int j=0; i>j;j++ )
     {
-        cislice =input/1+'0';
-        output[j]=input+ '0';
-        input-=cislice;
-        input*=10;
+        cislice = source;
+        output[j] = source + '0';
+        source -= cislice;
+        source *= 10;
     }
     return output;
 }
