@@ -199,6 +199,7 @@ int StrToInt(char *input)
         }
         return output;
 }
+
 int BoolToInt(bool input)
 {
     return input;
@@ -254,15 +255,21 @@ char *IntToStr(int input)
 }
 
 char *DoubleToStr(double input)
-{   int i=0;
+{   int i=0, j = 0;
     int cislice;
-    for(; input>=10; i++)
+    while(input>=10)
         {
             input/=10;
             i++;
         }
-    char *output=malloc(sizeof (char)*i+1);
+    while((input % 1) != 0)
+        {input *= 10;
+         j++;
+        }
+    char *output=malloc(sizeof (char)*j);
     garbage_add(output, &garbage_default_erase);
+    
+    
     for(int j=0; i>j;j++ )
     {
         cislice =input/1+'0';
