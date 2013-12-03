@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 1
+#define debug 0
 
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -68,7 +68,7 @@ int generateCode(){
 	if(paska == NULL) return ERROR_INTER;
 	
 	
-	garbage_add(paska, &destroyPaska);
+	//garbage_add(paska, &destroyPaska);
 
 	item = pop_back(alejStromu);
 
@@ -794,25 +794,27 @@ int generateTempVar(T_Token *tok){
 }
 
 
-bool destroyPaska(void *paskaFree)
+bool destroyPaska(TAC *paskaFree)
 {
 	//muzeme mit nekonecnou smycku testujeme konec pasky
-
-	TAC *paskaPom = (TAC*)paskaFree;
-	if(paskaPom == NULL) return true;
+	TAC* Instr;
+	
+	if(paskaFree == NULL) return true;
 
 	int index = 0;
 	while(true)
-	{
-		if (paskaPom[index].operand1.value != NULL) free(paskaPom[index].operand1.value );
-		if (paskaPom[index].operand2.value != NULL) free(paskaPom[index].operand2.value );
-		if (paskaPom[index].vysledek.value != NULL) free(paskaPom[index].vysledek.value );
+	{	Instr = &(paskaFree[index]); 
+		if(Instr->operator == THE_END ) break;
+
+		if (Instr->operand1.value != NULL) free(Instr->operand1.value );
+		if (Instr->operand2.value != NULL) free(Instr->operand2.value );
+		if (Instr->vysledek.value != NULL) free(Instr->vysledek.value );
 		
-		if(paskaPom[index].operator == THE_END ) break;
+		
 		index++;
 	}
 
-	free(paskaPom);
+	free(paskaFree);
 
 	return true;
 }

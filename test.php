@@ -1,4 +1,4 @@
 <?php
-$x = 1;
-
-$d = $b;
+$a =  get_string();
+$a = intval($a);
+put_string($a);

@@ -924,6 +924,7 @@ int interpret()
 				
 
 			case THE_END:
+				destroyPaska(paska);
 				return OK;
 		}
 	}
