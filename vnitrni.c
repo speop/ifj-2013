@@ -401,7 +401,7 @@ int generateCode(){
 		
 		}
 		if ( paska[x].operator == STORE_PARAM){
-			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru neexistuje");
+			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru \"%s\"neexistuje",(char*)(paska[x].operand1).value);
 			else printf(", promena pro ulozeni parametru je: %s",(char*)(paska[x].vysledek.value) );
 			printf(" ukladam typ: %d",  paska[x].operand1.type );
 		}
@@ -421,7 +421,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 	T_Token tempVar;
 	int result = OK;
 	tExpr ret;
-
+	T_Token *right = NULL, *left = NULL;
 	ret.rightVar = NULL;
 	ret.leftVar = NULL;
 	//printf("typ: %d\n",tree->op->type );
@@ -465,14 +465,18 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 			if(((Tleaf*)(tree->op2->value))->op1->type == S_E){
 				ret = exprGC(tree->op2->value, RIGHT);
 				if(ret.ret != OK)  return ret;
-
+				right = ret.rightVar;
 			}
 
 			//v pravo uz nesjou podstromy jdemem do leva
 			if(((Tleaf*)(tree->op1->value))->op1->type == S_E){
 				ret = exprGC(tree->op1->value, LEFT);
-				if(ret.ret != OK)  return ret; 
-			}
+				if(ret.ret != OK)  return ret;
+				left = ret.leftVar;  
+			} 
+
+			ret.rightVar = right;
+			ret.leftVar = left;
 		}
 
 		//dosli jsme na dno
@@ -625,7 +629,7 @@ int funGC(Tleaf *tree){
 		else {
 			//vyhodnotime si pod vyraz
 			ret= exprGC(tree, RIGHT);
-			if(ret.ret != OK) return ret.ret;
+			if(ret.ret != OK) return ret.ret; 
 			if((generate(STORE_PARAM, &LastVar, NULL, NULL)) != OK ) return ERROR_INTER;
 		}
 	}
