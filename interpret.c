@@ -263,13 +263,13 @@ int interpret()
 				}
 
 				op1_typ = AuxSTVar->data->type;
-				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni string
 				else op1 = AuxSTVar->data->value;
 			  }
 			  else {     //operand1 neni promenna
 				op1_typ = Instr->operand1.type;
-				if(op2_typ != S_STR) {
-					op2 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani					
+				if(op1_typ != S_STR) {
+					op1 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani					
 				}
 				else op1 = Instr->operand1.value;
 			  }
