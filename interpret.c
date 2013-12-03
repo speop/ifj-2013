@@ -421,11 +421,12 @@ int interpret()
 				
 				res->data->type = S_BOOL;
 				res->data->value = (int*)malloc(sizeof(int));
-				
+
 				//jestli se typy nerovnaji, je to false nebo chyba
 				if(op1_typ != op2_typ) {
 				  if(Instr->operator == S_EQ || Instr->operator == S_NEQ){
-						*((int*)(res->data)->value) = 0;
+				  	if(Instr->operator == S_NEQ)	*((int*)(res->data)->value) = 1;
+				  	else *((int*)(res->data)->value) = 0;
 						break;
 				  }
 				  else {

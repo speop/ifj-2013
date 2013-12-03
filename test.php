@@ -9,3 +9,5 @@ if ($e !== 11)
 	{
 		$x = put_string("e neni ruzne od 11");
 	}
+
+
