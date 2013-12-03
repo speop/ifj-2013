@@ -136,11 +136,13 @@ double StrToDouble(char *input)
         {
          i++;
          if(i<length && input[i] == '-' )
-            expsign = -1;
+            {expsign = -1;
+            i++;
+            }
          else if(input[i] == '+')
-                    expsign = 1;
-              else return (output * sign);
-              
+                    {expsign = 1;
+                    i++;
+                    }
          while(i<length && input[i]>='0' && input[i]<='9')
              {exponent*=10;
              exponent += (input[i] - '0') ;
