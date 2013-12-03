@@ -16,10 +16,8 @@
 #define debug 0
 
 FILE *pSource_File; //vstupni soubor
-//static int state; //soucasny stav automatu
 extern T_Token *prevToken;
 extern int row; // z main.c
-
 
 void putToken( T_Token *token)
 {
@@ -50,13 +48,6 @@ const char *LEX_ECODEMSG[] =
 const int ASCII_ZERO=48;
 const int ASCII_A_TO_HEX=55;
 const int ASCII_a_TO_HEX=87;
-
-//prechod do noveho stavu
-/*int next( int newst )
-{
-    state = newst;
-    return fgetc(file);
-}*/
 
 
 /** Hlavni fce lexikalniho analyzatoru */
@@ -102,8 +93,7 @@ int getTokenReal(T_Token *token)
         result = OK;
         result = readNumber(token, scanned);
         return result;
-        //result = readNumber(&token);
-        //return result;
+      
     }
     else if ((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || scanned == '_'){
         
@@ -120,6 +110,7 @@ int getTokenReal(T_Token *token)
               more_str = (char*) realloc (str, alokovano * sizeof(int));
               if(more_str == NULL){
                   free(str);
+                  fprintf(stderr, "Spatna alokace pameti pri nacitani retezce.\n");
                   return ERROR_INTER;
               }
               else str = more_str;
@@ -140,6 +131,7 @@ int getTokenReal(T_Token *token)
               more_str = (char*) realloc (str, alokovano * sizeof(int));
               if(more_str == NULL){
                   free(str);
+                  fprintf(stderr, "Spatna alokace pri ulozeni posledniho znaku .\n");
                   return ERROR_INTER;
               }
               else str = more_str;
@@ -161,6 +153,7 @@ int getTokenReal(T_Token *token)
             token->type = S_BOOL;
             if( (token->value = malloc(sizeof (int))) == NULL){
               free(str);
+              fprintf(stderr, "Spatna alokace klicoveho slova false.\n");
               return ERROR_INTER;
             }
             *(int*)token->value = 0;
@@ -171,6 +164,7 @@ int getTokenReal(T_Token *token)
             token->type = S_NULL;
 			if( (token->value = malloc(sizeof (int))) == NULL){
               free(str);
+              fprintf(stderr, "Spatna alokace klicoveho slova null.\n");
               return ERROR_INTER;
             }
 
@@ -182,6 +176,7 @@ int getTokenReal(T_Token *token)
            token->type = S_BOOL;
             if( (token->value = malloc(sizeof (int))) == NULL){
               free(str);
+              fprintf(stderr, "Spatna alokace klicoveho slova true.\n");
               return ERROR_INTER;
             }
 
@@ -195,8 +190,7 @@ int getTokenReal(T_Token *token)
         token->value = mystrdup(str);
         free(str);
         return OK;
-        /*result = readWord(&token);
-        return result;*/
+
     }
 
     else{
@@ -216,6 +210,7 @@ int getTokenReal(T_Token *token)
                   more_str = (char*) realloc (str, alokovano * sizeof(int));
                   if(more_str == NULL){
                       free(str);
+                      fprintf(stderr, "Spatna alokace pri zvetosvani pameti pro retezec.\n");
                       return ERROR_INTER;
                   }
                   else str = more_str;
@@ -233,6 +228,7 @@ int getTokenReal(T_Token *token)
                 more_str = (char*) realloc (str, alokovano * sizeof(int));
                 if(more_str == NULL){
                   free(str);
+                  fprintf(stderr, "Spatna alokace pri ulozeni posledniho znaku a kontrole .\n");
                   return ERROR_INTER;
                 }
                 else str = more_str;
@@ -429,7 +425,9 @@ int getTokenReal(T_Token *token)
 	        return ERROR_LEX;
 
        
-        default: return ERROR_LEX;
+        default: 
+        fprintf(stderr, "Lexikalni chyba nejakej jinej symbol.\n");
+        return ERROR_LEX;
 		  }//konec switche
     }//konec else
   }//konec while
@@ -515,6 +513,7 @@ int getFunctionHeader(T_Token*  token, FUn what)
     }while(true);    
   }
   else  return getToken(token);
+  fprintf(stderr, "Lexikalni chyba pri function.\n");
   return ERROR_LEX;
 }
 
@@ -577,6 +576,7 @@ int readNumber(T_Token *token, char firstNum)
       }
       else {
         if (!firstTime) {
+          fprintf(stderr, "Lexikalni chyba u funkce pro cisla \n");
           return ERROR_LEX;                                  //a tady neco falesneho
         }
         fseek(pSource_File, -1, SEEK_CUR);
@@ -625,6 +625,7 @@ int readString(T_Token *token){
       more_str = (char*) realloc (string, alokovano * sizeof(int));
       if(more_str == NULL){
           free(string);
+          fprintf(stderr, "Spatna reallokace stringu.\n");
           return ERROR_INTER;
       }
       else string = more_str;
@@ -684,6 +685,7 @@ int readString(T_Token *token){
     
     scanned = fgetc(pSource_File);
     if (scanned == EOF) {
+    	fprintf(stderr, "Lexikalni chyba pri escape sekvencich.\n");
 	return ERROR_LEX;
     }
     
@@ -696,6 +698,7 @@ int readString(T_Token *token){
       more_str = (char*) realloc (string, alokovano * sizeof(int));
       if(more_str == NULL){
           free(string);
+          fprintf(stderr, "Spatna realokace pri stringu.\n");
           return ERROR_INTER;
       }
       else string = more_str;
