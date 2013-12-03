@@ -607,7 +607,7 @@ int readNumber(T_Token *token, char firstNum)
 
     n = fgetc(pSource_File);
 
-  }while((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || (n == 'e' || n == 'E') || (n == '.'));
+  }while((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0)));
 
   fseek(pSource_File, -1,SEEK_CUR);
   
