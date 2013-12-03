@@ -672,14 +672,15 @@ int readString(T_Token *token){
 
   }
 
-  //z vrchu uvozovky koncime
-  else if(scanned != '"'){ 
+ 
+  else{ 
 
     readStr = false;
     
 
     do { 
-      
+      //z vrchu uvozovky zavolame si get token.. jinac by to delalo       
+      if(scanned == '"'){ break;}
       if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
         alokovano  = alokovano << 1;
 
@@ -695,8 +696,8 @@ int readString(T_Token *token){
 
       //konec souboru
       if(scanned == EOF){
-        fprintf(stderr, "Row: %d, Chybi konec retezce",row);
-        return ERROR_INTER;
+        fprintf(stderr, "Row: %d, Chybi konec retezce\n",row);
+        return ERROR_LEX;
       }
 
       //expanze promenych
