@@ -257,40 +257,44 @@ char *IntToStr(int input)
 }
 
 char *DoubleToStr(double input)
-{   int i=0, j = 0;
+{   int i=0, j = 0; //i= pocet cislis pred des. teckou, j= pocet cislic
     int cislice;
+    int abc = 0;
     while(input>=10)
         {
             input/=10;
             i++;
         }
-    while((input % 1) != 0)
-        {input *= 10;
+        
+    while((abc-input) != 0)
+        {
+         input *= 10;
+         abc = input;
          j++;
         }
-    char *output=malloc(sizeof (char)*j);
+         
+    char *output=malloc(sizeof (char)*(j+2));
     garbage_add(output, &garbage_default_erase);
     
-    
-    for(int j=0; i>j;j++ )
-    {
-        cislice =input/1+'0';
-        output[j]=cislice;
-        input-=cislice-'0';
-        input*=10;
+        
+    for(; i>j;j--)
+    {	
+        cislice = abc % 10;
+        output[j+1] = cislice + '0';
+        abc -= cislice;
     }
-    while(input !=0)
-        {input *=10;
-        cislice = input/1 +'0';
-        output=realloc(output, sizeof(output)+sizeof(char));
-        output[i]=cislice;
+    
+    output[j] ='.';
+    
+    for(; j>=0; j--)
+        {
+         cislice = abc % 10;
+         output[j] = cislice + '0';
+         abc -= cislice;
+         abc /= 10;
         }
     return output;
 }
-
-
-
-
 
 
 bool newboolval(T_ST_VarsItem input)
