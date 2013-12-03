@@ -268,10 +268,9 @@ int interpret()
 			  }
 			  else {     //operand1 neni promenna
 				op1_typ = Instr->operand1.type;
-				if(op1_typ == S_DOUB);  //typ promenne  neni istr musime provest konverzi
-				else if (op1_typ == S_INT);
-				else if  (op1_typ == S_BOOL);
-				else if (op1_typ == S_NULL);
+				if(op2_typ != S_STR) {
+					op2 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani					
+				}
 				else op1 = Instr->operand1.value;
 			  }
 
@@ -283,13 +282,15 @@ int interpret()
 				}
 
 				op2_typ = AuxSTVar->data->type;
-				if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
+				if(op2_typ != S_STR) {
+					op2 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani					
+				}
 				else op2 = AuxSTVar->data->value;
 			  }
 			  else {      //operand2 neni promenna
 				op2_typ = Instr->operand2.type;
-				if(op2_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni int ani double
-				else op2 = Instr->operand1.value;
+				if(op2_typ != S_STR) op2 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani z nestringu na string
+				else op2 = Instr->operand2.value;
 			  }
 
 			  res = findVarST(Instr->vysledek.value, actualST);
