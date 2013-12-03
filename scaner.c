@@ -672,9 +672,11 @@ int readString(T_Token *token){
 
   }
 
-  else{ 
+  //z vrchu uvozovky koncime
+  else if(scanned != '"'){ 
 
     readStr = false;
+    
 
     do { 
       
@@ -689,10 +691,11 @@ int readString(T_Token *token){
         }
         else string = more_str;
       }
+      putchar(scanned);
 
       //konec souboru
       if(scanned == EOF){
-        fprintf(stderr, "Chybi koned retezce.n");
+        fprintf(stderr, "Row: %d, Chybi konec retezce",row);
         return ERROR_INTER;
       }
 
