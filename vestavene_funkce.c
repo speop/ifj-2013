@@ -234,15 +234,15 @@ else return "";
 
 char *IntToStr(int input)
 {
-    int i=0;
+    int i=1;
     int cislice;
     double source = input;
     for(; input>=10; i++)   //zjistime pocet cislic
         {
             input /= 10;
             source /= 10;
-            i++;
         }
+    
     char *output=malloc(sizeof (char)*i+1);
     garbage_add(output, &garbage_default_erase);
     
@@ -255,6 +255,7 @@ char *IntToStr(int input)
     }
     return output;
 }
+
 
 char *DoubleToStr(double input)
 {   int i=0, j = 0; //i= pocet cislis pred des. teckou, j= pocet cislic
