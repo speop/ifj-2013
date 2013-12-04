@@ -1,6 +1,20 @@
 <?php
-$a = "dnes";
-$b = "jdes $a ven?";
-put_string($b);
 
+// Program 8: Testovani deklarace funkci
 
+$a = My_func("Jak toto funguje");
+$x = put_string($a, "\n");
+$a = "heh\n";	
+$x = put_string($a);
+
+$b = "funguje to?\n";
+$x = put_string($b);
+
+return 0;
+
+function My_func($str)      {
+
+	$c = put_string($str, "\n");
+	$x = put_string($str, "\n");
+	return $x;
+	}

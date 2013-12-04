@@ -105,8 +105,16 @@ int interpret()
 
 					break;
 
-			case  RETURN: 
+			case  RETURN:
 				StackHelpItem = pop_top(callStack);
+
+				//pokud je to NULL returnuju se z mainu takze konci provadeni
+				if(StackHelpItem == NULL){
+					destroyPaska(paska);
+					return OK;
+				}
+				
+
 				newST = ((TCallStack *)(StackHelpItem->data))->symbolTable; //tabulka symbolu z ktere byla tato funkce volana
 				
 				StackHelpItem2 = pop_top(paramStack);
@@ -816,9 +824,13 @@ int interpret()
 							case S_STR:
 								printf("%s", (char *)(Instr->operand1).value); break;
 							case S_BOOL:
-								printf("%d", (bool)(Instr->operand1).value); break;
+								if(*(int*)(Instr->operand1).value) printf("1");
+								//else printf("");
+								break;
 							case S_NULL:
-								printf("null\n"); break;
+								//printf(""); 
+								break;
+
 							case S_ID:
 								AuxSTVar = findVarST(Instr->operand1.value, actualST);
 								if(AuxSTVar == NULL){
@@ -835,9 +847,12 @@ int interpret()
 									case S_STR: 
 										printf("%s", (char *)op1); break;
 									case S_BOOL:
-										printf("%d", (bool)op1); break;
+										if(*(int*)(Instr->operand1).value) printf("1");
+										//else printf("");
+										break;
 									case S_NULL:
-										printf("null\n"); break;
+										//printf("");
+										 break;
 									}
 								break;
 

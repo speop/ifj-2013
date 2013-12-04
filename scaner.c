@@ -632,7 +632,7 @@ int readString(T_Token *token){
   int pozice = 0;
   int alokovano = 32;
   int nextChar,i;
-  char *string, *more_str,s1;
+  char *string, *more_str,s1, zaloha;
   char scanned = fgetc(pSource_File);
 
 
@@ -672,12 +672,15 @@ int readString(T_Token *token){
 
   }
 
+ 
   else{ 
 
     readStr = false;
+    
 
     do { 
-      
+      //z vrchu uvozovky zavolame si get token.. jinac by to delalo       
+      if(scanned == '"'){ break;}
       if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
         alokovano  = alokovano << 1;
 
@@ -689,11 +692,12 @@ int readString(T_Token *token){
         }
         else string = more_str;
       }
+      
 
       //konec souboru
       if(scanned == EOF){
-        fprintf(stderr, "Chybi koned retezce.n");
-        return ERROR_INTER;
+        fprintf(stderr, "Row: %d, Chybi konec retezce\n",row);
+        return ERROR_LEX;
       }
 
       //expanze promenych
@@ -710,6 +714,7 @@ int readString(T_Token *token){
         if(scanned != '\\') string[pozice++] =scanned;
         else{
           //escape sekvence
+          zaloha = scanned;
           scanned = fgetc(pSource_File);
           switch(scanned){
             case 'x':
@@ -736,13 +741,18 @@ int readString(T_Token *token){
             case 't':   string[pozice++] = '\t'; break;
             case '\\':  string[pozice++] = '\\'; break;
             case '"':   string[pozice++] = '"'; break;
+            //neznama escapen sekvence
+            default:
+                string[pozice++] = zaloha;
+                fseek(pSource_File, -1,SEEK_CUR);
+                break;
           }
         }
       }
       scanned = fgetc(pSource_File);
 
     } while(scanned != '"');
-  }//konec else pro if(extenVar)
+  }//konec  else if(scanned != '"') pro if(extenVar)
 
     
   //jeste je treba nahrat znak konce retezce
