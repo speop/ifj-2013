@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 1
+#define debug 0
 
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -401,7 +401,7 @@ int generateCode(){
 		
 		}
 		if ( paska[x].operator == STORE_PARAM){
-			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru \"%s\"neexistuje",(char*)(paska[x].operand1).value);
+			if(paska[x].vysledek.type == NOT_EXIST) printf(", promena pro ulozeni parametru \"%s\" neexistuje",(char*)(paska[x].operand1).value);
 			else printf(", promena pro ulozeni parametru je: %s",(char*)(paska[x].vysledek.value) );
 			printf(" ukladam typ: %d",  paska[x].operand1.type );
 		}
