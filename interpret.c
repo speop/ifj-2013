@@ -105,8 +105,16 @@ int interpret()
 
 					break;
 
-			case  RETURN: 
+			case  RETURN:
 				StackHelpItem = pop_top(callStack);
+
+				//pokud je to NULL returnuju se z mainu takze konci provadeni
+				if(StackHelpItem == NULL){
+					destroyPaska(paska);
+					return OK;
+				}
+				
+
 				newST = ((TCallStack *)(StackHelpItem->data))->symbolTable; //tabulka symbolu z ktere byla tato funkce volana
 				
 				StackHelpItem2 = pop_top(paramStack);
