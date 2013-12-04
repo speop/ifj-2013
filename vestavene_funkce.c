@@ -241,7 +241,6 @@ char *IntToStr(int input)
         {
             input /= 10;
             source /= 10;
-            printf("1. %d %d\n", input, source);
         }
     
     char *output= (char *)malloc(sizeof (char)*i+1);

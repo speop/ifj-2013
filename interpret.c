@@ -263,7 +263,10 @@ int interpret()
 				}
 
 				op1_typ = AuxSTVar->data->type;
-				if(op1_typ != S_STR) return SEM_TYPE_ERROR;  //typ promenne  neni string
+				if(op1_typ != S_STR) {
+					fprintf(stderr, "Not a string for concatenation\n");
+					return SEM_TYPE_ERROR;  //typ promenne  neni string
+			  } 
 				else op1 = AuxSTVar->data->value;
 			  }
 			  else {     //operand1 neni promenna
@@ -289,8 +292,23 @@ int interpret()
 			  }
 			  else {      //operand2 neni promenna
 				op2_typ = Instr->operand2.type;
-				if(op2_typ != S_STR) op2 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani z nestringu na string
-				else op2 = Instr->operand2.value;
+				switch(op2_typ) {
+					case S_INT:
+							op2 = IntToStr(*(int *)(Instr->operand2.value));
+							break;
+					case S_DOUB:
+							op2 = DoubleToStr(*(double*)(Instr->operand2.value));
+							break;
+					case S_STR:
+							op2 = (char*)(Instr->operand2.value);
+							break;
+					case S_BOOL:
+							op2 = BoolToStr(*(int*)(Instr->operand2.value)); // vnitrne je bool reprezentovan jako int
+							break;					              
+					case S_NULL:
+							op2 = "";
+							break;
+					}
 			  }
 
 			  res = findVarST(Instr->vysledek.value, actualST);
