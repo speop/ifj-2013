@@ -763,7 +763,7 @@ int interpret()
 				if(strcmp(funcName, "sort_string") == 0) {
 					AuxSTVar->data->type = S_STR;
 					res = findVarST((char *)variables[0], newST);
-					printf("radim \"%s\"\n", (char *)(res->data->value));
+					//printf("radim \"%s\"\n", (char *)(res->data->value));
 					AuxSTVar->data->value = sort_string((char *)(res->data->value));
 					StackHelpItem = pop_top(paramStack);
 
