@@ -246,7 +246,11 @@ int interpret()
 				  res->data->value = (double*)malloc(sizeof(double));
 
 				if(Instr->operator == S_MUL) *((double*)(res->data)->value) = doub1 * doub2;
-				else if (Instr->operator == S_DIV) *((double*)(res->data)->value) =doub1 / doub2;
+				else if (Instr->operator == S_DIV) { 
+						//kontrola jestli nedelim 0
+						if(doub2 == 0){ fprintf(stderr, "Error division by zero\n" ); return SEM_ZERRO_DIVISION; }
+						*((double*)(res->data)->value) =doub1 / doub2;
+				}
 				else if(Instr->operator == S_PLUS) *((double*)(res->data)->value) = doub1 + doub2;
 				else *((double*)(res->data)->value) = doub1 - doub2;
 				//printf("\tpocitani -%f- -%f- = -%f- \n", doub1, doub2, *((double*)(res->data)->value) );
