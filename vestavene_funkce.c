@@ -258,45 +258,23 @@ char *IntToStr(int input)
 
 
 char *DoubleToStr(double input)
-{   int i=0, j = 0; //i= pocet cislis pred des. teckou, j= pocet cislic
-    int cislice;
-    int abc = 0;
-    while(input>=10)
-        {
-            input/=10;
-            i++;
-        }
-        
-    while((abc-input) != 0)
-        {
-         input *= 10;
-         abc = input;
-         j++;
-        }
-         
-    char *output=malloc(sizeof (char)*(j+2));
-    garbage_add(output, &garbage_default_erase);
+{
+    int k, length;
+    char *output = malloc(512 * sizeof(char));
+    if(sprintf(output, "%f", input) == 0)
+        return NULL;
     
-        
-    for(; i>j;j--)
-    {	
-        cislice = abc % 10;
-        output[j+1] = cislice + '0';
-        abc -= cislice;
-    }
-    
-    output[j] ='.';
-    
-    for(; j>=0; j--)
-        {
-         cislice = abc % 10;
-         output[j] = cislice + '0';
-         abc -= cislice;
-         abc /= 10;
-        }
+    length = strlen(output);
+    for(int j = 0; j<length; j++)
+        if(output[j] != '0')        //nalezneme posledni nenulu
+            k = j+1;
+            
+    output[k] = '\0';
+    printf("%d\n", k);      //pokud je posledni znak '.', tak ji oddelame
+    if(output[k-1] =='.')
+        output[k-1] = '\0';
     return output;
 }
-
 
 bool newboolval(T_ST_VarsItem input)
 {   
