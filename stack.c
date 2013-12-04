@@ -52,6 +52,7 @@ tStackItem* pop_top(tStack *stack){
 
 	tStackItem *temp;
 
+	if(stack == NULL) return NULL;
 	//prazdny zasobnik
 	if(stack->top == NULL) return NULL;
 
@@ -73,7 +74,7 @@ tStackItem* pop_top(tStack *stack){
 }
 
 tStackItem *top(tStack *stack){
-
+	if(stack == NULL) return NULL;
 	return stack->top;
 }
 
@@ -112,6 +113,7 @@ tStackItem* pop_back(tStack *stack){
 	tStackItem *temp = NULL;
 
 	//prazdny zasobnik
+	if(stack == NULL) return NULL;
 	if(stack->top == NULL) return NULL;
 
 	//jediny prvek na zasobniku
@@ -133,7 +135,7 @@ tStackItem* pop_back(tStack *stack){
 }
 
 tStackItem* bottom(tStack *stack){
-
+	if(stack == NULL) return NULL;
 	return stack->bottom;
 }
 
@@ -199,6 +201,7 @@ bool destroyST(void * data) {
 	// nekonecna smycka cyklime tak dlouho dokud nam pop neposle NULL coz znamena prazdy zasobnik
 	while(true){
 
+
 		temp = pop_top((tStack*)data);
 		if(temp == NULL) break;
 		free(temp->data);
@@ -212,16 +215,17 @@ bool destroyST(void * data) {
 //funkce pro dealokaci tokenu
 bool tokenFree(void *token){ 
 	// zkontrolujeme si jestli to neni E token... ten obsahuje odkazy na dalsi token
-	if(((T_Token *)token)->type == S_E){
+	/*if(((T_Token *)token)->type == S_E){
 		//pro jistotu
 		if(((T_Token *)token)->value != NULL)
 		{
-			if(((Tleaf*)((T_Token*)token)->value)->op1 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op1);
+			printf("%d \n", ((T_Token *)token)->type );
+			if(((Tleaf*)((T_Token*)token)->value)->op1 != NULL) { printf("%d \n", ((Tleaf*)((T_Token*)token)->value)->op1);printf("token %d\n", ((Tleaf*)((T_Token*)token)->value)->op1->type ); tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op1);}
 			if(((Tleaf*)((T_Token*)token)->value)->op2 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op2);
 			if(((Tleaf*)((T_Token*)token)->value)->op != NULL)  free(((Tleaf*)((T_Token*)token)->value)->op);
 		}
 	
-	}
+	}*/
 	if(((T_Token *)token)->value != NULL) free(((T_Token *)token)->value ); 
 	return true;
 }
@@ -229,6 +233,7 @@ bool tokenFree(void *token){
 bool tokenFreepom(T_Token *token)
 {	
 	// zkontrolujeme si jestli to neni E token... ten obsahuje odkazy na dalsi token
+	/*
 	if(((T_Token *)token)->type == S_E){
 		//pro jistotu
 		if(((T_Token *)token)->value != NULL)
@@ -237,7 +242,7 @@ bool tokenFreepom(T_Token *token)
 			if(((Tleaf*)((T_Token*)token)->value)->op2 != NULL) tokenFreepom(((Tleaf*)((T_Token*)token)->value)->op2);
 			if(((Tleaf*)((T_Token*)token)->value)->op != NULL)  free(((Tleaf*)((T_Token*)token)->value)->op);
 		}
-	}
+	}*/
 	if(token->value != NULL) free(token->value ); 
 	free(token);
 	return true;

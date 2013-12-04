@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	
 	
 
-	//garbage_empty();
+	garbage_empty();
 	fclose(stdout);
 	fclose(pSource_File);
 	return result;

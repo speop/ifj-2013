@@ -235,7 +235,11 @@ else return "";
 
 char *IntToStr(int input)
 {
-    int i, j;
+   
+    char *output= (char *)malloc(sizeof (char)*256);
+    if(sprintf(output, "%d", input) == 0)
+        return NULL;
+    /*int i, j;
     int cislice;
     double source = input;
     for(i = 1; input>=10; i++)   //zjistime pocet cislic
@@ -253,18 +257,19 @@ char *IntToStr(int input)
         source -= cislice;
         source *= 10;
     }
-    output[j] = '\0';
+    output[j] = '\0'; */
     return output;
 }
 
 
 char *DoubleToStr(double input)
 {
-    int k, length;
+    //int k, length;
     char *output = malloc(512 * sizeof(char));
-    if(sprintf(output, "%f", input) == 0)
+    if(sprintf(output, "%g", input) == 0)
         return NULL;
     
+    /*
     length = strlen(output);
     for(int j = 0; j<length; j++)
         if(output[j] != '0')        //nalezneme posledni nenulu
@@ -273,7 +278,7 @@ char *DoubleToStr(double input)
     output[k] = '\0';
     //printf("%d\n", k);      //pokud je posledni znak '.', tak ji oddelame
     if(output[k-1] =='.')
-        output[k-1] = '\0';
+        output[k-1] = '\0'; */
     return output;
 }
 

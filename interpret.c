@@ -87,7 +87,9 @@ int interpret()
 						res->data->type = S_NULL;
 					}
 
-				
+					
+					//dealokace ST
+					//freeVarST(actualST);
 					//jeste zmenit tabulky symbolu
 					actualST = newST;
 
@@ -182,6 +184,7 @@ int interpret()
 
 				}
 
+				
 				//jeste zmenit tabulky symbolu
 				actualST = newST;
 
@@ -967,6 +970,7 @@ int interpret()
 				
 
 			case THE_END:
+				
 				destroyPaska(paska);
 				return OK;
 		}

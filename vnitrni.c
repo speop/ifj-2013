@@ -521,7 +521,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 		}
 
 		//printf("prvek za dnem : %d\n",tree->op->type );
-		if(LastVar.value) free(LastVar.value);
+		if(LastVar.value!=NULL) {free(LastVar.value); LastVar.value = NULL;}
 		if(tree->op->type ==  S_IS){
 			
 			//vysledek nam muze probublat jen zprava
@@ -591,7 +591,7 @@ tExpr exprGC(Tleaf *tree, Smery smer){
 				ret.rightVar->type = S_ID;
 			}
 
-			if(LastVar.value) free(LastVar.value);
+			if(LastVar.value!= NULL) free(LastVar.value);
 			LastVar.value = mystrdup(tempVar.value);
 		
 		}

@@ -309,7 +309,7 @@ void printTree(T_ST_Vars *table)
 bool freeVarST(void *tree)
 {	
 	//strom je prazdny
-	if(((T_ST_Vars*)tree)->data == NULL) return true;
+	if(tree == NULL || ((T_ST_Vars*)tree)->data == NULL) return true;
 	
 	//existuje pravy podstrom
 	if(((T_ST_Vars*)tree)->right != NULL) freeVarSTpom(((T_ST_Vars*)tree)->right, RIGHT);
@@ -349,7 +349,7 @@ bool freeFuncST(void *tree)
 {	
 
 	//strom je prazdny
-	if(((T_ST_Funcs*)tree)->data == NULL) return true;
+	if(tree == NULL || ((T_ST_Funcs*)tree)->data == NULL) return true;
 	
 	//existuje pravy podstrom
 	if(((T_ST_Funcs*)tree)->right != NULL) freeFuncSTpom(((T_ST_Funcs*)tree)->right, RIGHT);
@@ -422,7 +422,7 @@ int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
 //spojí dvě seřazené pole  do jednoho, 
 char *merge(TString left, TString right)
 {
-    char *output=malloc((left.length+right.length)*sizeof(char));
+    char *output=malloc((left.length+right.length + 1)*sizeof(char));
     int i=0;
 
     while(left.length>0&& right.length>0)
@@ -452,7 +452,7 @@ char *merge(TString left, TString right)
          i++;
          right.first=&right.first[1];
         }
-
+    output[i]='\0';
     return output;
 }
 
@@ -466,7 +466,8 @@ char *sort_string(char *vstup)
     TString left, right, input;
 
     input.first=vstup;
-    input.length=strlen(input.first);
+    //printf("\"%s\"\n",vstup );
+    input.length=strlen(vstup);
 
     if(input.length<=1)
         return input.first;
@@ -474,22 +475,25 @@ char *sort_string(char *vstup)
     left.length = input.length / 2;
     right.length = input.length - left.length;
 
-    left.first = malloc(left.length*sizeof(char));
+    left.first = malloc((left.length+1)*sizeof(char));
     if(left.first==0)
     return 0;
-    right.first = malloc(right.length*sizeof(char));
+    right.first = malloc((right.length+1)*sizeof(char));
     if(right.first==0)
     return 0;
 
-    int i = 0;
+    int i = 0,j;
     for(; i<left.length; i++)
         {left.first [i] = input.first [i];
          }
 
-    for(int j=0; j<right.length; j++)
+    left.first [i] = '\0';
+
+    for (j=0; j<right.length; j++)
         {right.first [j] = input.first [i+j];
          }
 
+    right.first[j]='\0';
 
     left.first = sort_string(left.first);
     if(left.first==0)
