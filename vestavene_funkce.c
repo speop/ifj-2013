@@ -6,6 +6,7 @@
 #include "garbage_collector.h"
 #include "types.h"
 #include "ial.h"
+#include "scaner.h"
 
 #define NAN (0.0/0.0)
 
@@ -351,13 +352,12 @@ char *strval(T_ST_VarsItem input)
 
     case S_DOUB: return DoubleToStr(*(double*)(input).value);
 
-    case S_STR: return (char*)(input).value;
+    case S_STR:  return mystrdup((char*)(input).value);
 
-    case S_BOOL: return BoolToStr(*(int*)input.value); // vnitrne je bool reprezentovan jako int
-                  
+    case S_BOOL: return BoolToStr(*(int*)input.value); // vnitrne je bool reprezentovan jako int          
     case S_NULL: return "";
     }
 
-    return false;
+    return NULL;
 }
 
