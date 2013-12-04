@@ -1,20 +1,18 @@
 <?php
 
-// Program 8: Testovani deklarace funkci
+// Testovani find_string
 
-$a = My_func("Jak toto funguje");
-$x = put_string($a, "\n");
-$a = "heh\n";	
-$x = put_string($a);
+$a = "";
 
-$b = "funguje to?\n";
-$x = put_string($b);
+$b = boolval($a);
+$x = put_string($b, "\n");
 
-return 0;
-
-function My_func($str)      {
-
-	$c = put_string($str, "\n");
-	$x = put_string($str, "\n");
-	return $x;
-	}
+if ($b !== true) {
+	$x = "Tohle je super.\n";
+	$x = find_string($x, "");
+	$x = put_string($x, "\n");
+}
+else {
+	// Sem se nedostane
+	$x = $d;
+}

@@ -630,10 +630,7 @@ int interpret()
 				 	AuxSTVar->data->type = S_INT;
 
 				 	res = findVarST((char *)variables[0], newST);
-				 	if(res == NULL){
-							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
-							return SEM_UNDECLARED_PARAMETER;
-					}
+				 
 				 	*(int*)(AuxSTVar->data)->value = strlen((char *)(res->data->value));
 				
 					 StackHelpItem = pop_top(paramStack);
@@ -652,12 +649,9 @@ int interpret()
 					
 					AuxSTVar->data->value = malloc(sizeof(int));
 					AuxSTVar->data->type = S_BOOL;
-
+					
 					res = findVarST((char *)variables[0], newST);
-					if(res == NULL){
-							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
-							return SEM_UNDECLARED_PARAMETER;
-					}
+					
 					*(int*)(AuxSTVar->data)->value = newboolval(*(res->data));
 					
 					StackHelpItem = pop_top(paramStack);
@@ -851,7 +845,7 @@ int interpret()
 									case S_STR: 
 										printf("%s", (char *)op1); break;
 									case S_BOOL:
-										if(*(int*)(Instr->operand1).value) printf("1");
+										if(*(int*)op1) printf("1");
 										//else printf("");
 										break;
 									case S_NULL:
