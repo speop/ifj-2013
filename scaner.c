@@ -632,7 +632,7 @@ int readString(T_Token *token){
   int pozice = 0;
   int alokovano = 32;
   int nextChar,i;
-  char *string, *more_str,s1;
+  char *string, *more_str,s1, zaloha;
   char scanned = fgetc(pSource_File);
 
 
@@ -714,6 +714,7 @@ int readString(T_Token *token){
         if(scanned != '\\') string[pozice++] =scanned;
         else{
           //escape sekvence
+          zaloha = scanned;
           scanned = fgetc(pSource_File);
           switch(scanned){
             case 'x':
@@ -740,6 +741,11 @@ int readString(T_Token *token){
             case 't':   string[pozice++] = '\t'; break;
             case '\\':  string[pozice++] = '\\'; break;
             case '"':   string[pozice++] = '"'; break;
+            //neznama escapen sekvence
+            default:
+                string[pozice++] = zaloha;
+                fseek(pSource_File, -1,SEEK_CUR);
+                break;
           }
         }
       }
