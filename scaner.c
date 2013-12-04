@@ -708,6 +708,11 @@ int readString(T_Token *token){
         break;
       }
 
+      //lexikalni chyba
+      else if(scanned <=31){
+        fprintf(stderr, "Row: %d, Byl nacten znak s ordinalni hodnotou mensi nez 32\n",row );
+        return ERROR_LEX;
+      }
       //nacitani retezce
       else{
         //neni to escape sekvence pridame to 
