@@ -18,4 +18,17 @@ double doubleval(T_ST_VarsItem input);
 bool newboolval(T_ST_VarsItem input);
 bool boolval(T_Token input);		//rozdil v datovych typech na vstupu
 
+double StrToDouble(char *input);
+double IntToDouble(int input);
+double BoolToDouble(bool input);
+int DoubleToInt(double input);
+bool StrToBool(char *input);
+int StrToInt(char *input);
+int BoolToInt(bool input);
+bool IntToBool(int input);
+bool DoubleToBool(double input);
+bool StringToBool(char *input);
+char *BoolToStr(bool input);
+char *IntToStr(int input);
+char *DoubleToStr(double input);
 #endif
