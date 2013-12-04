@@ -270,7 +270,7 @@ char *DoubleToStr(double input)
             k = j+1;
             
     output[k] = '\0';
-    printf("%d\n", k);      //pokud je posledni znak '.', tak ji oddelame
+    //printf("%d\n", k);      //pokud je posledni znak '.', tak ji oddelame
     if(output[k-1] =='.')
         output[k-1] = '\0';
     return output;
