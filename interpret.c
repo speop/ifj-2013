@@ -672,10 +672,7 @@ int interpret()
 					AuxSTVar->data->type = S_DOUB;
 
 					res = findVarST((char *)variables[0], newST);
-					if(res == NULL){
-							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
-							return SEM_UNDECLARED_PARAMETER;
-					}
+					
 					*(double*)(AuxSTVar->data)->value = doubleval(*(res->data));
 					
 					 StackHelpItem = pop_top(paramStack);
