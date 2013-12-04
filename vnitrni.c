@@ -13,7 +13,7 @@
 #include "ast_tree.h"
 #include "scaner.h"
 
-#define debug 0
+#define debug 1
 
 
 extern tStack *alejStromu; //z parseru, je to ASS
@@ -630,7 +630,7 @@ int funGC(Tleaf *tree){
 			//vyhodnotime si pod vyraz
 			ret= exprGC(tree, RIGHT);
 			if(ret.ret != OK) return ret.ret; 
-			if((generate(STORE_PARAM, &LastVar, NULL, NULL)) != OK ) return ERROR_INTER;
+			if((generate(STORE_PARAM, ret.rightVar, NULL, NULL)) != OK ) return ERROR_INTER;
 		}
 	}
 	else{
