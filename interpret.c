@@ -125,14 +125,24 @@ int interpret()
 					res = findVarST(((Tparam *)(StackHelpItem2->data))->returnvalue ,newST);
 					if(res->data->value != NULL) free (res->data->value);
 
-					AuxSTVar = findVarST(Instr->operand1.value, actualST);
-					if(AuxSTVar == NULL){
-							fprintf(stderr, "Undefined variable\n");
-							return SEM_UNDECLARED_PARAMETER;
+					//neukladame promenou ale hodnotou
+					if( Instr->operand1.type != S_ID ){
+						op1 = Instr->operand1.value;
+						op1_typ = Instr->operand1.type;
 					}
+					else{
+						AuxSTVar = findVarST(Instr->operand1.value, actualST);
+						if(AuxSTVar == NULL){
+							fprintf(stderr, "Undefined variable\"%s\"\n",(char*)(Instr->operand1).value);
+							return SEM_UNDECLARED_PARAMETER;
+						}
+						op1 = AuxSTVar->data->value;
+						op1_typ =AuxSTVar->data->type;
+					}
+					
 
-					op1 = AuxSTVar->data->value;
-					switch(AuxSTVar->data->type){
+					
+					switch(op1_typ){
 				  		case S_STR:
 					  		res->data->value = mystrdup((char*)op1);
 					  		res->data->type = S_STR;
@@ -143,8 +153,8 @@ int interpret()
 				  		case S_INT:
 					 		res->data->value = malloc(sizeof(int));
 					  		*(int*)(res->data->value) = *(int*)op1;
-					  		res->data->type = AuxSTVar->data->type;
-					  		//printf("returnuju %d\n", *(int*)op1);
+					  		res->data->type = op1_typ;
+					  		//printf("returnuju %d\n", *(int*)(res->data->value));
 					  		break;
 
 				  		case S_DOUB:
