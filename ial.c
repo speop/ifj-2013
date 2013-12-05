@@ -423,8 +423,12 @@ int copyTableFill(T_ST_Vars* hd, T_ST_Vars* sb)
 char *merge(TString left, TString right)
 {
     char *output=malloc((left.length+right.length + 1)*sizeof(char));
-    int i=0;
+    char *str1, *str2;
+	int i=0;
 
+	str1 = left.first;		//toto se pak bude uvolnovat
+	str2 = right.first;
+	
     while(left.length>0&& right.length>0)
         {
          if(left.first[0]<right.first[0])
@@ -453,6 +457,8 @@ char *merge(TString left, TString right)
          right.first=&right.first[1];
         }
     output[i]='\0';
+	free(str1);
+	free(str2);
     return output;
 }
 
