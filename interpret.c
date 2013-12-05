@@ -289,7 +289,7 @@ int interpret()
 
 				op1_typ = AuxSTVar->data->type;
 				if(op1_typ != S_STR) {
-					fprintf(stderr, "Not a string for concatenation\n");
+					fprintf(stderr, "Not a string as a first operand for concatenation\n");
 					return SEM_TYPE_ERROR;  //typ promenne  neni string
 			  } 
 				else op1 = AuxSTVar->data->value;
@@ -297,7 +297,8 @@ int interpret()
 			  else {     //operand1 neni promenna
 				op1_typ = Instr->operand1.type;
 				if(op1_typ != S_STR) {
-					op1 = strval(*((T_ST_VarsItem *)(AuxSTVar->data)));		//pretypovani					
+					fprintf(stderr, "Not a string as a first operand for concatenation\n");
+					return SEM_TYPE_ERROR;  //typ hodnoty neni string
 				}
 				else op1 = Instr->operand1.value;
 			  }
