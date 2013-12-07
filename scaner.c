@@ -243,7 +243,7 @@ int getTokenReal(T_Token *token)
 
             //nebyl zadan nazev promenne
             if(pozice<2){fprintf(stderr, "Row: %d, Musite zadat nazev promenne\n",row ); free(str); return ERROR_LEX;}
-            
+
             //ulozime konec retezce za poseldni znak, i ted se muzeme dostat za to co mame alokovano tak musim zkontrolovat
             if(pozice >= alokovano) {
                 alokovano  = alokovano << 1;
@@ -685,7 +685,7 @@ int readString(T_Token *token){
 
     do { 
       //z vrchu uvozovky zavolame si get token.. jinac by to delalo       
-      if(scanned == '"'){ break;}
+      if(scanned == '"'){break;}
       if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
         alokovano  = alokovano << 1;
 

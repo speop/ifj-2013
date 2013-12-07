@@ -134,7 +134,7 @@ int interpret()
 					}
 					else{
 						AuxSTVar = findVarST(Instr->operand1.value, actualST);
-						if(AuxSTVar == NULL){
+						if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable\"%s\"\n",(char*)(Instr->operand1).value);
 							return SEM_UNDECLARED_PARAMETER;
 						}
@@ -207,11 +207,11 @@ int interpret()
 			case S_DIV:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					if(AuxSTVar == NULL){
+					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable\n");
 							return SEM_UNDECLARED_PARAMETER;
 					}
-
+					
 					op1_typ = AuxSTVar->data->type;
 					if(op1_typ != S_INT && op1_typ != S_DOUB) { fprintf(stderr, "Incompatible types in expression\n" ); return SEM_TYPE_ERROR; }  //typ promenne  neni int ani double
 					else op1 = AuxSTVar->data->value;
@@ -226,7 +226,7 @@ int interpret()
 
 				if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 					AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					if(AuxSTVar == NULL){
+					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL ){
 							fprintf(stderr, "Undefined variable\n");
 							return SEM_UNDECLARED_PARAMETER;
 					}
@@ -282,7 +282,7 @@ int interpret()
 
 			  if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 				AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-				if(AuxSTVar == NULL){
+				if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable\n");
 							return SEM_UNDECLARED_PARAMETER;
 				}
@@ -305,7 +305,7 @@ int interpret()
 
 			  if(Instr->operand2.type == S_ID) { //operand2 je to promenna
 				AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-				if(AuxSTVar == NULL){
+				if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable\n");
 							return SEM_UNDECLARED_PARAMETER;
 				}
@@ -353,7 +353,7 @@ int interpret()
 			case S_IS:
 				if(Instr->operand1.type == S_ID) { //operand1 je to promenna
 				  AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-				  if(AuxSTVar == NULL){
+				  if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable\n");
 							return SEM_UNDECLARED_PARAMETER;
 					}
@@ -434,7 +434,7 @@ int interpret()
 			case S_NEQ:
 				if(Instr->operand1.type == S_ID) { //operand1 je promenna
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					if(AuxSTVar == NULL){
+					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
 							return SEM_UNDECLARED_PARAMETER;
 					}
@@ -449,7 +449,7 @@ int interpret()
 
 				if(Instr->operand2.type == S_ID) { //operand2 je promenna
 					AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
-					if(AuxSTVar == NULL){
+					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
 							return SEM_UNDECLARED_PARAMETER;
 					}
@@ -842,7 +842,7 @@ int interpret()
 
 							case S_ID:
 								AuxSTVar = findVarST(Instr->operand1.value, actualST);
-								if(AuxSTVar == NULL){
+								if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 									fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
 									return SEM_UNDECLARED_PARAMETER;
 								}
@@ -932,7 +932,7 @@ int interpret()
 			case JMP_NOT:
 				if(Instr->operand1.type == S_ID) { 
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);
-					if(AuxSTVar == NULL){
+					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
 							return SEM_UNDECLARED_PARAMETER;
 					}

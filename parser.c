@@ -1136,7 +1136,7 @@ int expr(){
 										break;
 									default: 	fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
-												projimadlo = false;
+												projimadlo = true;
 								}
 								if (projimadlo) break;
 								
