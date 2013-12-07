@@ -87,6 +87,7 @@ int getTokenReal(T_Token *token)
   int alokovano = 32;
   char *str, *more_str;
   int pomRow;
+  bool first = false;
 
   //kvuli rozisreni expanze promene, posleme tecku
   if(con){
@@ -106,6 +107,7 @@ int getTokenReal(T_Token *token)
   while((scanned = fgetc(pSource_File)) != EOF){
     //printf("nacteny znak je: %c\n",scanned);
     result = OK;
+    first = false;
 
     // slozitejsi podminky se vezmou pres if tam kde zalezi jen na jednom znaku se pouzije switch
     if (scanned >= '0' && scanned <= '9'){
@@ -138,6 +140,8 @@ int getTokenReal(T_Token *token)
 
             str[pozice++] = scanned;//ulozime si znak   
             scanned = fgetc(pSource_File);
+
+            
 
         }while((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || (scanned >= '0' && scanned <= '9') || scanned == '_');
 
@@ -236,8 +240,20 @@ int getTokenReal(T_Token *token)
                   else str = more_str;
                 }
 
-                str[pozice++] = scanned;//ulozime si znak   
-                scanned = fgetc(pSource_File);
+              str[pozice++] = scanned;//ulozime si znak   
+              scanned = fgetc(pSource_File);
+              
+              //prvni cteni muze byt jen pismeno nebo podrziko
+              if(!first) { 
+                if(!((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') ||  scanned == '_')){
+                  fprintf(stderr, "Row: %d, promena nesmi zacinat \"%c\"\n", row,scanned);
+                  free(str);
+                  return ERROR_LEX;
+                }
+                first = true;
+              }
+
+              
 
             }while((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || (scanned >= '0' && scanned <= '9') || scanned == '_');
 
@@ -649,7 +665,8 @@ int readString(T_Token *token){
   int pozice = 0;
   int alokovano = 32;
   int nextChar,i;
-  char *string, *more_str,s1, zaloha;
+  char *string, *more_str,s1, zaloha, zaloha2;
+  bool zalohovat = false;
   char scanned = fgetc(pSource_File);
 
 
@@ -696,6 +713,7 @@ int readString(T_Token *token){
     
 
     do { 
+      zalohovat = false;
       //z vrchu uvozovky zavolame si get token.. jinac by to delalo       
       if(scanned == '"'){break;}
       if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
@@ -735,13 +753,14 @@ int readString(T_Token *token){
         //neni to escape sekvence pridame to 
         if(scanned != '\\') string[pozice++] =scanned;
         else{
-          //escape sekvence
+          
+          //zalohujme si kdyz to neni znama escapse sekvence
           zaloha = scanned;
+
           scanned = fgetc(pSource_File);
           switch(scanned){
             case 'x':
                 nextChar = 0;
-
                 for (i = 0; i < 2; i++) {
                     nextChar *= 16;
                     s1 = fgetc(pSource_File);
@@ -755,8 +774,23 @@ int readString(T_Token *token){
                     else if (s1 >= '0' && s1 <= '9') {
                       nextChar += s1 - ASCII_ZERO;
                     }
+                    else{fseek(pSource_File, -1,SEEK_CUR); break;}
+                      
+                     
+
+
+
                 }
-                string[pozice++] = nextChar;
+
+                if(!i){
+                    string[pozice++] = zaloha;
+                    string[pozice++] = scanned;
+                }
+                else {
+                   string[pozice++] = nextChar;
+                }
+
+               
                 break;
             case '$':   string[pozice++] = '$'; break;                                      //$
             case 'n':   string[pozice++] = '\n'; break;
@@ -766,6 +800,11 @@ int readString(T_Token *token){
             //neznama escapen sekvence
             default:
                 string[pozice++] = zaloha;
+                //if(zalohovat){
+               //      string[pozice++] = scanned;
+                //}
+                //zalohovat se nastavi pri nacitani hexa cisla a tam se to samo vraci o 1
+               
                 fseek(pSource_File, -1,SEEK_CUR);
                 break;
           }

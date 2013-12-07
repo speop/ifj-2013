@@ -739,7 +739,7 @@ int functionHeaders(){
 
 		//pridame promenou do tabulky symbolu promenych u funkce
 		ret = addVarNodeToST(promena , symboly);
-		if(ret == ITEM_EXIST) return SEM_DEF_ERROR;
+		if(ret == ITEM_EXIST) { fprintf(stderr, "Row: %d, redefinice parametru \"%s\"\n",row, promena->name); return SEM_OTHER_ERROR;}
 		else if (ret ==  INTERNAL_ERROR) return ERROR_INTER;
 
 		paramCount++;
@@ -1095,7 +1095,8 @@ int expr(){
 					if( ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1 != NULL ) typ1 = ((Tleaf*)((T_Token*)(pomItem)->data)->value)->op1->type;	
 					else typ1 = NOT_EXIST;
 
-					if( ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1 != NULL ) typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
+					//printf("token %d\n",((T_Token*)(pomItem3)->data)->type );
+					if((((T_Token*)(pomItem3)->data)->value)!= NULL &&  ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1 != NULL ) typ2 = ((Tleaf*)((T_Token*)(pomItem3)->data)->value)->op1->type;
 					else typ2 = NOT_EXIST;
 					//pokud by to byl jednoduchy E ma v typu kokretni typ, pokud se jedna o slozeny ma v typu E takze musi existovt i znamenko mezi tema dvema
 					znamenko1 = 0;
@@ -1120,6 +1121,11 @@ int expr(){
 									//case S_FUNC:
 									case S_DOUB:
 									case S_ID:	break;
+									case NOT_EXIST: fprintf(stderr, "Row: %d, missing symbol  in expression\n",row );
+											ret= ERROR_SYN;
+											projimadlo = true;
+											break;
+
 									case S_E:
 										
 										switch(znamenko1){
@@ -1145,6 +1151,11 @@ int expr(){
 									case S_FUNC:
 									case S_DOUB: 
 									case S_ID: break;
+									case NOT_EXIST: 
+											fprintf(stderr, "Row: %d, missing symbol  in expression\n",row );
+											ret= ERROR_SYN;
+											projimadlo = true;
+											break;
 										
 									case S_E:
 										switch(znamenko2){
@@ -1153,6 +1164,7 @@ int expr(){
 											case S_DIV:
 											case S_FUNC:
 											case S_MUL: break;
+											
 											default: 
 												fprintf(stderr, "Row: %d, incompatible types in expression\n",row );
 												ret= SEM_TYPE_ERROR;
