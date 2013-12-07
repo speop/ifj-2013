@@ -96,8 +96,17 @@ int generateCode(){
 						*addr = index;
 						push(whileSkoky,addr);
 
-						if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
-						else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+						if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) {
+								LastVar.type = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->type;
+								LastVar.value = copyData(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1);
+						}
+						else {
+								ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+								if (ret.ret != OK ) return ret.ret;
+								
+								LastVar.type = ret.rightVar->type;
+								LastVar.value = copyData(ret.rightVar);
+						}
 
 						addr = (int*)malloc(sizeof(int));
 						*addr = index;
@@ -114,8 +123,17 @@ int generateCode(){
 					
 					case ELSEIF:
 						
-						if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) LastVar.value = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->value;
-						else ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+						if(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op == NULL) {
+								LastVar.type = ((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1->type;
+								LastVar.value = copyData(((Tleaf*)(((Tleaf*)((T_Token*)(item)->data)->value)->op1->value))->op1);
+						}
+						else {
+								ret = exprGC(((Tleaf*)(((T_Token*)(item)->data)->value))->op1->value, RIGHT);
+								if (ret.ret != OK ) return ret.ret;
+								
+								LastVar.type = ret.rightVar->type;
+								LastVar.value = copyData(ret.rightVar);
+						}
 						
 						addr = (int*)malloc(sizeof(int));
 						*addr = index;

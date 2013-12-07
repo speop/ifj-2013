@@ -66,9 +66,9 @@ static int prtable [POLE][POLE] = {
 				+		*		(		)		=		.		/		-		,		f		id		i		d		s		b		n		$  		<		>		<=		>=		===		!==*/
 /*  0  + */	{	H,		L,		L,		H,		X,		H,		L,		H,		H,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  1  * */ {	H,		H,		L,		H,		X,		H,		H,		H,		H,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
-/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
+/*  2  ( */ {	L,		L,		L,		EQ,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L},
 /*  3  ) */ {	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		H,		X,		X,		X,		X,		X,		X},
+/*  4  = */	{	L,		L,		L,		X,		X,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		H,		L,		L,		L,		L,		L,		L},
 /*  5  . */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  6  / */ {	H,		H,		L,		H,		X,		H,		H,		H,		X,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  7  - */ {	H,		L,		L,		H,		X,		H,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
@@ -80,7 +80,7 @@ static int prtable [POLE][POLE] = {
 /*  13  s */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  14  b */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
 /*  15  n */{	H,		H,		X,		H,		X,		H,		H,		H,		H,		X,		X,		X,		X,		X,		X,		X,		H,		H,		H,		H,		H,		H,		H},
-/*  17  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		X,		L,		L,		L,		L,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L},
+/*  17  $ */{	L,		L,		L,		X,		L,		L,		L,		L,		X,		X,		L,		L,		L,		L,		L,		L,		EQ,		L,		L,		L,		L,		L,		L},
 /*  18  < */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},	
 /*  19  > */{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
 /*  20  <=*/{	L,		L,		L,		H,		X,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		L,		H,		H,		H,		H,		H,		H,		H},
@@ -429,11 +429,15 @@ int st_list(){
 				eTokenAlej->value = pomVetev;
 				if (push(alejStromu,eTokenAlej) != OK) { tokenFree(eTokenAlej); return ERROR_INTER;}
 			}
+			// vubec se mi to nelibi.. ale return  musi byt s expr tak bude holt s expr no.. i kdzy to je velike zjednoduseni ale co uz..
 			else{
+				fprintf(stderr, "Row: %d, return must contains some expression\n", row);
+				return ERROR_SYN;
+				/*
 				if ((eTokenAlej = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 				eTokenAlej->type = RETURN;
 				eTokenAlej->value = NULL;
-				if (push(alejStromu,eTokenAlej) != OK) { free(eTokenAlej); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;}
+				if (push(alejStromu,eTokenAlej) != OK) { free(eTokenAlej); fprintf(stderr,"Leaf pushing error\n"); return ERROR_INTER;} */
 			}
 
 			if ((result = getToken(&token)) != OK) return result;

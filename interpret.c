@@ -930,7 +930,7 @@ int interpret()
 				break;
 
 			case JMP_NOT:
-				if(Instr->operand1.type == S_ID) {
+				if(Instr->operand1.type == S_ID) { 
 					AuxSTVar = findVarST(Instr->operand1.value, actualST);
 					if(AuxSTVar == NULL){
 							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);

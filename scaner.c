@@ -86,7 +86,7 @@ int getTokenReal(T_Token *token)
   int pozice = 0;
   int alokovano = 32;
   char *str, *more_str;
-
+  int pomRow;
 
   //kvuli rozisreni expanze promene, posleme tecku
   if(con){
@@ -241,6 +241,9 @@ int getTokenReal(T_Token *token)
 
             }while((scanned >= 'A' && scanned <= 'Z') || (scanned >= 'a' && scanned <= 'z') || (scanned >= '0' && scanned <= '9') || scanned == '_');
 
+            //nebyl zadan nazev promenne
+            if(pozice<2){fprintf(stderr, "Row: %d, Musite zadat nazev promenne\n",row ); free(str); return ERROR_LEX;}
+            
             //ulozime konec retezce za poseldni znak, i ted se muzeme dostat za to co mame alokovano tak musim zkontrolovat
             if(pozice >= alokovano) {
                 alokovano  = alokovano << 1;
@@ -292,7 +295,7 @@ int getTokenReal(T_Token *token)
 
               //blokovy komentar
               else if (scanned == '*'){
-                  do{
+                  do{   pomRow = row;
                         scanned = fgetc(pSource_File);
                         if(scanned == '\n') row++;
 						
@@ -304,6 +307,8 @@ int getTokenReal(T_Token *token)
                         }
                 }
                 while(scanned!=EOF);
+
+                if(scanned == EOF ){fprintf(stderr, "Row: %d, Zacatek neukonceneho komentare\n",pomRow ); return ERROR_LEX;}
                 break;
               }
 

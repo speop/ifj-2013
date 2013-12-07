@@ -1,5 +1,3 @@
 <?php
 
-// Na co jen si vzpomenete
-$a = true."a";
-put_string($a);
+if(2.0 === 2.0){$a= put_string("je");}
