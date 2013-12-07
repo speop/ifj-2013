@@ -559,22 +559,24 @@ int readNumber(T_Token *token, char firstNum)
   n = fgetc(pSource_File);
   do {
     if (expS >= 1) {                                      //Predchozi bylo e/E
-      if (n == '+' && expS != 2) {                        //cteme nepovinne znamenko a to poprve
+      if (n == '+' && expS == 1) {                        //cteme nepovinne znamenko a to poprve
         expM = 1;
         expS = 2;                                         //vickrat znamenko v exp. je chyba
       }
-      else if (n == '-' && expS != 2) {
+      else if (n == '-' && expS == 1) {
         expM = -1;
         expS = 2;
       }
       else if (n >= '0' && n <= '9') {                    //hodnota exponentu
+        expS = 3;
         exp *= 10;
         exp += n - ASCII_ZERO;
       }
     }
     else {
       if (n >= '0' && n <= '9') {
-        if (isDecimal) {
+        if (isDecimal >= 1) {
+    	  isDecimal = 2;
           double tmp = n - ASCII_ZERO;
           tmp = tmp / decimal;
           num += tmp;
@@ -612,7 +614,17 @@ int readNumber(T_Token *token, char firstNum)
 
     n = fgetc(pSource_File);
 
-  }while((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0)));
+  }while((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0) && (expS == 0)));
+
+    if ((expS == 1) || (expS == 2)) {
+	fprintf(stderr, "Lexikalni chyba u funkce pro cisla \n");
+	return ERROR_LEX;		//Bud bylo nacteno jen e/E nebo e/E a znamenko
+    }
+    if (isDecimal == 1) {
+	fprintf(stderr, "Lexikalni chyba u funkce pro cisla \n");
+	return ERROR_LEX;		//Byla nactena tecka, avsak ne des. cast
+    }
+
 
   fseek(pSource_File, -1,SEEK_CUR);
   
