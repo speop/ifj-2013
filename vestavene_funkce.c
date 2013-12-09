@@ -110,6 +110,7 @@ double StrToDouble(char *input)
     double  exponent = 0;
     double expsign = 1;
     double sign = 1;
+    int a = 0, b = 0, c = 0;          //pocitadla cislic
 
     // preskocime bile znaky (tabulator, mezera, konec radku)    
     while((input[i] == ' ' || input[i] == ' ' || input[i] == '\n')&&i<length)
@@ -123,16 +124,24 @@ double StrToDouble(char *input)
         {output *= 10;
          output += input[i] - '0';
          i++;
+         a++;
         }
+   
     if(input[i]=='.')
         {i++;
          while(input[i]>='0' && input[i]<='9' && i<length)
             {increment *= 10;
             output += (input[i] - '0') / increment;
             i++;
+            b++;
             }
+         if(b == 0)
+            return E_DOUBLEVAL;
         }
-        
+   
+   if(a == 0 && b == 0)
+        return E_DOUBLEVAL;
+    
     if(input[i] == 'e' || input[i] == 'E')
         {
          i++;
@@ -148,9 +157,14 @@ double StrToDouble(char *input)
              {exponent*=10;
              exponent += (input[i] - '0') ;
              i++;
+             c++;
             }
          exponent *= expsign;
+         if (c == 0)
+            return E_DOUBLEVAL;
+            
         }
+        
         if(exponent>0)
             for(; exponent>0; exponent--)
                 output*=10;
