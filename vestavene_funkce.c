@@ -136,7 +136,7 @@ double StrToDouble(int *ret, char *input)
         }
 
     n = input[i++];
-    if(!(n != '\0' &&( (n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || (n == '.')) && (isDecimal == 0) && (expS == 0))) {fprintf(stderr, "Problem pri pretypovanina double\n" ); return SEM_RETYPE;}
+    if(!(n!='\0' && ((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0) && (expS == 0))))) {fprintf(stderr, "Problem pri pretypovanina double\n" ); return SEM_RETYPE;}
     do {
         if (expS >= 1) {                                      //Predchozi bylo e/E
             if (n == '+' && expS == 1) {                        //cteme nepovinne znamenko a to poprve
@@ -185,7 +185,7 @@ double StrToDouble(int *ret, char *input)
         firstTime = 0;
 
         n =  input[i++];
-    }while(n != '\0' &&( (n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || (n == '.')) && (isDecimal == 0) && (expS == 0));
+    }while(n!='\0' && ((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0) && (expS == 0))));
     
     if (expS >= 1) {
         exp *= expM;
@@ -198,6 +198,7 @@ double StrToDouble(int *ret, char *input)
         *ret =  SEM_RETYPE;                                  //a tady neco falesneho
         return 0;      //Bud bylo nacteno jen e/E nebo e/E a znamenko
     }
+
     if (isDecimal == 1) {
         fprintf(stderr, "Lexikalni chyba u doubleval \n");
         *ret =  SEM_RETYPE;                                  //a tady neco falesneho

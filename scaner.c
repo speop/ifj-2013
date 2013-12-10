@@ -665,7 +665,7 @@ int readString(T_Token *token){
   int pozice = 0;
   int alokovano = 32;
   int nextChar,i;
-  char *string, *more_str,s1, zaloha;
+  char *string, *more_str,s1,s2, zaloha;
   //bool zalohovat = false;
   char scanned = fgetc(pSource_File);
 
@@ -716,7 +716,7 @@ int readString(T_Token *token){
      // zalohovat = false;
       //z vrchu uvozovky zavolame si get token.. jinac by to delalo       
       if(scanned == '"'){break;}
-      if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto
+      if(pozice >= (alokovano-3)) {                                                    //Realokace, kdy nemame misto
         alokovano  = alokovano << 1;
 
         more_str = (char*) realloc (string, alokovano * sizeof(int));
@@ -763,7 +763,9 @@ int readString(T_Token *token){
                 nextChar = 0;
                 for (i = 0; i < 2; i++) {
                     nextChar *= 16;
+                    s2 =s1;
                     s1 = fgetc(pSource_File);
+                  
                   
                     if (s1 >= 'A' && s1 <= 'F') {
                       nextChar += s1 - ASCII_A_TO_HEX;
@@ -774,7 +776,7 @@ int readString(T_Token *token){
                     else if (s1 >= '0' && s1 <= '9') {
                       nextChar += s1 - ASCII_ZERO;
                     }
-                    else{fseek(pSource_File, -1,SEEK_CUR); break;}
+                    else{ fseek(pSource_File, -1,SEEK_CUR); break;}
                       
                      
 
@@ -782,11 +784,12 @@ int readString(T_Token *token){
 
                 }
 
-                if(!i){
+                if(i<2){
                     string[pozice++] = zaloha;
                     string[pozice++] = scanned;
+                    if(i)  string[pozice++] = s2;
                 }
-                else {
+                else { 
                    string[pozice++] = nextChar;
                 }
 

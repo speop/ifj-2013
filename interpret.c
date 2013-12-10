@@ -683,14 +683,16 @@ int interpret()
 				
 				if(strcmp(funcName, "doubleval") == 0) {
 					
-					AuxSTVar->data->value = malloc(sizeof(int));
+					AuxSTVar->data->value = malloc(sizeof(double));
 					AuxSTVar->data->type = S_DOUB;
 
 					ret = 0;
 
 					res = findVarST((char *)variables[0], newST);
 					
-					*(double*)(AuxSTVar->data)->value = doubleval(&ret, *(res->data));
+					doub1 =doubleval(&ret, *(res->data));
+					
+					*(double*)(AuxSTVar->data)->value = doub1;
 					
 					 StackHelpItem = pop_top(paramStack);
 
