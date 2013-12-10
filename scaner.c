@@ -665,8 +665,8 @@ int readString(T_Token *token){
   int pozice = 0;
   int alokovano = 32;
   int nextChar,i;
-  char *string, *more_str,s1, zaloha, zaloha2;
-  bool zalohovat = false;
+  char *string, *more_str,s1, zaloha;
+  //bool zalohovat = false;
   char scanned = fgetc(pSource_File);
 
 
@@ -713,7 +713,7 @@ int readString(T_Token *token){
     
 
     do { 
-      zalohovat = false;
+     // zalohovat = false;
       //z vrchu uvozovky zavolame si get token.. jinac by to delalo       
       if(scanned == '"'){break;}
       if(pozice >= alokovano) {                                                    //Realokace, kdy nemame misto

@@ -39,6 +39,7 @@ int interpret()
 	TCallStack *CallStack;                //prvek zasobniku pro navraty
 	Tparam *param;
 	double doub1, doub2;
+	int ret = 0;
 	//tStack *returnStack = SInit();      //zasobnik navratovach hodnot
 	//tStack *tableStack = SInit();         //zasobnik tabulek symbolu
 	//tStack *funcStack = SInit();        //zasobnik s funkcemi a parametry pro volani
@@ -685,9 +686,11 @@ int interpret()
 					AuxSTVar->data->value = malloc(sizeof(int));
 					AuxSTVar->data->type = S_DOUB;
 
+					ret = 0;
+
 					res = findVarST((char *)variables[0], newST);
 					
-					*(double*)(AuxSTVar->data)->value = doubleval(*(res->data));
+					*(double*)(AuxSTVar->data)->value = doubleval(&ret, *(res->data));
 					
 					 StackHelpItem = pop_top(paramStack);
 
@@ -698,6 +701,7 @@ int interpret()
 					free(StackHelpItem->data);
 					free(StackHelpItem);
 				  
+				  	if(ret) return ret;
 					break;
 				}
 			

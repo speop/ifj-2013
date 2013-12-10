@@ -14,11 +14,11 @@ int find_string(char *, char *);  //vyhledani podretezce
 //prevody datovach typu
 char *strval(T_ST_VarsItem input);
 int intval(T_ST_VarsItem input);
-double doubleval(T_ST_VarsItem input);
+double doubleval(int *ret, T_ST_VarsItem input);
 bool newboolval(T_ST_VarsItem input);
 bool boolval(T_Token input);		//rozdil v datovych typech na vstupu
 
-double StrToDouble(char *input);
+double StrToDouble(int *ret, char *input);
 double IntToDouble(int input);
 double BoolToDouble(bool input);
 int DoubleToInt(double input);

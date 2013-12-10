@@ -7,9 +7,12 @@
 #include "types.h"
 #include "ial.h"
 #include "scaner.h"
+#include <math.h>
 
-#define NAN (0.0/0.0)
 
+//#define NAN (0.0/0.0)
+
+//const int ASCII_ZERO=48;
 //přečte jednenřádek ze vstupu
 //pokud se nepovede některá alokace, vracím nulu
 //HOTOVO
@@ -102,15 +105,26 @@ int find_string(char *string1, char *string2)
 }
 
 
-double StrToDouble(char *input)
+double StrToDouble(int *ret, char *input)
 {
-    double output = 0;
+    //double output = 0;
     unsigned int i = 0, length = strlen(input);
-    double increment = 1;
-    double  exponent = 0;
-    double expsign = 1;
+    //double increment = 1;
+    //double  exponent = 0;
+    //double expsign = 1;
     double sign = 1;
-    int a = 0, b = 0, c = 0;          //pocitadla cislic
+    //char c;
+    const int ASCII_ZERO=48;
+    //int a = 0, b = 0, c = 0;          //pocitadla cislic
+
+    int firstTime = 1;
+    int isDecimal = 0;
+    int decimal = 10;                                       //Pocitadlo desetinneho mista
+    int exp = 0;                                            //hodnota exponentu
+    int expS = 0;                                           //stav exponentu
+    int expM = 1;                                           //multiplikator exponentu (+-1)
+    int n=0;                                  //PREDANY PARAMETR PRVNIHO PRECTENEHO (PODLE KTEREHO VIME, ZE JE TO CISLO)
+    double num = 0;   
 
     // preskocime bile znaky (tabulator, mezera, konec radku)    
     while((input[i] == ' ' || input[i] == ' ' || input[i] == '\n')&&i<length)
@@ -120,58 +134,77 @@ double StrToDouble(char *input)
         {sign = -1;
          i++;
         }
-    while(input[i]>='0' && input[i]<='9' && i<length)
-        {output *= 10;
-         output += input[i] - '0';
-         i++;
-         a++;
-        }
-   
-    if(input[i]=='.')
-        {i++;
-         while(input[i]>='0' && input[i]<='9' && i<length)
-            {increment *= 10;
-            output += (input[i] - '0') / increment;
-            i++;
-            b++;
+
+    n = input[i++];
+    if(!(n != '\0' &&( (n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || (n == '.')) && (isDecimal == 0) && (expS == 0))) {fprintf(stderr, "Problem pri pretypovanina double\n" ); return SEM_RETYPE;}
+    do {
+        if (expS >= 1) {                                      //Predchozi bylo e/E
+            if (n == '+' && expS == 1) {                        //cteme nepovinne znamenko a to poprve
+                expM = 1;
+                expS = 2;                                         //vickrat znamenko v exp. je chyba
             }
-         if(b == 0)
-            return E_DOUBLEVAL;
+            else if (n == '-' && expS == 1) {
+                expM = -1;
+                expS = 2;
+            }
+            else if (n >= '0' && n <= '9') {                    //hodnota exponentu
+                expS = 3;
+                exp *= 10;
+                exp += n - ASCII_ZERO;
+            }
         }
-   
-   if(a == 0 && b == 0)
-        return E_DOUBLEVAL;
+        else {
+            if (n >= '0' && n <= '9') {
+                if (isDecimal >= 1) {
+                    isDecimal = 2;
+                    double tmp = n - ASCII_ZERO;
+                    tmp = tmp / decimal;
+                    num += tmp;
+                    decimal *= 10;
+                }
+                else {
+                    num *= 10;                                         //pridani cele casti cisla
+                    num += n - ASCII_ZERO;
+                }
+            }
+            else if (n == '.') {
+                isDecimal = 1;
+            } 
+            else if (n == 'e' || n == 'E') {
+                expS = 1;                                          //a mame tu exponent
+            }
+            else {
+                if (!firstTime) {
+                    fprintf(stderr, "Lexikalni chyba u doubleval \n");
+                    *ret =  SEM_RETYPE;                                  //a tady neco falesneho
+                    return 0;
+                }
+            }
+        }
+
+        firstTime = 0;
+
+        n =  input[i++];
+    }while(n != '\0' &&( (n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || (n == '.')) && (isDecimal == 0) && (expS == 0));
     
-    if(input[i] == 'e' || input[i] == 'E')
-        {
-         i++;
-         if(i<length && input[i] == '-' )
-            {expsign = -1;
-            i++;
-            }
-         else if(input[i] == '+')
-                    {expsign = 1;
-                    i++;
-                    }
-         while(i<length && input[i]>='0' && input[i]<='9')
-             {exponent*=10;
-             exponent += (input[i] - '0') ;
-             i++;
-             c++;
-            }
-         exponent *= expsign;
-         if (c == 0)
-            return E_DOUBLEVAL;
-            
-        }
-        
-        if(exponent>0)
-            for(; exponent>0; exponent--)
-                output*=10;
-        if(exponent<0)
-            for(;exponent<0; exponent++)
-                output/=10;
-    return (sign * output );
+    if (expS >= 1) {
+        exp *= expM;
+        num = num * pow(10.0, exp);
+    }
+
+
+    if ((expS == 1) || (expS == 2)) {
+        fprintf(stderr, "Lexikalni chyba u doubleval \n");
+        *ret =  SEM_RETYPE;                                  //a tady neco falesneho
+        return 0;      //Bud bylo nacteno jen e/E nebo e/E a znamenko
+    }
+    if (isDecimal == 1) {
+        fprintf(stderr, "Lexikalni chyba u doubleval \n");
+        *ret =  SEM_RETYPE;                                  //a tady neco falesneho
+        return 0;      //Byla nactena tecka, avsak ne des. cast
+    }
+
+    return (sign * num );
 }
 
 
@@ -330,14 +363,14 @@ bool boolval(T_Token input)
     return false;
 }
 
-double doubleval(T_ST_VarsItem input)
+double doubleval(int *ret, T_ST_VarsItem input)
 {   
    switch (input.type){
     case S_INT: return IntToDouble(*(int *)input.value);
 
     case S_DOUB: return *(double*)(input).value;
 
-    case S_STR: return StrToDouble((char*)(input).value);
+    case S_STR: return StrToDouble(ret, (char*)(input).value);
 
     case S_BOOL: return BoolToDouble(*(int*)input.value); // vnitrne je bool reprezentovan jako int
                   

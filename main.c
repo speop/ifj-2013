@@ -39,12 +39,7 @@ int main(int argc, char **argv)
 	}
 
 	garbage_init();
-	void *data;
-
-
 	
-
-	//garbage_add(data,&garbage_default_erase);
 	
 	#if debug 
 		printf("Volam syntakci analyzator: \n\n");		
@@ -52,9 +47,6 @@ int main(int argc, char **argv)
 	result = parser();
 
 	
-	
-	
-
 	garbage_empty();
 	fclose(stdout);
 	fclose(pSource_File);
@@ -62,9 +54,3 @@ int main(int argc, char **argv)
 	
 }
 
-bool test(void * data){
-	printf("Mazu cislo %d\n",*(int*)data);
-	free(data);
-
-	return true;
-}
