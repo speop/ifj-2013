@@ -486,30 +486,25 @@ int interpret()
 						case S_BOOL:
 							  switch(Instr->operator) {
 									case S_LST:
-										if((*((int *)op1) < *((int *)op2))) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
+										*((int*)(res->data)->value) = ((*((int *)op1) < *((int *)op2)));
 										break;
 									case S_GRT:
-										if((*((int *)op1) > *((int *)op2))) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
+										*((int*)(res->data)->value) = ((*((int *)op1) > *((int *)op2)));
 										break;
 									case S_LEQ:
-										if((*((int *)op1) <= *((int *)op2))) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
+										*((int*)(res->data)->value) = ((*((int *)op1) <= *((int *)op2)));
 										break;
 									case S_GEQ:
-										if((*((int *)op1) >= *((int *)op2))) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
+										*((int*)(res->data)->value) = ((*((int *)op1) >= *((int *)op2)));
 										break;
 									case S_EQ:
-										if(((*(int *)op1) == *((int *)op2))) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
+										*((int*)(res->data)->value) = (((*(int *)op1) == *((int *)op2)));
 										break;
 									case S_NEQ:
-										if((*((int *)op1) != *((int *)op2))) *((int*)(res->data)->value) = 1;
-										else *((int*)(res->data)->value) = 0;
+										*((int*)(res->data)->value) = ((*((int *)op1) != *((int *)op2)));
 										break;
 							  }
+								printf("vysledek porovnavani je : %d\n", *((int*)(res->data)->value));
 							  break;
 						case S_DOUB:
 							  switch(Instr->operator) {
