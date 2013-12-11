@@ -504,7 +504,6 @@ int interpret()
 										*((int*)(res->data)->value) = ((*((int *)op1) != *((int *)op2)));
 										break;
 							  }
-								printf("vysledek porovnavani je : %d\n", *((int*)(res->data)->value));
 							  break;
 						case S_DOUB:
 							  switch(Instr->operator) {
