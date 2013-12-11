@@ -136,7 +136,7 @@ double StrToDouble(int *ret, char *input)
         }
 
     n = input[i++];
-    if(!(n!='\0' && ((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0) && (expS == 0))))) {fprintf(stderr, "Problem pri pretypovanina double\n" ); return SEM_RETYPE;}
+    if(!(n!='\0' && ((n >= '0' && n <= '9') || (n == '+' && expS == 1) || (n == '-' && expS == 1) || ((n == 'e' || n == 'E') && (expS == 0)) || ((n == '.') && (isDecimal == 0) && (expS == 0))))) { return 0;}
     do {
         if (expS >= 1) {                                      //Predchozi bylo e/E
             if (n == '+' && expS == 1) {                        //cteme nepovinne znamenko a to poprve
