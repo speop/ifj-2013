@@ -530,31 +530,40 @@ int interpret()
 						case S_STR:
 							  switch(Instr->operator) {
 							  	case S_LST:
-							  		if(strcmp((char *)op1, (char *)op2) < 0) *((int*)(res->data)->value) = 1;
-							  		else *((int*)(res->data)->value) = 0;
+							  		*((int*)(res->data)->value) = (strcmp((char *)op1, (char *)op2) < 0);							  		
 							  		break;
 							  	case S_GRT:
-							  		if(strcmp((char *)op1, (char *)op2) > 0) *((int*)(res->data)->value) = 1;
-							  		else *((int*)(res->data)->value) = 0;
+							  		*((int*)(res->data)->value) = (strcmp((char *)op1, (char *)op2) > 0);							  		
 							  		break;
 							  	case S_LEQ:
-							  		if(strcmp((char *)op1, (char *)op2) <= 0) *((int*)(res->data)->value) = 1;
-							  		else *((int*)(res->data)->value) = 0;
+							  		*((int*)(res->data)->value) = (strcmp((char *)op1, (char *)op2) <= 0);							  		
 							  		break;
 							  	case S_GEQ:
-							  		if(strcmp((char *)op1, (char *)op2) >= 0) *((int*)(res->data)->value) = 1;
-							  		else *((int*)(res->data)->value) = 0;
+							  		*((int*)(res->data)->value) = (strcmp((char *)op1, (char *)op2) >= 0);							  		
 							  		break;
 							  	case S_EQ:
-							  		if(strcmp((char *)op1, (char *)op2) == 0) *((int*)(res->data)->value) = 1;
-							  		else *((int*)(res->data)->value) = 0;
+							  		*((int*)(res->data)->value) = (strcmp((char *)op1, (char *)op2) == 0);							  		
 							  		break;
 							  	case S_NEQ:
-							  		if(strcmp((char *)op1, (char *)op2) != 0) *((int*)(res->data)->value) = 1;
-							  		else *((int*)(res->data)->value) = 0;
+							  		*((int*)(res->data)->value) = (strcmp((char *)op1, (char *)op2) != 0);							  		
 							  		break;
 							  }
-					}				 
+							  break;
+						case S_NULL:
+								switch(Instr->operator) {
+									case S_LST:
+									case S_GRT:
+									case S_NEQ:
+										*((int*)(res->data)->value) = 0;
+										break;
+									case S_LEQ:
+									case S_GEQ:
+									case S_EQ:
+										*((int*)(res->data)->value) = 1;
+										break;
+								}
+					}			
+					//printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
 				}
 				break;
 
