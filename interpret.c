@@ -49,6 +49,7 @@ int interpret()
 	//Tparam param;           //struktura pro parametry
 	//T_Token pom1, pom2, pom3;   //pomocnÄ‚Â© tokeny
 	T_Token backup;
+	bool multiCompare = 0, prevCompRes = 1;			//priznak pro vicenasobne porovnavani, vysledek predchoziho porovnavani
 
 	T_ST_Vars *actualST, *newST;
 	actualST = symbolTable;
@@ -56,7 +57,7 @@ int interpret()
 	while(1)
 	{
 		Instr = &(paska[i++]);         //nacitame z pasky a posouvame se po ni
-		
+		if(Instr->operator < S_LST || Instr->operator > S_NEQ) multiCompare = 0;
 		switch (Instr->operator) {
 			case  FUNCTION:  //definice funkce.. tu jen preskocime
 
@@ -433,25 +434,42 @@ int interpret()
 			case S_GEQ:
 			case S_EQ:
 			case S_NEQ:
-				if(Instr->operand1.type == S_ID) { //operand1 je promenna
-					AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+				if(!multiCompare) {			//je to prvni porovnani
+					if(Instr->operand1.type == S_ID) { //operand1 je promenna
+						AuxSTVar = findVarST(Instr->operand1.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
+						if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
+								fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
+								return SEM_UNDECLARED_PARAMETER;
+						}
+						op1_typ = (*AuxSTVar).data->type;
+						op1 = AuxSTVar->data->value;
+					}
+					else {     //operand1 neni promenna
+						op1_typ = Instr->operand1.type;
+						op1 = Instr->operand1.value;
+					}
+					backup = Instr->operand2;		//zaloha, pri pripadnem dalsim porovnavani bude prvnim operandem, postupuje se zleva doprava
+				}
+
+				else if(multiCompare) {				//toto porovnani je jiz nekolikate v rade
+					//v prvnim operandu je vysledek predchoziho porovnani
+					//je to navic v promenne, musim to dostat z tabulky symbolu
+					AuxSTVar = findVarST(Instr->operand1.value, actualST);
 					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
 							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
 							return SEM_UNDECLARED_PARAMETER;
 					}
-
-					op1_typ = (*AuxSTVar).data->type;
-					op1 = AuxSTVar->data->value;
-				}
-				else {     //operand1 neni promenna
-					op1_typ = Instr->operand1.type;
-					op1 = Instr->operand1.value;
+					prevCompRes = *((bool *)(AuxSTVar->data->value));		//ulozeni vysledku predchoziho porovnavani
+					op1_typ = backup.type;									//obnova druheho operandu z predchoziho porovnavani
+					op1 = backup.value;
+					backup = Instr->operand2;		//zaloha, pri pripadnem dalsim porovnavani bude prvnim operandem, postupuje se zleva doprava
 				}
 
+				//druhy operand se uz nacita normalne, bez ohledu na vicenasobne porovnavani
 				if(Instr->operand2.type == S_ID) { //operand2 je promenna
 					AuxSTVar = findVarST(Instr->operand2.value, actualST);    //vyhledam ji v tabulce symbolu a ulozim si odkaz
 					if(AuxSTVar == NULL || AuxSTVar->data->value == NULL){
-							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
+							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand2).value);
 							return SEM_UNDECLARED_PARAMETER;
 					}
 					op2_typ = (*AuxSTVar).data->type;
@@ -476,7 +494,7 @@ int interpret()
 						break;
 				  }
 				  else {
-				  	fprintf(stderr, "porovnavani rozdilnych typu\n");
+				  	fprintf(stderr, "Different types in comparison\n");
 						return SEM_TYPE_ERROR;
 				  }
 				}
@@ -563,7 +581,10 @@ int interpret()
 										break;
 								}
 					}			
-					//printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
+					if(multiCompare) *((int*)(res->data)->value) *= prevCompRes;
+					multiCompare = 1;					//nasledujici porovnavani bude vicenasobne
+					// printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
+					//u vicenasobneho porovnavani plati vztah and
 				}
 				break;
 
