@@ -16,6 +16,7 @@
 #define debug 0 //  0 - vypnuto, 1 - lehka verze, > 1 vypisuje se i stack a porovnavaci tokeny
 #define POLE 23
 
+bool inFunc = false;
 extern TGarbageList trash; //z main.c
 extern int row; // z main.c
 extern T_Token *prevToken; // z main.c
@@ -315,6 +316,13 @@ int st_list(){
 
 		// pravidlo 6. <st-list> → function funcId ( <functionList> { <st-list> } <st-list>
 		case FUNCTION: 
+			//funkce ve funkce
+			if (inFunc){
+				fprintf(stderr, "Row: %d, IFJ13 doesn't support nested functions. \n",row);
+				return ERROR_SYN;
+			}
+			inFunc = true;
+
 			konecBloku++;
 			if ((result = getToken(&token)) != OK) return result;
 			if(token.type != S_FUNC){
@@ -391,6 +399,7 @@ int st_list(){
 				return ERROR_SYN;
 			}
 			konecBloku--;
+			inFunc = false;
 			//hodime si info pro sebe ze konci blok funkce
 			if ((pomToken = (T_Token*) malloc(sizeof(T_Token))) == NULL) return ERROR_INTER;
 			pomToken->type = INTER_RETURN;
@@ -408,6 +417,7 @@ int st_list(){
 			result = st_list();
 			if(result != OK) return result;
 
+			
 			return OK;
 			break;
 
