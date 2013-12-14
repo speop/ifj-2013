@@ -488,7 +488,7 @@ int interpret()
 				res->data->value = (int*)malloc(sizeof(int));
 
 				//jestli se typy nerovnaji, je to false nebo chyba
-				printf("op1_typ: %d, op2_typ: %d\n", op1_typ, op2_typ);
+				//printf("op1_typ: %d, op2_typ: %d\n", op1_typ, op2_typ);
 				if(op1_typ != op2_typ) {
 				  if(Instr->operator == S_EQ || Instr->operator == S_NEQ){
 				  	if(Instr->operator == S_NEQ)	*((int*)(res->data)->value) = 1;
@@ -585,7 +585,7 @@ int interpret()
 					}			
 					if(multiCompare) *((int*)(res->data)->value) *= prevCompRes;
 					multiCompare = 1;					//nasledujici porovnavani bude vicenasobne
-					printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
+					//printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
 					//u vicenasobneho porovnavani plati vztah and
 				}
 				break;
