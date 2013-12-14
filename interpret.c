@@ -441,14 +441,13 @@ int interpret()
 								fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand1).value);
 								return SEM_UNDECLARED_PARAMETER;
 						}
-						op1_typ = (*AuxSTVar).data->type;
+						op1_typ = AuxSTVar->data->type;
 						op1 = AuxSTVar->data->value;
 					}
 					else {     //operand1 neni promenna
 						op1_typ = Instr->operand1.type;
 						op1 = Instr->operand1.value;
 					}
-					backup = Instr->operand2;		//zaloha, pri pripadnem dalsim porovnavani bude prvnim operandem, postupuje se zleva doprava
 				}
 
 				else if(multiCompare) {				//toto porovnani je jiz nekolikate v rade
@@ -462,7 +461,6 @@ int interpret()
 					prevCompRes = *((bool *)(AuxSTVar->data->value));		//ulozeni vysledku predchoziho porovnavani
 					op1_typ = backup.type;									//obnova druheho operandu z predchoziho porovnavani
 					op1 = backup.value;
-					backup = Instr->operand2;		//zaloha, pri pripadnem dalsim porovnavani bude prvnim operandem, postupuje se zleva doprava
 				}
 
 				//druhy operand se uz nacita normalne, bez ohledu na vicenasobne porovnavani
@@ -472,12 +470,15 @@ int interpret()
 							fprintf(stderr, "Undefined variable \"%s\"\n",(char*)(Instr->operand2).value);
 							return SEM_UNDECLARED_PARAMETER;
 					}
-					op2_typ = (*AuxSTVar).data->type;
+					op2_typ = AuxSTVar->data->type;
 					op2 = AuxSTVar->data->value;
+					backup.type = AuxSTVar->data->type;		//zaloha, pri pripadnem dalsim porovnavani bude prvnim operandem, postupuje se zleva doprava
+					backup.value = AuxSTVar->data->value;
 				}
 				else {      //operand2 neni promenna
 					op2_typ = Instr->operand2.type;
 					op2 = Instr->operand2.value;
+					backup = Instr->operand2;		//zaloha, pri pripadnem dalsim porovnavani bude prvnim operandem, postupuje se zleva doprava
 				}
 
 				res = findVarST(Instr->vysledek.value, actualST);
@@ -487,6 +488,7 @@ int interpret()
 				res->data->value = (int*)malloc(sizeof(int));
 
 				//jestli se typy nerovnaji, je to false nebo chyba
+				printf("op1_typ: %d, op2_typ: %d\n", op1_typ, op2_typ);
 				if(op1_typ != op2_typ) {
 				  if(Instr->operator == S_EQ || Instr->operator == S_NEQ){
 				  	if(Instr->operator == S_NEQ)	*((int*)(res->data)->value) = 1;
@@ -583,7 +585,7 @@ int interpret()
 					}			
 					if(multiCompare) *((int*)(res->data)->value) *= prevCompRes;
 					multiCompare = 1;					//nasledujici porovnavani bude vicenasobne
-					// printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
+					printf("vysledek porovnavani je : > %d <\n", *((int*)(res->data)->value));
 					//u vicenasobneho porovnavani plati vztah and
 				}
 				break;
