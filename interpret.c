@@ -250,7 +250,7 @@ int interpret()
 				if (res->data->value != NULL) free(res->data->value);
 
 					  //vypocet
-				if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operator == S_MUL || Instr->operator == S_DIV) {
+				if(op1_typ == S_DOUB || op2_typ == S_DOUB || Instr->operator == S_DIV) {
 					
 					if(op1_typ == S_INT) doub1 = (double)(*(int*)op1);
 					else  doub1 = *(double*)op1;
@@ -274,6 +274,7 @@ int interpret()
 				else { 
 				  res->data->value = (int*)malloc(sizeof(int));
 				  if(Instr->operator == S_PLUS)  *((int*)(res->data)->value) = *((int*)(op1)) + *((int*)(op2));
+				  else if(Instr->operator == S_MUL)  *((int*)(res->data)->value) = *((int*)(op1)) * *((int*)(op2));
 				  else *((int*)(res->data)->value) = *((int*)(op1)) - *((int*)(op2));
 				  res->data->type = S_INT;
 				}
